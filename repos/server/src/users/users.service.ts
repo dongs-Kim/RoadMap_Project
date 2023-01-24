@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const user = new User();
-    user.user_id = shortUUID.generate();
+    user.id = shortUUID.generate();
     user.email = createUserDto.email;
     user.password = await hashPassword(createUserDto.password_origin);
     user.nickname = createUserDto.nickname;
@@ -30,23 +31,38 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(user_id: string): Promise<User> {
-    return this.usersRepository.findOneBy({ user_id });
+  findOne(id: string): Promise<User> {
+    return this.usersRepository.findOneBy({ id });
   }
 
-  async update(user_id: string, updateUserDto: UpdateUserDto) {
-    const user = new User();
-    user.nickname = updateUserDto.nickname;
-    user.comment = updateUserDto.comment;
-    user.image = updateUserDto.image;
-    if (updateUserDto.password_origin) {
-      user.password = await hashPassword(updateUserDto.password_origin);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    await this.usersRepository.update(id, updateUserDto);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
+
+  async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      select: {
+        password: true,
+      },
+    });
+    if (!user) {
+      return;
     }
-    return await this.usersRepository.update(user_id, updateUserDto);
-  }
 
-  async remove(user_id: string): Promise<void> {
-    await this.usersRepository.delete(user_id);
+    // 기존 비밀번호 체크
+    if (!bcrypt.compareSync(changePasswordDto.password_prev, user.password)) {
+      return;
+    }
+
+    const updateParam = {
+      password: await hashPassword(changePasswordDto.password_origin),
+    };
+    await this.usersRepository.update(id, updateParam);
   }
 }
 

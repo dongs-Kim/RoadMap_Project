@@ -1,10 +1,18 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToMany,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
+import { Roadmap } from './roadmap.entity';
 
 @Entity()
 export class User {
   @PrimaryColumn('char', { length: 22 })
-  user_id: string;
+  id: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -30,4 +38,10 @@ export class User {
 
   @Column({ default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @OneToMany(() => Roadmap, (roadmap) => roadmap.User)
+  Roadmaps: Roadmap[];
+
+  @ManyToMany(() => Roadmap, (roadmap) => roadmap.LikeUsers)
+  LikeRoadmaps: Roadmap[];
 }

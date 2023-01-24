@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
+@ApiTags('users')
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -29,23 +31,29 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '특정 사용자 조회' })
-  @Get(':user_id')
-  findOne(@Param('user_id') user_id: string) {
-    return this.usersService.findOne(user_id);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
   }
 
   @ApiOperation({ summary: '사용자 수정' })
-  @Patch(':user_id')
-  update(
-    @Param('user_id') user_id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(user_id, updateUserDto);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @ApiOperation({ summary: '사용자 삭제' })
-  @Delete(':user_id')
-  remove(@Param('user_id') user_id: string) {
-    return this.usersService.remove(user_id);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
+
+  @ApiOperation({ summary: '비밀번호 변경' })
+  @Patch(':id/changePassword')
+  changePassword(
+    @Param('id') id: string,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.usersService.changePassword(id, changePasswordDto);
   }
 }
