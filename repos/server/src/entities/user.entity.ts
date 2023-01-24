@@ -3,10 +3,12 @@ import {
   Column,
   Entity,
   Index,
+  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
+import { Reply } from './reply.entity';
 import { Roadmap } from './roadmap.entity';
 
 @Entity()
@@ -20,7 +22,7 @@ export class User {
   @Column({ length: 30, update: false })
   email: string;
 
-  @Column({ length: 100, select: false })
+  @Column({ length: 100 })
   password: string;
 
   @IsNotEmpty()
@@ -42,6 +44,13 @@ export class User {
   @OneToMany(() => Roadmap, (roadmap) => roadmap.User)
   Roadmaps: Roadmap[];
 
+  @OneToMany(() => Reply, (reply) => reply.User)
+  Replies: Reply[];
+
   @ManyToMany(() => Roadmap, (roadmap) => roadmap.LikeUsers)
   LikeRoadmaps: Roadmap[];
+
+  @ManyToMany(() => Roadmap, (roadmap) => roadmap.StoringUsers)
+  @JoinTable()
+  StoredRoadmaps: Roadmap[];
 }

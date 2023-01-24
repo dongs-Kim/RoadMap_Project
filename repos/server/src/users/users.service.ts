@@ -7,12 +7,15 @@ import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { Roadmap } from 'src/entities/roadmap.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Roadmap)
+    private roadmapsRepository: Repository<Roadmap>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -63,6 +66,56 @@ export class UsersService {
       password: await hashPassword(changePasswordDto.password_origin),
     };
     await this.usersRepository.update(id, updateParam);
+  }
+
+  async storeRoadmap(user: User, roadmap_id: string) {
+    // roadmap 조회
+    const roadmap = await this.roadmapsRepository.findOneBy({ id: roadmap_id });
+    if (!roadmap) {
+      return;
+    }
+
+    const storeUser = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: {
+        StoredRoadmaps: true,
+      },
+    });
+
+    // 이미 저장 했는지 체크
+    if (storeUser.StoredRoadmaps.some((x) => x.id === roadmap_id)) {
+      return;
+    }
+
+    // StoredRoadmaps에 추가
+    storeUser.StoredRoadmaps.push(roadmap);
+    await this.usersRepository.save(storeUser);
+  }
+
+  async unstoreRoadmap(user: User, roadmap_id: string) {
+    // roadmap 조회
+    const roadmap = await this.roadmapsRepository.findOneBy({ id: roadmap_id });
+    if (!roadmap) {
+      return;
+    }
+
+    const storeUser = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: {
+        StoredRoadmaps: true,
+      },
+    });
+
+    // 저장되어 있는지 확인
+    if (!storeUser.StoredRoadmaps.some((x) => x.id === roadmap_id)) {
+      return;
+    }
+
+    // StoredRoadmaps에서 삭제
+    storeUser.StoredRoadmaps = storeUser.StoredRoadmaps.filter(
+      (x) => x.id !== roadmap_id,
+    );
+    await this.usersRepository.save(storeUser);
   }
 }
 

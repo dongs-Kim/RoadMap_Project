@@ -8,6 +8,11 @@ import { User } from './entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { Roadmap } from './entities/roadmap.entity';
 import { RoadmapsModule } from './roadmaps/roadmaps.module';
+import { AuthModule } from './auth/auth.module';
+import { RoadmapItemsModule } from './roadmap_items/roadmap_items.module';
+import { RoadmapItem } from './entities/roadmap_item.entity';
+import { RepliesModule } from './replies/replies.module';
+import { Reply } from './entities/reply.entity';
 
 @Module({
   imports: [
@@ -22,14 +27,16 @@ import { RoadmapsModule } from './roadmaps/roadmaps.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Roadmap],
-      keepConnectionAlive: true,
+      entities: [User, Roadmap, RoadmapItem, Reply],
       charset: 'utf8mb4_general_ci',
       synchronize: isProduction() ? false : true,
       logging: isProduction() ? false : true,
     }),
     UsersModule,
     RoadmapsModule,
+    AuthModule,
+    RoadmapItemsModule,
+    RepliesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

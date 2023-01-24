@@ -27,6 +27,7 @@ export class RoadmapsService {
     roadmap.id = shortUUID.generate();
     roadmap.category = createRoadmapDto.category;
     roadmap.public = createRoadmapDto.public;
+    roadmap.title = createRoadmapDto.title;
     roadmap.User = user;
 
     await this.roadmapsRepository.save(roadmap);
@@ -48,12 +49,8 @@ export class RoadmapsService {
     await this.roadmapsRepository.delete(id);
   }
 
-  async like(id: string, user_id: string) {
-    // user, roadmap 조회
-    const user = await this.usersRepository.findOneBy({ id: user_id });
-    if (!user) {
-      return;
-    }
+  async like(id: string, user: User) {
+    // roadmap 조회
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id },
       relations: {
@@ -65,7 +62,7 @@ export class RoadmapsService {
     }
 
     // 이미 like 했는지 체크
-    if (roadmap.LikeUsers.some((user) => user.id === user_id)) {
+    if (roadmap.LikeUsers.some((x) => x.id === user.id)) {
       return;
     }
 
@@ -74,12 +71,8 @@ export class RoadmapsService {
     await this.roadmapsRepository.save(roadmap);
   }
 
-  async unlike(roadmap_id: string, user_id: string) {
-    // user, roadmap 조회
-    const user = await this.usersRepository.findOneBy({ id: user_id });
-    if (!user) {
-      return;
-    }
+  async unlike(roadmap_id: string, user: User) {
+    // roadmap 조회
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id: roadmap_id },
       relations: {
@@ -91,12 +84,12 @@ export class RoadmapsService {
     }
 
     // like 되어 있는지 확인
-    if (!roadmap.LikeUsers.some((user) => user.id === user_id)) {
+    if (!roadmap.LikeUsers.some((x) => x.id === user.id)) {
       return;
     }
 
     // LikeUsers에서 삭제
-    roadmap.LikeUsers = roadmap.LikeUsers.filter((user) => user.id !== user_id);
+    roadmap.LikeUsers = roadmap.LikeUsers.filter((x) => x.id !== user.id);
     await this.roadmapsRepository.save(roadmap);
   }
 }

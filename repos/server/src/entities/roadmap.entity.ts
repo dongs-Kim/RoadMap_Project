@@ -1,13 +1,16 @@
-import { IsDefined, IsIn } from 'class-validator';
-import { EN_CATEGORY } from 'src/common/enums';
+import { IsDefined, IsIn, IsNotEmpty } from 'class-validator';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
 } from 'typeorm';
+import { EN_CATEGORY } from '../common/enums';
+import { Reply } from './reply.entity';
+import { RoadmapItem } from './roadmap_item.entity';
 import { User } from './user.entity';
 
 @Entity()
@@ -23,6 +26,13 @@ export class Roadmap {
   @Column()
   public: boolean;
 
+  @IsNotEmpty()
+  @Column()
+  title: string;
+
+  @Column('text', { nullable: true })
+  contents: string;
+
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;
 
@@ -32,7 +42,16 @@ export class Roadmap {
   @ManyToOne(() => User, (user) => user.Roadmaps)
   User: User;
 
+  @OneToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.Roadmap)
+  RoadmapItems: RoadmapItem[];
+
+  @OneToMany(() => Reply, (reply) => reply.Roadmap)
+  Replies: Reply[];
+
   @ManyToMany(() => User, (user) => user.LikeRoadmaps)
   @JoinTable()
   LikeUsers: User[];
+
+  @ManyToMany(() => User, (user) => user.StoredRoadmaps)
+  StoringUsers: User[];
 }
