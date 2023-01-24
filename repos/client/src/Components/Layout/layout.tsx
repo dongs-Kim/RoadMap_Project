@@ -1,10 +1,17 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const Layout = () => {
   const { pathname } = useLocation();
 
-  return <div>Layout</div>;
+  return (
+    <div>
+      <header style={{ backgroundColor: 'grey' }}>Header Test</header>
+      <main>
+        <Outlet></Outlet>
+      </main>
+    </div>
+  );
 };
 
 export default Layout;
