@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RoadmapItemsService } from './roadmap_items.service';
 import { CreateRoadmapItemDto } from './dto/create-roadmap_item.dto';
 import { UpdateRoadmapItemDto } from './dto/update-roadmap_item.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('roadmap-items')
 @Controller('roadmap-items')
 export class RoadmapItemsController {
   constructor(private readonly roadmapItemsService: RoadmapItemsService) {}
@@ -23,7 +33,10 @@ export class RoadmapItemsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoadmapItemDto: UpdateRoadmapItemDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRoadmapItemDto: UpdateRoadmapItemDto,
+  ) {
     return this.roadmapItemsService.update(+id, updateRoadmapItemDto);
   }
 

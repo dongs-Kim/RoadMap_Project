@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateRoadmapDto } from './create-roadmap.dto';
+export class UpdateRoadmapDto {
+  category?: string;
 
-export class UpdateRoadmapDto extends PartialType(CreateRoadmapDto) {}
+  public?: boolean;
+
+  title?: string;
+
+  contents?: string;
+}

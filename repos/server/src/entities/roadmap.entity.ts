@@ -31,7 +31,7 @@ export class Roadmap {
   title: string;
 
   @Column('text', { nullable: true })
-  contents: string;
+  contents?: string;
 
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;
