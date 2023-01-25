@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home/Home';
 import Login from './Pages/Login/login';
 import Mypage from './Pages/Mypage/mypage';
+import UserInfo from './Pages/UserInfo/userInfo';
 import SignUp from './Pages/SignUp/signUp';
 import Layout from './Components/Layout/layout';
 import RoadMapList from './Pages/RoadMapList/roadmapList';
@@ -12,15 +13,16 @@ import RoadmapView from './Pages/RoadmapView/roadmapView';
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signUp" element={<SignUp />} />
-      <Route path="/" element={<Layout />}>
+      <Route path="/Login" element={<Login />} />
+      <Route path="/SignUp" element={<SignUp />} />
+      <Route element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="/mypage" element={<Mypage />} />
-        <Route path="/roadmap/list/:category" element={<RoadMapList />} />
+        <Route path="/Mypage" element={<Mypage />} />
+        <Route path="/Userinfo" element={<UserInfo />} />
+        <Route path="/Roadmap/list/:category" element={<RoadMapList />} />
       </Route>
-      <Route path="/roadmap/write" element={<RoadmapWrite />} />
-      <Route path="/roadmap/view/:roadmapId" element={<RoadmapView />} />
+      <Route path="/Roadmap/write" element={<RoadmapWrite />} />
+      <Route path="/Roadmap/view/:roadmapId" element={<RoadmapView />} />
     </Routes>
   );
 }
