@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
 import { Roadmap } from 'src/entities/roadmap.entity';
@@ -20,7 +20,7 @@ export class RoadmapsService {
     // user 조회
     const user = await this.usersRepository.findOneBy({ id: user_id });
     if (!user) {
-      return;
+      throw new BadRequestException();
     }
 
     const roadmap = new Roadmap();

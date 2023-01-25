@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -20,6 +22,8 @@ import { NotLoggedInGuard } from 'src/auth/not-logged-in.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { User as UserEntity } from 'src/entities/user.entity';
 import { StoreRoadmapDto } from './dto/store-roadmap.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { profileImageOption, UPLOAD_PROFILE_PATH } from './image-upload.option';
 
 @ApiTags('users')
 @Controller('api/users')
@@ -79,7 +83,7 @@ export class UsersController {
     @User() user: UserEntity,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    return this.usersService.changePassword(user.id, changePasswordDto);
+    return this.usersService.changePassword(user, changePasswordDto);
   }
 
   @ApiOperation({ summary: '로드맵 저장' })
@@ -100,5 +104,26 @@ export class UsersController {
     @Body() storeRoadmapDto: StoreRoadmapDto,
   ) {
     return this.usersService.unstoreRoadmap(user, storeRoadmapDto.roadmap_id);
+  }
+
+  @ApiOperation({ summary: '프로필 이미지 업로드' })
+  @UseGuards(LoggedInGuard)
+  @UseInterceptors(FileInterceptor('image', profileImageOption))
+  @Post('profile-image')
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @User() user: UserEntity,
+  ) {
+    const url = `${UPLOAD_PROFILE_PATH}/${file.filename}`;
+    await this.usersService.uploadProfileImage(user, url);
+    return url;
+  }
+
+  @ApiOperation({ summary: '프로필 이미지 삭제' })
+  @UseGuards(LoggedInGuard)
+  @Delete('profile-image')
+  async deleteProfileImage(@User() user: UserEntity) {
+    await this.usersService.deleteProfileImage(user);
+    return true;
   }
 }

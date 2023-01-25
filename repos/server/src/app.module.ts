@@ -13,6 +13,8 @@ import { RoadmapItemsModule } from './roadmap_items/roadmap_items.module';
 import { RoadmapItem } from './entities/roadmap_item.entity';
 import { RepliesModule } from './replies/replies.module';
 import { Reply } from './entities/reply.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -31,6 +33,9 @@ import { Reply } from './entities/reply.entity';
       charset: 'utf8mb4_general_ci',
       synchronize: isProduction() ? false : true,
       logging: isProduction() ? false : true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
     }),
     UsersModule,
     RoadmapsModule,

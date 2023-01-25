@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
+import fs from 'fs-extra';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { Roadmap } from 'src/entities/roadmap.entity';
+import path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,7 @@ export class UsersService {
     user.image = createUserDto.image;
 
     await this.usersRepository.save(user);
+    return true;
   }
 
   findAll(): Promise<User[]> {
@@ -40,39 +43,32 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.usersRepository.update(id, updateUserDto);
+    return true;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string) {
     await this.usersRepository.delete(id);
+    return true;
   }
 
-  async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
-    const user = await this.usersRepository.findOne({
-      where: { id },
-      select: {
-        password: true,
-      },
-    });
-    if (!user) {
-      return;
-    }
-
+  async changePassword(user: User, changePasswordDto: ChangePasswordDto) {
     // 기존 비밀번호 체크
     if (!bcrypt.compareSync(changePasswordDto.password_prev, user.password)) {
-      return;
+      throw new BadRequestException('비밀번호가 틀렸습니다');
     }
 
     const updateParam = {
       password: await hashPassword(changePasswordDto.password_origin),
     };
-    await this.usersRepository.update(id, updateParam);
+    await this.usersRepository.update(user.id, updateParam);
+    return true;
   }
 
   async storeRoadmap(user: User, roadmap_id: string) {
     // roadmap 조회
     const roadmap = await this.roadmapsRepository.findOneBy({ id: roadmap_id });
     if (!roadmap) {
-      return;
+      throw new BadRequestException('로드맵이 존재하지 않습니다');
     }
 
     const storeUser = await this.usersRepository.findOne({
@@ -84,19 +80,20 @@ export class UsersService {
 
     // 이미 저장 했는지 체크
     if (storeUser.StoredRoadmaps.some((x) => x.id === roadmap_id)) {
-      return;
+      return true;
     }
 
     // StoredRoadmaps에 추가
     storeUser.StoredRoadmaps.push(roadmap);
     await this.usersRepository.save(storeUser);
+    return true;
   }
 
   async unstoreRoadmap(user: User, roadmap_id: string) {
     // roadmap 조회
     const roadmap = await this.roadmapsRepository.findOneBy({ id: roadmap_id });
     if (!roadmap) {
-      return;
+      throw new BadRequestException('로드맵이 존재하지 않습니다');
     }
 
     const storeUser = await this.usersRepository.findOne({
@@ -108,7 +105,7 @@ export class UsersService {
 
     // 저장되어 있는지 확인
     if (!storeUser.StoredRoadmaps.some((x) => x.id === roadmap_id)) {
-      return;
+      return true;
     }
 
     // StoredRoadmaps에서 삭제
@@ -116,6 +113,19 @@ export class UsersService {
       (x) => x.id !== roadmap_id,
     );
     await this.usersRepository.save(storeUser);
+    return true;
+  }
+
+  async uploadProfileImage(user: User, url: string) {
+    await this.usersRepository.update(user.id, { image: url });
+  }
+
+  async deleteProfileImage(user: User) {
+    if (!user.image) {
+      return;
+    }
+    await fs.remove(path.join('public', user.image));
+    await this.usersRepository.update(user.id, { image: null });
   }
 }
 
