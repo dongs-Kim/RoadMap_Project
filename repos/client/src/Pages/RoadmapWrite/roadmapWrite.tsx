@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from 'react';
+import { Flow } from './Flow';
 
 const RoadmapWrite = () => {
   const [title, setTitle] = useState('');
@@ -43,7 +44,9 @@ const RoadmapWrite = () => {
       </div>
       <div>
         <label>로드맵</label>
-        <span>로드맵 에디터</span>
+        <div style={{ height: 800 }}>
+          <Flow />
+        </div>
       </div>
     </div>
   );
