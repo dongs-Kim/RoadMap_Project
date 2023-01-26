@@ -15,7 +15,7 @@ export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback((params: Connection) => setEdges((eds : any) => addEdge(params, eds)), [setEdges]);
 
   return (
     <ReactFlow
