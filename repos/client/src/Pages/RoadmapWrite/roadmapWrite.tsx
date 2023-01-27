@@ -44,9 +44,7 @@ const RoadmapWrite = () => {
       </div>
       <div>
         <label>로드맵</label>
-        <div style={{ height: 800 }}>
-          <Flow />
-        </div>
+        <Flow />
       </div>
     </div>
   );

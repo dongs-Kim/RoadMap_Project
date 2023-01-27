@@ -25,6 +25,7 @@
     "react-scripts": "5.0.1",
     "reactflow": "^11.5.0",
     "redux": "^4.2.0",
+    "short-uuid": "^4.2.2",
     "typescript": "^4.9.4",
     "web-vitals": "^2.1.4"
   },
@@ -59,5 +60,4 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-standard": "^5.0.0"
   }
-  
 }
