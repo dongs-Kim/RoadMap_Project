@@ -1,53 +1,191 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import ReactFlow, { MiniMap, Controls, Background, useNodesState, useEdgesState, addEdge, Connection } from 'reactflow';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { useCallback, useRef } from 'react';
+import ReactFlow, {
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Edge,
+  OnConnectStartParams,
+  useReactFlow,
+  Node,
+} from 'reactflow';
 import shortUUID from 'short-uuid';
-import { AddNodeDrop } from './AddNodeDrop';
-import { RoadmapItemNode } from './RoadmapItemNode';
+import { DownNode } from '../../Components/RoadmapItem/DownNode';
+import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
+import { RightNode } from '../../Components/RoadmapItem/RightNode';
+import { StartNode } from '../../Components/RoadmapItem/StartNode';
+import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapNodeData } from '../../Interface/roadmap';
+import './flow.css';
 
 const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
-  { id: '3', position: { x: 300, y: 300 }, data: { label: '3' } },
+  {
+    id: shortUUID.generate(),
+    type: 'startNode',
+    data: { label: '시작' },
+    position: { x: 100, y: 50 },
+  },
 ];
 
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const nodeTypes = {
+  [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
+  [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode,
+  [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
+  [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
+};
+
+const getClientXY = (event: MouseEvent | TouchEvent) => {
+  if ('touches' in event) {
+    return {
+      clientX: event.touches[0].clientX,
+      clientY: event.touches[0].clientY,
+    };
+  }
+  return {
+    clientX: event.clientX,
+    clientY: event.clientY,
+  };
+};
+
+const getNodeType = (handleId: string) => {
+  switch (handleId) {
+    case EN_ROADMAP_HANDLE_ID.Top:
+      return EN_ROADMAP_NODE_TYPE.StartNode;
+    case EN_ROADMAP_HANDLE_ID.Left:
+      return EN_ROADMAP_NODE_TYPE.LeftNode;
+    case EN_ROADMAP_HANDLE_ID.Right:
+      return EN_ROADMAP_NODE_TYPE.RigthNode;
+    default:
+      return EN_ROADMAP_NODE_TYPE.DownNode;
+  }
+};
 
 export const Flow = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const connectingRef = useRef<Pick<OnConnectStartParams, 'nodeId' | 'handleId'> | null>(null);
+  const { project } = useReactFlow();
 
-  const nodeTypes = useMemo(() => ({ roadmapItem: RoadmapItemNode }), []);
-  const onConnect = useCallback((params: Connection) => setEdges((eds: any) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback(
+    (params: Connection) => {
+      setEdges((eds: Edge[]) => addEdge(params, eds));
+    },
+    [setEdges],
+  );
 
-  //----------------
-  // 항목 생성
-  //----------------
-  const [itemName, setItemName] = useState('');
-  const onChangeItemName = (e: ChangeEvent<HTMLInputElement>) => {
-    setItemName(e.target.value);
-  };
-  const onClickItemCreate = () => {
-    if (!itemName) {
-      alert('항목 이름을 입력해 주세요');
-      return;
-    }
-    const item = { id: shortUUID.generate(), type: 'roadmapItem', position: { x: 0, y: 0 }, data: { label: itemName } };
-    setNodes((ns) => ns.concat(item));
-  };
+  const onConnectStart = useCallback(
+    (event: React.MouseEvent | React.TouchEvent, { nodeId, handleId }: OnConnectStartParams) => {
+      connectingRef.current = { nodeId, handleId };
+    },
+    [],
+  );
+
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      const target = event.target as HTMLElement;
+      const targetIsPane = target.classList.contains('react-flow__pane');
+      if (
+        !targetIsPane ||
+        !containerRef.current ||
+        !connectingRef.current?.nodeId ||
+        !connectingRef.current?.handleId
+      ) {
+        return;
+      }
+
+      const { top, left } = containerRef.current.getBoundingClientRect();
+      const id = shortUUID.generate();
+      const { clientX, clientY } = getClientXY(event);
+      const position = project({ x: clientX - left - 75, y: clientY - top });
+      const newNode: Node<RoadmapNodeData> = {
+        id,
+        position,
+        type: getNodeType(connectingRef.current.handleId),
+        data: { label: `Node` },
+      };
+      const newEdge: Edge = {
+        id,
+        source: connectingRef.current.nodeId,
+        sourceHandle: connectingRef.current.handleId,
+        target: id,
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+      setEdges((eds) => eds.concat(newEdge));
+    },
+    [project, setEdges, setNodes],
+  );
+
+  const onNodeDoubleClick = useCallback(
+    (event: React.MouseEvent, node: Node<RoadmapNodeData>) => {
+      //
+      onOpen();
+    },
+    [onOpen],
+  );
 
   return (
-    <div>
-      <div>
-        <h3>항목 생성</h3>
-        <div>
-          <label>이름</label>
-          <input type="text" value={itemName} onChange={onChangeItemName}></input>
-        </div>
-        <button onClick={onClickItemCreate}>생성</button>
+    <>
+      <div ref={containerRef} style={{ height: 600 }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
+          onNodeDoubleClick={onNodeDoubleClick}
+          nodeTypes={nodeTypes}
+          // fitView
+          // fitViewOptions={fitViewOptions}
+        >
+          <MiniMap />
+          <Controls />
+          <Background />
+        </ReactFlow>
       </div>
-      <div style={{ height: 800 }}>
-        <AddNodeDrop />
-      </div>
-    </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>로드맵 항목</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>항목명</FormLabel>
+              <Input type="text" />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              적용
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              취소
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

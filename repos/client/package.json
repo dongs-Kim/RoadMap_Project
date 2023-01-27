@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
+    "@chakra-ui/react": "^2.4.9",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -16,6 +20,7 @@
     "axios": "^1.2.3",
     "create-react-app": "^5.0.1",
     "eslint": "^8.32.0",
+    "framer-motion": "^8.5.4",
     "http-proxy-middleware": "^2.0.6",
     "prettier": "^2.8.3",
     "react": "^18.2.0",
