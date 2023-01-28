@@ -1,17 +1,3 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from '@chakra-ui/react';
 import { useCallback, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
@@ -31,17 +17,8 @@ import { DownNode } from '../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../Components/RoadmapItem/RightNode';
 import { StartNode } from '../../Components/RoadmapItem/StartNode';
-import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapNodeData } from '../../Interface/roadmap';
+import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
 import './flow.css';
-
-const initialNodes = [
-  {
-    id: shortUUID.generate(),
-    type: 'startNode',
-    data: { label: '시작' },
-    position: { x: 100, y: 50 },
-  },
-];
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
@@ -76,10 +53,19 @@ const getNodeType = (handleId: string) => {
   }
 };
 
-export const Flow = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+const nodeStateHook = useNodesState<RoadmapItem>;
+
+interface FlowProps {
+  nodes: ReturnType<typeof nodeStateHook>[0];
+  setNodes: ReturnType<typeof nodeStateHook>[1];
+  onNodesChange: ReturnType<typeof nodeStateHook>[2];
+  edges: ReturnType<typeof useEdgesState>[0];
+  setEdges: ReturnType<typeof useEdgesState>[1];
+  onEdgesChange: ReturnType<typeof useEdgesState>[2];
+  openModal(data: RoadmapItem): Promise<RoadmapItem | void>;
+}
+
+export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange, openModal }: FlowProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const connectingRef = useRef<Pick<OnConnectStartParams, 'nodeId' | 'handleId'> | null>(null);
   const { project } = useReactFlow();
@@ -112,20 +98,20 @@ export const Flow = () => {
       }
 
       const { top, left } = containerRef.current.getBoundingClientRect();
-      const id = shortUUID.generate();
+      const nodeId = shortUUID.generate();
       const { clientX, clientY } = getClientXY(event);
       const position = project({ x: clientX - left - 75, y: clientY - top });
-      const newNode: Node<RoadmapNodeData> = {
-        id,
+      const newNode: Node<RoadmapItem> = {
+        id: nodeId,
         position,
         type: getNodeType(connectingRef.current.handleId),
-        data: { label: `Node` },
+        data: { name: '항목', description: '' },
       };
       const newEdge: Edge = {
-        id,
+        id: shortUUID.generate(),
         source: connectingRef.current.nodeId,
         sourceHandle: connectingRef.current.handleId,
-        target: id,
+        target: nodeId,
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -135,11 +121,20 @@ export const Flow = () => {
   );
 
   const onNodeDoubleClick = useCallback(
-    (event: React.MouseEvent, node: Node<RoadmapNodeData>) => {
-      //
-      onOpen();
+    async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
+      const data = await openModal({ ...targetNode.data });
+      if (data) {
+        setNodes((nds) =>
+          nds.map((node) => {
+            if (node.id === targetNode.id) {
+              node.data = data;
+            }
+            return node;
+          }),
+        );
+      }
     },
-    [onOpen],
+    [openModal, setNodes],
   );
 
   return (
@@ -155,37 +150,12 @@ export const Flow = () => {
           onConnectEnd={onConnectEnd}
           onNodeDoubleClick={onNodeDoubleClick}
           nodeTypes={nodeTypes}
-          // fitView
-          // fitViewOptions={fitViewOptions}
         >
           <MiniMap />
           <Controls />
           <Background />
         </ReactFlow>
       </div>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>로드맵 항목</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl>
-              <FormLabel>항목명</FormLabel>
-              <Input type="text" />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              적용
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              취소
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   );
 };

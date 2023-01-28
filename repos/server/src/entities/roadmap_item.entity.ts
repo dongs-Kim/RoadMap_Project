@@ -8,9 +8,6 @@ export class RoadmapItem {
   @PrimaryColumn('char', { length: 22 })
   id: string;
 
-  @Column('char', { length: 22, nullable: true })
-  parent_id?: string;
-
   @IsNotEmpty()
   @Column({ length: 20 })
   name: string;
@@ -21,6 +18,15 @@ export class RoadmapItem {
   @IsIn(Object.values(EN_ROADMAP_ITEM_STATUS).concat(undefined))
   @Column({ length: 10, nullable: true })
   status?: string;
+
+  @Column({ length: 20 })
+  type: string;
+
+  @Column('int')
+  positionX: number;
+
+  @Column('int')
+  positionY: number;
 
   @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems)
   Roadmap: Roadmap;

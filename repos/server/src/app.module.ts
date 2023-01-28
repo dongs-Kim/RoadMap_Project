@@ -13,6 +13,7 @@ import { RoadmapItemsModule } from './roadmap_items/roadmap_items.module';
 import { RoadmapItem } from './entities/roadmap_item.entity';
 import { RepliesModule } from './replies/replies.module';
 import { Reply } from './entities/reply.entity';
+import { RoadmapEdge } from './entities/roadmap_edge.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -29,7 +30,7 @@ import { join } from 'path';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Roadmap, RoadmapItem, Reply],
+      entities: [User, Roadmap, RoadmapItem, RoadmapEdge, Reply],
       charset: 'utf8mb4_general_ci',
       synchronize: isProduction() ? false : true,
       logging: isProduction() ? false : true,

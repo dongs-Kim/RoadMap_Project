@@ -1,11 +1,11 @@
 import { Handle, NodeProps, Position } from 'reactflow';
-import { RoadmapNodeData } from '../../Interface/roadmap';
+import { RoadmapItem } from '../../Interface/roadmap';
 
-export const LeftNode = ({ data }: NodeProps<RoadmapNodeData>) => {
+export const LeftNode = ({ data }: NodeProps<RoadmapItem>) => {
   return (
     <>
       <Handle type="target" position={Position.Right} />
-      {data.label}
+      {data.name}
       <Handle type="source" position={Position.Left} id="left" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
     </>

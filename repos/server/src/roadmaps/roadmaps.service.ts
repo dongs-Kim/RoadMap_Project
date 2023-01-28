@@ -1,10 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
+import { EN_ROADMAP_ITEM_STATUS } from 'src/common/enums';
 import { Roadmap } from 'src/entities/roadmap.entity';
+import { RoadmapEdge } from 'src/entities/roadmap_edge.entity';
+import { RoadmapItem } from 'src/entities/roadmap_item.entity';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
 import { CreateRoadmapDto } from './dto/create-roadmap.dto';
+import { SaveRoadmapDto } from './dto/save-roadmap.dto';
 import { UpdateRoadmapDto } from './dto/update-roadmap.dto';
 
 @Injectable()
@@ -14,6 +22,7 @@ export class RoadmapsService {
     private roadmapsRepository: Repository<Roadmap>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private dataSource: DataSource,
   ) {}
 
   async create(createRoadmapDto: CreateRoadmapDto, user_id: string) {
@@ -37,8 +46,56 @@ export class RoadmapsService {
     return this.roadmapsRepository.find();
   }
 
-  findOne(id: string) {
-    return this.roadmapsRepository.findOneBy({ id });
+  findOne(id: string, relations?: FindOptionsRelations<Roadmap>) {
+    return this.roadmapsRepository.findOne({
+      where: { id },
+      relations,
+    });
+  }
+
+  async findOneSet(id: string) {
+    const dbRoadmap = await this.roadmapsRepository.findOne({
+      where: { id },
+      relations: {
+        RoadmapItems: true,
+        RoadmapEdges: true,
+      },
+    });
+
+    const roadmapDto = new SaveRoadmapDto();
+    roadmapDto.roadmap = {
+      id: dbRoadmap.id,
+      title: dbRoadmap.title,
+      category: dbRoadmap.category,
+      public: dbRoadmap.public,
+      contents: dbRoadmap.contents,
+    };
+    roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
+      id: item.id,
+      type: item.type,
+      data: {
+        name: item.name,
+        description: item.description,
+        status: item.status as EN_ROADMAP_ITEM_STATUS | null,
+      },
+      position: {
+        x: item.positionX,
+        y: item.positionY,
+      },
+    }));
+    roadmapDto.edges = dbRoadmap.RoadmapEdges;
+
+    return roadmapDto;
+  }
+
+  findMyAll(user: User) {
+    return this.roadmapsRepository.find({
+      where: {
+        User: {
+          id: user.id,
+        },
+      },
+    });
   }
 
   async update(id: string, updateRoadmapDto: UpdateRoadmapDto) {
@@ -91,5 +148,84 @@ export class RoadmapsService {
     // LikeUsers에서 삭제
     roadmap.LikeUsers = roadmap.LikeUsers.filter((x) => x.id !== user.id);
     await this.roadmapsRepository.save(roadmap);
+  }
+
+  async save(user: User, { roadmap, nodes, edges }: SaveRoadmapDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const roadmapsRepository = queryRunner.manager.getRepository(Roadmap);
+
+    // 수정인 경우
+    if (roadmap.id) {
+      // 존재하는지 확인
+      const existRoadmap = await roadmapsRepository.findOne({
+        where: { id: roadmap.id },
+        relations: {
+          User: true,
+        },
+      });
+      if (!existRoadmap) {
+        throw new BadRequestException();
+      }
+
+      // 내 로드맵이 맞는지 확인
+      if (existRoadmap.User.id !== user.id) {
+        throw new ForbiddenException();
+      }
+    }
+
+    try {
+      // nodes
+      const newRoadmapItems = nodes.map((node) => {
+        const roadmapItem = new RoadmapItem();
+        roadmapItem.id = node.id;
+        roadmapItem.name = node.data.name;
+        roadmapItem.description = node.data.description;
+        roadmapItem.status = node.data.status;
+        roadmapItem.type = node.type;
+        roadmapItem.positionX = node.position.x;
+        roadmapItem.positionY = node.position.y;
+        return roadmapItem;
+      });
+      await queryRunner.manager
+        .getRepository(RoadmapItem)
+        .save(newRoadmapItems);
+
+      // edges
+      const newRoadmapEdges = edges.map((edge) => {
+        const roadmapEdge = new RoadmapEdge();
+        roadmapEdge.id = edge.id;
+        roadmapEdge.source = edge.source;
+        roadmapEdge.sourceHandle = edge.sourceHandle;
+        roadmapEdge.target = edge.target;
+        return roadmapEdge;
+      });
+      await queryRunner.manager
+        .getRepository(RoadmapEdge)
+        .save(newRoadmapEdges);
+
+      // roadmap 저장
+      if (!roadmap.title) {
+        throw new BadRequestException();
+      }
+      const newRoadmap = new Roadmap();
+      newRoadmap.id = roadmap.id || shortUUID.generate();
+      newRoadmap.category = roadmap.category;
+      newRoadmap.public = roadmap.public;
+      newRoadmap.title = roadmap.title;
+      newRoadmap.contents = roadmap.contents;
+      newRoadmap.User = user;
+      newRoadmap.RoadmapItems = newRoadmapItems;
+      newRoadmap.RoadmapEdges = newRoadmapEdges;
+      await queryRunner.manager.getRepository(Roadmap).save(newRoadmap);
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

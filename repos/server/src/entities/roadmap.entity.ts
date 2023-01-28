@@ -11,6 +11,7 @@ import {
 import { EN_CATEGORY } from '../common/enums';
 import { Reply } from './reply.entity';
 import { RoadmapItem } from './roadmap_item.entity';
+import { RoadmapEdge } from './roadmap_edge.entity';
 import { User } from './user.entity';
 
 @Entity()
@@ -44,6 +45,9 @@ export class Roadmap {
 
   @OneToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.Roadmap)
   RoadmapItems: RoadmapItem[];
+
+  @OneToMany(() => RoadmapEdge, (roadmapEdge) => roadmapEdge.Roadmap)
+  RoadmapEdges: RoadmapEdge[];
 
   @OneToMany(() => Reply, (reply) => reply.Roadmap)
   Replies: Reply[];
