@@ -1,0 +1,18 @@
+export const roadmapItemNameList = [
+  { name: 'HTML' },
+  { name: 'CSS' },
+  { name: 'Javascript' },
+  { name: 'Typescript' },
+  { name: 'React' },
+  { name: 'Redux' },
+  { name: 'Next.js' },
+  { name: 'NestJS' },
+  { name: 'TypeORM' },
+  { name: 'Node.js' },
+  { name: 'SQL' },
+  { name: 'MySQL' },
+  { name: 'express' },
+  { name: 'Java' },
+  { name: 'Python' },
+  { name: 'C#' },
+];

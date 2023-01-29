@@ -14,21 +14,23 @@ import {
   Select,
   Textarea,
 } from '@chakra-ui/react';
+import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import { EN_ROADMAP_ITEM_STATUS, RoadmapItem } from '../../Interface/roadmap';
+import { roadmapItemNameList } from '../../Constants/roadmap';
 
 interface RoadmapItemInputModalProps {
   onClose(data?: RoadmapItem): void;
   data: RoadmapItem;
 }
 
+const autocompleteItems = roadmapItemNameList.map(({ name }, i) => ({ id: i, name }));
+
 export const RoadmapItemInputModal = ({ onClose, data }: RoadmapItemInputModalProps) => {
   const [name, setName] = useState<string>(data.name);
   const [description, setDescription] = useState<string>(data.description);
   const [status, setStatus] = useState<string | undefined>(data.status);
+  const [maxResults, setMaxResults] = useState<number>(0);
 
-  const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  }, []);
   const onChangeDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
   }, []);
@@ -43,6 +45,18 @@ export const RoadmapItemInputModal = ({ onClose, data }: RoadmapItemInputModalPr
     onClose({ name, description, status: status as EN_ROADMAP_ITEM_STATUS | undefined });
   };
 
+  const handleOnSearch = (name: string) => {
+    setName(name);
+  };
+
+  const handleOnSelect = (item: { name: string }) => {
+    setName(item.name);
+  };
+
+  const handleOnFocus = () => {
+    setMaxResults(5);
+  };
+
   return (
     <Modal isOpen={true} onClose={onModalClose}>
       <ModalOverlay />
@@ -50,9 +64,18 @@ export const RoadmapItemInputModal = ({ onClose, data }: RoadmapItemInputModalPr
         <ModalHeader>로드맵 항목</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl>
+          <FormControl zIndex={1000}>
             <FormLabel>항목명</FormLabel>
-            <Input type="text" value={name} onChange={onChangeName} />
+            <ReactSearchAutocomplete
+              items={autocompleteItems}
+              inputSearchString={name}
+              onSearch={handleOnSearch}
+              onSelect={handleOnSelect}
+              onFocus={handleOnFocus}
+              showNoResults={false}
+              maxResults={maxResults}
+              inputDebounce={10}
+            />
           </FormControl>
           <FormControl>
             <FormLabel>설명</FormLabel>
