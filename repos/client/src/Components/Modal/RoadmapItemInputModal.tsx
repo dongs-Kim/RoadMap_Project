@@ -3,7 +3,6 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,15 +14,16 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
-import { EN_ROADMAP_ITEM_STATUS, RoadmapItem } from '../../Interface/roadmap';
-import { roadmapItemNameList } from '../../Constants/roadmap';
+import { RoadmapItem } from '../../Interface/roadmap';
+import { ROADMAP_ITEM_NAME_LIST } from '../../Constants/roadmap';
+import { RoadmapItemStatus } from '../../Constants/roadmapItemStatus';
 
 interface RoadmapItemInputModalProps {
   onClose(data?: RoadmapItem): void;
   data: RoadmapItem;
 }
 
-const autocompleteItems = roadmapItemNameList.map(({ name }, i) => ({ id: i, name }));
+const autocompleteItems = ROADMAP_ITEM_NAME_LIST.map(({ name }, i) => ({ id: i, name }));
 
 export const RoadmapItemInputModal = ({ onClose, data }: RoadmapItemInputModalProps) => {
   const [name, setName] = useState<string>(data.name);
@@ -42,7 +42,7 @@ export const RoadmapItemInputModal = ({ onClose, data }: RoadmapItemInputModalPr
     onClose();
   };
   const onApply = () => {
-    onClose({ name, description, status: status as EN_ROADMAP_ITEM_STATUS | undefined });
+    onClose({ name, description, status: status as RoadmapItemStatus | undefined });
   };
 
   const handleOnSearch = (name: string) => {

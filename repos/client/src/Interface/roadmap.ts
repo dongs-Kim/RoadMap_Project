@@ -1,9 +1,10 @@
 import { Edge, Node } from 'reactflow';
+import { RoadmapItemStatus } from '../Constants/roadmapItemStatus';
 
 export interface RoadmapItem {
   name: string;
   description: string;
-  status?: EN_ROADMAP_ITEM_STATUS;
+  status?: RoadmapItemStatus;
 }
 
 export enum EN_ROADMAP_NODE_TYPE {
@@ -20,12 +21,6 @@ export enum EN_ROADMAP_HANDLE_ID {
   Right = 'right',
 }
 
-export enum EN_ROADMAP_ITEM_STATUS {
-  Todo = 'todo',
-  Ing = 'ing',
-  Completed = 'completed',
-}
-
 export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
@@ -38,4 +33,5 @@ export interface RoadmapDto {
   category: string;
   public: boolean;
   contents: string;
+  like?: number;
 }

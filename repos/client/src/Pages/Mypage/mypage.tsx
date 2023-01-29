@@ -46,9 +46,15 @@ const Mypage = () => {
           <ul>
             {myRoadmaps.map((roadmap) => (
               <li key={roadmap.id}>
-                <Link as={RouterLink} to={`/Roadmap/write/${roadmap.id}`}>
-                  {roadmap.title}
-                </Link>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div>{roadmap.title}</div>
+                  <Link as={RouterLink} to={`/Roadmap/write/${roadmap.id}`}>
+                    수정
+                  </Link>
+                  <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
+                    보기
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>

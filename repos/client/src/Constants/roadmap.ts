@@ -1,4 +1,4 @@
-export const roadmapItemNameList = [
+export const ROADMAP_ITEM_NAME_LIST = [
   { name: 'HTML' },
   { name: 'CSS' },
   { name: 'Javascript' },
@@ -15,4 +15,9 @@ export const roadmapItemNameList = [
   { name: 'Java' },
   { name: 'Python' },
   { name: 'C#' },
+];
+
+export const ROADMAP_CATEGORY = [
+  { id: 'front_end', name: '프론트엔드 ' },
+  { id: 'back_end', name: '백엔드' },
 ];

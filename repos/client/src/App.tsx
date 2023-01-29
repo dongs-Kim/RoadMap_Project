@@ -7,7 +7,7 @@ import SignUp from './Pages/SignUp/signUp';
 import Layout from './Components/Layout/layout';
 import RoadMapList from './Pages/RoadMapList/roadmapList';
 import RoadmapWrite from './Pages/RoadmapWrite/RoadmapWrite';
-import RoadmapView from './Pages/RoadmapView/roadmapView';
+import RoadmapView from './Pages/RoadmapView/RoadmapView';
 
 function App() {
   return (

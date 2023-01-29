@@ -18,7 +18,6 @@ import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../Components/RoadmapItem/RightNode';
 import { StartNode } from '../../Components/RoadmapItem/StartNode';
 import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
-import './flow.css';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,

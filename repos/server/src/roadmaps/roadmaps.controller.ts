@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { RoadmapsService } from './roadmaps.service';
 import { CreateRoadmapDto } from './dto/create-roadmap.dto';
@@ -44,8 +45,8 @@ export class RoadmapsController {
 
   @ApiOperation({ summary: '특정 로드맵 조회' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roadmapsService.findOneSet(id);
+  findOne(@Param('id') id: string, @Query('mode') mode?: string) {
+    return this.roadmapsService.findOneSet(id, mode);
   }
 
   @ApiOperation({ summary: '로드맵 수정' })
@@ -74,5 +75,12 @@ export class RoadmapsController {
   @Post(':id/unlike')
   unlike(@User() user: UserEntity, @Param('id') id: string) {
     return this.roadmapsService.unlike(id, user);
+  }
+
+  @ApiOperation({ summary: '로드맵 좋아요 여부' })
+  @UseGuards(LoggedInGuard)
+  @Get(':id/isLike')
+  isLike(@User() user: UserEntity, @Param('id') id: string) {
+    return this.roadmapsService.isLike(id, user);
   }
 }

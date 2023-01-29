@@ -14,4 +14,6 @@ export class CreateRoadmapDto {
   title: string;
 
   contents?: string;
+
+  like?: number;
 }

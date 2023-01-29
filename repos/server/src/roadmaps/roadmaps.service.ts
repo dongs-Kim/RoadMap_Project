@@ -53,12 +53,13 @@ export class RoadmapsService {
     });
   }
 
-  async findOneSet(id: string) {
+  async findOneSet(id: string, mode?: string) {
     const dbRoadmap = await this.roadmapsRepository.findOne({
       where: { id },
       relations: {
         RoadmapItems: true,
         RoadmapEdges: true,
+        LikeUsers: mode === 'view' ? true : false,
       },
     });
 
@@ -69,6 +70,7 @@ export class RoadmapsService {
       category: dbRoadmap.category,
       public: dbRoadmap.public,
       contents: dbRoadmap.contents,
+      like: dbRoadmap.LikeUsers?.length,
     };
     roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
       id: item.id,
@@ -148,6 +150,17 @@ export class RoadmapsService {
     // LikeUsers에서 삭제
     roadmap.LikeUsers = roadmap.LikeUsers.filter((x) => x.id !== user.id);
     await this.roadmapsRepository.save(roadmap);
+  }
+
+  async isLike(id: string, user: User) {
+    const likeUser = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: { LikeRoadmaps: true },
+    });
+    if (!likeUser) {
+      return false;
+    }
+    return likeUser.LikeRoadmaps.some((roadmap) => roadmap.id === id);
   }
 
   async save(user: User, { roadmap, nodes, edges }: SaveRoadmapDto) {
