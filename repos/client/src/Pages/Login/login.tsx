@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Login = () => {
           console.log(response);
         })
         .catch((error) => {
-          setLogInError(error.response?.data?.code === 401);
+          setLogInError(error.response?.data?.statusCode === 403);
         });
     },
     [email, password],
@@ -57,6 +58,11 @@ const Login = () => {
         )}
         <br />
         <button formAction="">Login</button>
+        <p>
+          <br></br>
+          회원이 아니신가요?&nbsp;
+          <Link to="/SignUp">회원가입 하러가기</Link>
+        </p>
       </form>
     </div>
   );
