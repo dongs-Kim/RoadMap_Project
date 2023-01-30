@@ -10,6 +10,7 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
+  Param,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -104,6 +105,13 @@ export class UsersController {
     @Body() storeRoadmapDto: StoreRoadmapDto,
   ) {
     return this.usersService.unstoreRoadmap(user, storeRoadmapDto.roadmap_id);
+  }
+
+  @ApiOperation({ summary: '로드맵 저장 여부' })
+  @UseGuards(LoggedInGuard)
+  @Get('isStore/:roadmap_id')
+  isStore(@User() user: UserEntity, @Param('roadmap_id') roadmap_id: string) {
+    return this.usersService.isStore(user, roadmap_id);
   }
 
   @ApiOperation({ summary: '프로필 이미지 업로드' })

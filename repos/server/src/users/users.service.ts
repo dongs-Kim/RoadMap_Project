@@ -116,6 +116,19 @@ export class UsersService {
     return true;
   }
 
+  async isStore(user: User, roadmap_id: string) {
+    const storeUser = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: { StoredRoadmaps: true },
+    });
+    if (!storeUser) {
+      return false;
+    }
+    return storeUser.StoredRoadmaps.some(
+      (roadmap) => roadmap.id === roadmap_id,
+    );
+  }
+
   async uploadProfileImage(user: User, url: string) {
     await this.usersRepository.update(user.id, { image: url });
   }

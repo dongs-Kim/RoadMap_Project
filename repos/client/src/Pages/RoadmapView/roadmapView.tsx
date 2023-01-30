@@ -4,12 +4,14 @@ import { Button, Heading, useDisclosure } from '@chakra-ui/react';
 import axios from 'axios';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toPng } from 'html-to-image';
 import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
 import { RoadmapItem, RoadmapSetDto } from '../../Interface/roadmap';
 import { IUser } from '../../Interface/db';
-import { toastError } from '../../Utils/toast';
+import { toastError, toastSuccess } from '../../Utils/toast';
 import { FlowView } from './FlowView';
 import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
+import { downloadImage } from '../../Utils/roadmap';
 
 const RoadmapView = () => {
   const { roadmapId } = useParams();
@@ -19,6 +21,7 @@ const RoadmapView = () => {
   const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | null>(null);
   const [user, setUser] = useState<IUser | null>(null);
   const [isLike, setIsLike] = useState(false);
+  const [isStore, setIsStore] = useState(false);
 
   useEffect(() => {
     if (!roadmapId) {
@@ -34,11 +37,9 @@ const RoadmapView = () => {
       }
 
       try {
-        const { data } = await axios.get<IUser>('/api/users');
-        setUser(data);
-
-        const { data: isLikeData } = await axios.get<boolean>(`/api/roadmaps/${roadmapId}/isLike`);
-        setIsLike(isLikeData);
+        axios.get<IUser>('/api/users').then(({ data }) => setUser(data));
+        axios.get<boolean>(`/api/roadmaps/${roadmapId}/isLike`).then(({ data }) => setIsLike(data));
+        axios.get<boolean>(`/api/users/isStore/${roadmapId}`).then(({ data }) => setIsStore(data));
       } catch {
         // 로그인 안 한 상태
       }
@@ -93,6 +94,71 @@ const RoadmapView = () => {
     [roadmapSet, isLike, roadmapId],
   );
 
+  const onClickStore = useCallback(
+    _.debounce(() => {
+      if (isStore) {
+        axios.post(`/api/users/unstore-roadmap/`, { roadmap_id: roadmapId });
+        setIsStore(false);
+      } else {
+        axios.post(`/api/users/store-roadmap/`, { roadmap_id: roadmapId });
+        setIsStore(true);
+      }
+    }, 200),
+    [isStore, roadmapId],
+  );
+
+  const onClickShareCopyURL = useCallback(
+    _.debounce(() => {
+      navigator.clipboard.writeText(window.location.href);
+      toastSuccess('복사되었습니다');
+    }, 200),
+    [],
+  );
+
+  const onClickShareFacebook = useCallback(
+    _.debounce(() => {
+      window.open(`http://www.facebook.com/sharer/sharer.php?u=${encodeURI(window.location.href)}`);
+    }, 200),
+    [],
+  );
+
+  const onClickShareTwitter = useCallback(
+    _.debounce(() => {
+      if (roadmapSet) {
+        window.open(
+          `https://twitter.com/intent/tweet?text=${roadmapSet.roadmap.title}&url=${encodeURI(window.location.href)}`,
+        );
+      }
+    }, 200),
+    [],
+  );
+
+  const onClickDownloadImage = useCallback(
+    _.debounce(async () => {
+      const flowEl = document.querySelector<HTMLElement>('.react-flow');
+      if (!flowEl) {
+        return;
+      }
+      const result = await toPng(flowEl, {
+        filter: (node) => {
+          if (node?.classList?.contains('react-flow__minimap') || node?.classList?.contains('react-flow__controls')) {
+            return false;
+          }
+          return true;
+        },
+      });
+      downloadImage(result);
+    }, 200),
+    [],
+  );
+
+  const onClickClone = useCallback(
+    _.debounce(async () => {
+      //
+    }, 200),
+    [],
+  );
+
   if (!roadmapId) {
     toastError('잘못된 접근입니다');
     navigate(-1);
@@ -112,15 +178,24 @@ const RoadmapView = () => {
             <Button colorScheme="teal" size="sm" variant={isLike ? 'solid' : 'outline'} onClick={onClickLike}>
               좋아요
             </Button>
-            <Button colorScheme="teal" size="sm">
-              저장
+            <Button colorScheme="teal" size="sm" variant={isStore ? 'solid' : 'outline'} onClick={onClickStore}>
+              즐겨찾기
+            </Button>
+            <Button colorScheme="teal" size="sm" onClick={onClickClone}>
+              내로드맵으로복사
             </Button>
           </>
         )}
-        <Button colorScheme="teal" size="sm">
-          공유
+        <Button colorScheme="teal" size="sm" onClick={onClickShareCopyURL}>
+          공유(url복사)
         </Button>
-        <Button colorScheme="teal" size="sm">
+        <Button colorScheme="teal" size="sm" onClick={onClickShareFacebook}>
+          공유(페이스북)
+        </Button>
+        <Button colorScheme="teal" size="sm" onClick={onClickShareTwitter}>
+          공유(트위터)
+        </Button>
+        <Button colorScheme="teal" size="sm" onClick={onClickDownloadImage}>
           이미지 다운
         </Button>
       </div>
