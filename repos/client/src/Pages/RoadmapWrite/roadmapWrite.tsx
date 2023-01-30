@@ -8,6 +8,8 @@ import shortUUID from 'short-uuid';
 import axios from 'axios';
 import { toastError, toastSuccess } from '../../Utils/toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import ImageUploading from 'react-images-uploading';
+import { ExportInterface, ImageType } from 'react-images-uploading/dist/typings';
 
 const initialNodes: Node<RoadmapItem>[] = [
   {
@@ -28,6 +30,7 @@ const RoadmapWrite = () => {
   const [category, setCategory] = useState('back_end');
   const [isPublic, setIsPublic] = useState(true);
   const [contents, setContents] = useState('');
+  const [thumbnail, setThumbnail] = useState<ImageType | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | null>(null);
   const modalResolveRef = useRef<((value?: RoadmapItem) => void) | null>(null);
@@ -116,14 +119,24 @@ const RoadmapWrite = () => {
       nodes,
       edges,
     };
+    const formData = new FormData();
+    formData.append('roadmapSet', JSON.stringify(saveDto));
+    if (thumbnail && thumbnail.file) {
+      formData.append('thumbnail', thumbnail.file);
+    }
+
     try {
-      await axios.post('/api/roadmaps', saveDto);
+      await axios.post('/api/roadmaps', formData);
       toastSuccess('로드맵을 저장했습니다');
       navigate('/mypage');
     } catch {
       toastError('저장하지 못했습니다');
     }
   }, [id, title, category, isPublic, contents, nodes, edges, navigate]);
+
+  const onChangeThumbnail = useCallback((imageList: ImageType[]) => {
+    setThumbnail(imageList[0]);
+  }, []);
 
   if (loading) {
     return <div>loading...</div>;
@@ -152,6 +165,36 @@ const RoadmapWrite = () => {
       <div>
         <label>설명</label>
         <textarea value={contents} onChange={onChangeContents} />
+      </div>
+      <div>
+        <label>썸네일</label>
+        <ImageUploading value={thumbnail ? [thumbnail] : []} onChange={onChangeThumbnail} dataURLKey="thumbnail">
+          {({
+            imageList,
+            onImageUpload,
+            onImageRemoveAll,
+            onImageUpdate,
+            onImageRemove,
+            isDragging,
+            dragProps,
+          }: ExportInterface) => (
+            // write your building UI
+            <div>
+              <Button style={isDragging ? { color: 'red' } : undefined} onClick={onImageUpload} {...dragProps}>
+                이미지 업로드
+              </Button>
+              {imageList.map((image: ImageType, index: number) => (
+                <div key={index}>
+                  <img src={image['thumbnail']} alt="" width="100" />
+                  <div>
+                    <button onClick={() => onImageUpdate(index)}>Update</button>
+                    <button onClick={() => onImageRemove(index)}>Remove</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ImageUploading>
       </div>
       <div>
         <label>로드맵</label>
