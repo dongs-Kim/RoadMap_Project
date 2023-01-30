@@ -28,6 +28,8 @@ export class RoadmapItem {
   @Column('int')
   positionY: number;
 
-  @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems)
+  @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems, {
+    onDelete: 'CASCADE',
+  })
   Roadmap: Roadmap;
 }

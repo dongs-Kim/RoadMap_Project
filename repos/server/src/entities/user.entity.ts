@@ -51,6 +51,5 @@ export class User {
   LikeRoadmaps: Roadmap[];
 
   @ManyToMany(() => Roadmap, (roadmap) => roadmap.StoringUsers)
-  @JoinTable()
   StoredRoadmaps: Roadmap[];
 }

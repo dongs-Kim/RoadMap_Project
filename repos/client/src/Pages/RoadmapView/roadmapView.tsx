@@ -154,9 +154,19 @@ const RoadmapView = () => {
 
   const onClickClone = useCallback(
     _.debounce(async () => {
-      //
+      if (!roadmapSet) {
+        return;
+      }
+      const { id, ...restRoadmap } = roadmapSet.roadmap;
+      const cloneRoadmapSet: RoadmapSetDto = {
+        ...roadmapSet,
+        roadmap: restRoadmap,
+      };
+      navigate('/Roadmap/write', {
+        state: cloneRoadmapSet,
+      });
     }, 200),
-    [],
+    [roadmapSet],
   );
 
   if (!roadmapId) {

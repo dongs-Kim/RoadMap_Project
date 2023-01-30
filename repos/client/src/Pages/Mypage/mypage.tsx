@@ -1,33 +1,57 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Button, Heading, Link } from '@chakra-ui/react';
+import { Button, Heading, Link, useDisclosure } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { RoadmapDto } from '../../Interface/roadmap';
-import { toastError } from '../../Utils/toast';
+import { toastError, toastSuccess } from '../../Utils/toast';
+import { RoadmapDeleteDialog } from '../../Components/Dialog/RoadmapDeleteDialog';
 
 const Mypage = () => {
   const [myRoadmaps, setMyRoadmaps] = useState<RoadmapDto[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [toDeleteId, setToDeleteId] = useState<string | null>(null);
+
+  const loadMyRoadmaps = useCallback(async () => {
+    try {
+      const { data } = await axios.get<RoadmapDto[]>('/api/roadmaps/list/my');
+      setMyRoadmaps(data);
+    } catch {
+      toastError('내 로드맵을 불러오지 못했습니다');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     setLoading(true);
-
-    (async () => {
-      try {
-        const { data } = await axios.get<RoadmapDto[]>('/api/roadmaps/list/my');
-        setMyRoadmaps(data);
-      } catch {
-        toastError('내 로드맵을 불러오지 못했습니다');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    loadMyRoadmaps();
+  }, [loadMyRoadmaps]);
 
   const onClickCreate = useCallback(() => {
     navigate('/Roadmap/write');
   }, [navigate]);
+
+  const onClickDelete = useCallback(
+    (roadmapId?: string) => {
+      if (roadmapId) {
+        setToDeleteId(roadmapId);
+        onOpen();
+      }
+    },
+    [onOpen],
+  );
+
+  const onRoadmapDelete = useCallback(async () => {
+    if (toDeleteId) {
+      await axios.delete(`/api/roadmaps/${toDeleteId}`);
+      onClose();
+      toastSuccess('삭제했습니다');
+      setToDeleteId(null);
+      loadMyRoadmaps();
+    }
+  }, [onClose, toDeleteId, loadMyRoadmaps]);
 
   return (
     <div>
@@ -54,12 +78,16 @@ const Mypage = () => {
                   <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
                     보기
                   </Link>
+                  <Button colorScheme="teal" size="xs" onClick={() => onClickDelete(roadmap.id)}>
+                    삭제
+                  </Button>
                 </div>
               </li>
             ))}
           </ul>
         )}
       </div>
+      <RoadmapDeleteDialog isOpen={isOpen} onClose={onClose} onDelete={onRoadmapDelete} />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { Node, useEdgesState, useNodesState } from 'reactflow';
 import shortUUID from 'short-uuid';
 import axios from 'axios';
 import { toastError, toastSuccess } from '../../Utils/toast';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 const initialNodes: Node<RoadmapItem>[] = [
   {
@@ -22,6 +22,7 @@ const RoadmapWrite = () => {
   const { roadmapId } = useParams();
   const isEditing = roadmapId ? true : false;
   const navigate = useNavigate();
+  const location = useLocation();
   const [id, setId] = useState<string | undefined>();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('back_end');
@@ -35,6 +36,11 @@ const RoadmapWrite = () => {
   const [loading, setLoading] = useState(isEditing ? true : false);
 
   useEffect(() => {
+    // 복사한 경우
+    if (location.state) {
+      setStates(location.state);
+      return;
+    }
     // 수정인 경우
     if (!isEditing) {
       return;
@@ -42,20 +48,24 @@ const RoadmapWrite = () => {
     (async () => {
       try {
         const { data } = await axios.get<RoadmapSetDto>(`/api/roadmaps/${roadmapId}`);
-        setId(data.roadmap.id);
-        setTitle(data.roadmap.title);
-        setCategory(data.roadmap.category);
-        setIsPublic(data.roadmap.public);
-        setContents(data.roadmap.contents);
-        setNodes(data.nodes);
-        setEdges(data.edges);
-        setLoading(false);
+        setStates(data);
       } catch {
         toastError('로드맵을 불러오지 못했습니다');
         navigate(-1);
       }
     })();
-  }, [isEditing, navigate, roadmapId, setNodes, setEdges]);
+
+    function setStates(data: RoadmapSetDto) {
+      setId(data.roadmap.id);
+      setTitle(data.roadmap.title);
+      setCategory(data.roadmap.category);
+      setIsPublic(data.roadmap.public);
+      setContents(data.roadmap.contents);
+      setNodes(data.nodes);
+      setEdges(data.edges);
+      setLoading(false);
+    }
+  }, [isEditing, navigate, roadmapId, setNodes, setEdges, location.state]);
 
   const onChangeTitle = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -109,10 +119,11 @@ const RoadmapWrite = () => {
     try {
       await axios.post('/api/roadmaps', saveDto);
       toastSuccess('로드맵을 저장했습니다');
+      navigate('/mypage');
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [id, title, category, isPublic, contents, nodes, edges]);
+  }, [id, title, category, isPublic, contents, nodes, edges, navigate]);
 
   if (loading) {
     return <div>loading...</div>;

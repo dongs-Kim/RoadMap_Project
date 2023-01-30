@@ -43,19 +43,26 @@ export class Roadmap {
   @ManyToOne(() => User, (user) => user.Roadmaps)
   User: User;
 
-  @OneToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.Roadmap)
+  @OneToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.Roadmap, {
+    cascade: true,
+  })
   RoadmapItems: RoadmapItem[];
 
-  @OneToMany(() => RoadmapEdge, (roadmapEdge) => roadmapEdge.Roadmap)
+  @OneToMany(() => RoadmapEdge, (roadmapEdge) => roadmapEdge.Roadmap, {
+    cascade: true,
+  })
   RoadmapEdges: RoadmapEdge[];
 
-  @OneToMany(() => Reply, (reply) => reply.Roadmap)
+  @OneToMany(() => Reply, (reply) => reply.Roadmap, { cascade: true })
   Replies: Reply[];
 
-  @ManyToMany(() => User, (user) => user.LikeRoadmaps)
+  @ManyToMany(() => User, (user) => user.LikeRoadmaps, { cascade: true })
   @JoinTable()
   LikeUsers: User[];
 
-  @ManyToMany(() => User, (user) => user.StoredRoadmaps)
+  @ManyToMany(() => User, (user) => user.StoredRoadmaps, {
+    cascade: true,
+  })
+  @JoinTable()
   StoringUsers: User[];
 }

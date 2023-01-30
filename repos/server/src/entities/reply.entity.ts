@@ -16,6 +16,8 @@ export class Reply {
   @ManyToOne(() => User, (user) => user.Replies)
   User: User;
 
-  @ManyToOne(() => Roadmap, (roadmap) => roadmap.Replies)
+  @ManyToOne(() => Roadmap, (roadmap) => roadmap.Replies, {
+    onDelete: 'CASCADE',
+  })
   Roadmap: Roadmap;
 }

@@ -19,6 +19,8 @@ export class RoadmapEdge {
   @Column({ length: 22 })
   target: string;
 
-  @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapEdges)
+  @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapEdges, {
+    onDelete: 'CASCADE',
+  })
   Roadmap: Roadmap;
 }
