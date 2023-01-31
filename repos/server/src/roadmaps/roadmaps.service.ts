@@ -4,6 +4,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import fs from 'fs-extra';
+import glob from 'glob';
 import shortUUID from 'short-uuid';
 import { EN_ROADMAP_ITEM_STATUS } from 'src/common/enums';
 import { Roadmap } from 'src/entities/roadmap.entity';
@@ -14,6 +16,7 @@ import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
 import { CreateRoadmapDto } from './dto/create-roadmap.dto';
 import { SaveRoadmapDto } from './dto/save-roadmap.dto';
 import { UpdateRoadmapDto } from './dto/update-roadmap.dto';
+import { UPLOAD_THUMBNAIL_PATH } from './thumbnail-upload.option';
 
 @Injectable()
 export class RoadmapsService {
@@ -70,6 +73,7 @@ export class RoadmapsService {
       category: dbRoadmap.category,
       public: dbRoadmap.public,
       contents: dbRoadmap.contents,
+      thumbnail: dbRoadmap.thumbnail,
       like: dbRoadmap.LikeUsers?.length,
     };
     roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
@@ -105,7 +109,16 @@ export class RoadmapsService {
   }
 
   async remove(id: string) {
+    const roadmap = await this.roadmapsRepository.findOneBy({ id });
+    if (!roadmap) {
+      return false;
+    }
+
     await this.roadmapsRepository.delete(id);
+    if (roadmap.thumbnail) {
+      this.removeThumbnail(id);
+    }
+    return true;
   }
 
   async like(id: string, user: User) {
@@ -163,14 +176,14 @@ export class RoadmapsService {
     return likeUser.LikeRoadmaps.some((roadmap) => roadmap.id === id);
   }
 
-  async save(user: User, { roadmap, nodes, edges }: SaveRoadmapDto) {
+  async save(user: User, { roadmap, nodes, edges, isUpdate }: SaveRoadmapDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const roadmapsRepository = queryRunner.manager.getRepository(Roadmap);
 
     // 수정인 경우
-    if (roadmap.id) {
+    if (isUpdate) {
       // 존재하는지 확인
       const existRoadmap = await roadmapsRepository.findOne({
         where: { id: roadmap.id },
@@ -228,11 +241,18 @@ export class RoadmapsService {
       newRoadmap.public = roadmap.public;
       newRoadmap.title = roadmap.title;
       newRoadmap.contents = roadmap.contents;
+      newRoadmap.thumbnail = roadmap.thumbnail;
       newRoadmap.User = user;
       newRoadmap.RoadmapItems = newRoadmapItems;
       newRoadmap.RoadmapEdges = newRoadmapEdges;
       await queryRunner.manager.getRepository(Roadmap).save(newRoadmap);
       await queryRunner.commitTransaction();
+
+      //썸네일없는 경우 파일 삭제
+      if (!newRoadmap.thumbnail) {
+        this.removeThumbnail(newRoadmap.id);
+      }
+
       return true;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -240,5 +260,16 @@ export class RoadmapsService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async uploadThumbnail(id: string, url: string) {
+    await this.roadmapsRepository.update(id, { thumbnail: url });
+  }
+
+  removeThumbnail(id: string) {
+    const files = glob.sync(`public/${UPLOAD_THUMBNAIL_PATH}/${id}*`);
+    files.forEach((file) => {
+      fs.removeSync(file);
+    });
   }
 }

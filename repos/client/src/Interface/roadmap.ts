@@ -25,6 +25,7 @@ export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
   edges: Edge[];
+  isUpdate?: boolean;
 }
 
 export interface RoadmapDto {
@@ -34,4 +35,5 @@ export interface RoadmapDto {
   public: boolean;
   contents: string;
   like?: number;
+  thumbnail?: string | null;
 }

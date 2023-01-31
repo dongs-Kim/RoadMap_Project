@@ -11,6 +11,9 @@ export class SaveRoadmapDto {
 
   @IsDefined()
   edges: RoadmapEdgeDto[];
+
+  @IsDefined()
+  isUpdate: boolean;
 }
 
 export class RoadmapNodeDto {

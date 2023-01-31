@@ -25,12 +25,12 @@ const RoadmapWrite = () => {
   const isEditing = roadmapId ? true : false;
   const navigate = useNavigate();
   const location = useLocation();
-  const [id, setId] = useState<string | undefined>();
+  const [id, setId] = useState<string>(shortUUID.generate());
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('back_end');
   const [isPublic, setIsPublic] = useState(true);
   const [contents, setContents] = useState('');
-  const [thumbnail, setThumbnail] = useState<ImageType | null>(null);
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | null>(null);
   const modalResolveRef = useRef<((value?: RoadmapItem) => void) | null>(null);
@@ -59,11 +59,12 @@ const RoadmapWrite = () => {
     })();
 
     function setStates(data: RoadmapSetDto) {
-      setId(data.roadmap.id);
+      setId(data.roadmap.id ?? shortUUID.generate());
       setTitle(data.roadmap.title);
       setCategory(data.roadmap.category);
       setIsPublic(data.roadmap.public);
       setContents(data.roadmap.contents);
+      setThumbnail(data.roadmap.thumbnail ?? null);
       setNodes(data.nodes);
       setEdges(data.edges);
       setLoading(false);
@@ -115,27 +116,37 @@ const RoadmapWrite = () => {
         category,
         public: isPublic,
         contents,
+        thumbnail,
       },
       nodes,
       edges,
+      isUpdate: isEditing,
     };
-    const formData = new FormData();
-    formData.append('roadmapSet', JSON.stringify(saveDto));
-    if (thumbnail && thumbnail.file) {
-      formData.append('thumbnail', thumbnail.file);
-    }
 
     try {
-      await axios.post('/api/roadmaps', formData);
+      await axios.post('/api/roadmaps', saveDto);
       toastSuccess('로드맵을 저장했습니다');
       navigate('/mypage');
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [id, title, category, isPublic, contents, nodes, edges, navigate]);
+  }, [id, title, category, isPublic, contents, nodes, edges, navigate, thumbnail, isEditing]);
 
-  const onChangeThumbnail = useCallback((imageList: ImageType[]) => {
-    setThumbnail(imageList[0]);
+  const onChangeThumbnail = useCallback(
+    async (imageList: ImageType[]) => {
+      const file = imageList[0]?.file;
+      if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const { data } = await axios.post<string>(`/api/roadmaps/${id}/thumbnail`, formData);
+        setThumbnail(`${data}?t=${Date.now()}`);
+      }
+    },
+    [id],
+  );
+
+  const onDeleteThumbnail = useCallback(() => {
+    setThumbnail(null);
   }, []);
 
   if (loading) {
@@ -168,30 +179,20 @@ const RoadmapWrite = () => {
       </div>
       <div>
         <label>썸네일</label>
-        <ImageUploading value={thumbnail ? [thumbnail] : []} onChange={onChangeThumbnail} dataURLKey="thumbnail">
-          {({
-            imageList,
-            onImageUpload,
-            onImageRemoveAll,
-            onImageUpdate,
-            onImageRemove,
-            isDragging,
-            dragProps,
-          }: ExportInterface) => (
-            // write your building UI
+        <ImageUploading value={[]} onChange={onChangeThumbnail} dataURLKey="thumbnail">
+          {({ onImageUpload, onImageUpdate, onImageRemove, isDragging, dragProps }: ExportInterface) => (
             <div>
               <Button style={isDragging ? { color: 'red' } : undefined} onClick={onImageUpload} {...dragProps}>
                 이미지 업로드
               </Button>
-              {imageList.map((image: ImageType, index: number) => (
-                <div key={index}>
-                  <img src={image['thumbnail']} alt="" width="100" />
-                  <div>
-                    <button onClick={() => onImageUpdate(index)}>Update</button>
-                    <button onClick={() => onImageRemove(index)}>Remove</button>
-                  </div>
+              {thumbnail && (
+                <div>
+                  <img src={thumbnail} alt="" width="100" />
+                  <Button colorScheme="teal" size="sm" onClick={onDeleteThumbnail}>
+                    삭제
+                  </Button>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </ImageUploading>

@@ -225,6 +225,13 @@ const RoadmapView = () => {
         <label>좋아요</label>
         <span>{roadmapSet.roadmap.like}</span>
       </div>
+      {roadmapSet.roadmap.thumbnail && (
+        <div>
+          <label>썸네일</label>
+          <img src={roadmapSet.roadmap.thumbnail} alt="" width="100" />
+        </div>
+      )}
+
       <div>
         <label>로드맵</label>
         <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} openModal={openModal} />

@@ -8,15 +8,21 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { RoadmapsService } from './roadmaps.service';
-import { CreateRoadmapDto } from './dto/create-roadmap.dto';
 import { UpdateRoadmapDto } from './dto/update-roadmap.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoggedInGuard } from 'src/auth/logged-in.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { User as UserEntity } from 'src/entities/user.entity';
 import { SaveRoadmapDto } from './dto/save-roadmap.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  thumbnailOption,
+  UPLOAD_THUMBNAIL_PATH,
+} from './thumbnail-upload.option';
 
 @ApiTags('roadmaps')
 @Controller('api/roadmaps')
@@ -82,5 +88,18 @@ export class RoadmapsController {
   @Get(':id/isLike')
   isLike(@User() user: UserEntity, @Param('id') id: string) {
     return this.roadmapsService.isLike(id, user);
+  }
+
+  @ApiOperation({ summary: '썸네일 업로드' })
+  @UseGuards(LoggedInGuard)
+  @UseInterceptors(FileInterceptor('image', thumbnailOption))
+  @Post(':id/thumbnail')
+  async uploadThumbnail(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+  ) {
+    const url = `/${UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
+    await this.roadmapsService.uploadThumbnail(id, url);
+    return url;
   }
 }

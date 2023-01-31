@@ -34,6 +34,9 @@ export class Roadmap {
   @Column('text', { nullable: true })
   contents?: string;
 
+  @Column({ nullable: true })
+  thumbnail?: string;
+
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;
 
