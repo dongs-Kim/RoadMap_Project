@@ -7,7 +7,7 @@ import UserInfo from './Pages/UserInfo/userInfo';
 import SignUp from './Pages/SignUp/signUp';
 import Layout from './Components/Layout/layout';
 import RoadMapList from './Pages/RoadMapList/roadmapList';
-import RoadmapWrite from './Pages/RoadmapWrite/RoadmapWrite';
+import RoadmapWrite from './Pages/RoadmapWrite/roadmapWrite';
 import RoadmapView from './Pages/RoadmapView/roadmapView';
 import Profile from './Pages/Profile/Profile';
 

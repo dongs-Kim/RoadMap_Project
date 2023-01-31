@@ -1,11 +1,13 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import useSWR from 'swr';
+import fetcher from '../../Utils/fetchers';
 
 const Home = () => {
-  // eslint-disable-next-line no-constant-condition
-  // if ('a' === 'a') {
-  //   return <Navigate to="/Login "></Navigate>;
-  // }
+  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
+  if (userData === false) {
+    return <Navigate to="/login"></Navigate>;
+  }
 
   return <div>첫화면 / 요약페이지 입니다.</div>;
 };

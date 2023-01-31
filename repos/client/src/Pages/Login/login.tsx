@@ -1,11 +1,16 @@
 import React, { useState, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import useSWR from 'swr';
+
+import fetcher from '../../Utils/fetchers';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [logInError, setLogInError] = useState(false);
+
+  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
   const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
   };
@@ -28,6 +33,7 @@ const Login = () => {
         )
         .then((response) => {
           console.log(response);
+          mutate();
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 403);
@@ -35,6 +41,10 @@ const Login = () => {
     },
     [email, password],
   );
+
+  if (userData) {
+    return <Navigate to="/"></Navigate>;
+  }
 
   return (
     <div
@@ -59,9 +69,8 @@ const Login = () => {
         <br />
         <button formAction="">Login</button>
         <p>
-          <br></br>
-          회원이 아니신가요?&nbsp;
-          <Link to="/SignUp">회원가입 하러가기</Link>
+          <Link to="/SignUp">회원가입</Link> <br></br>
+          <text>비밀번호 찾기</text>
         </p>
       </form>
     </div>
