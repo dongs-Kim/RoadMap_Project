@@ -42,7 +42,7 @@ const RoadmapView = () => {
         axios.get<IUser>('/api/users').then(({ data }) => setUser(data));
         axios.get<boolean>(`/api/roadmaps/${roadmapId}/isLike`).then(({ data }) => setIsLike(data));
         axios.get<boolean>(`/api/users/isStore/${roadmapId}`).then(({ data }) => setIsStore(data));
-        axios.get<IReply[]>(`/api/roadmaps/${roadmapId}/reply`).then(({ data }) => setReplies(data));
+        loadReplies();
       } catch {
         // 로그인 안 한 상태
       }
@@ -180,15 +180,19 @@ const RoadmapView = () => {
       }
 
       try {
-        await axios.post(`/api/roadmaps/${roadmapId}/reply`, { contents });
+        await axios.post(`/api/replies`, { roadmap_id: roadmapId, contents });
         toastSuccess('댓글을 저장했습니다');
-        axios.get<IReply[]>(`/api/roadmaps/${roadmapId}/reply`).then(({ data }) => setReplies(data));
+        loadReplies();
       } catch {
         toastError('댓글을 저장하지 못했습니다');
       }
     }, 200),
-    [],
+    [roadmapId],
   );
+
+  const loadReplies = useCallback(() => {
+    axios.get<IReply[]>(`/api/replies/${roadmapId}`).then(({ data }) => setReplies(data));
+  }, [roadmapId]);
 
   if (!roadmapId) {
     toastError('잘못된 접근입니다');
@@ -258,7 +262,7 @@ const RoadmapView = () => {
         <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} openModal={openModal} />
       </div>
 
-      <RoadmapReply replies={replies} onSave={onSaveReply} />
+      <RoadmapReply replies={replies} user={user} onSave={onSaveReply} onDelete={loadReplies} onUpdate={loadReplies} />
 
       {isOpen && roadmapItem && <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} />}
     </div>

@@ -6,11 +6,10 @@ import { User } from 'src/entities/user.entity';
 import { Roadmap } from 'src/entities/roadmap.entity';
 import { RoadmapItem } from 'src/entities/roadmap_item.entity';
 import { RoadmapEdge } from 'src/entities/roadmap_edge.entity';
-import { Reply } from 'src/entities/reply.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Roadmap, RoadmapItem, RoadmapEdge, Reply]),
+    TypeOrmModule.forFeature([User, Roadmap, RoadmapItem, RoadmapEdge]),
   ],
   controllers: [RoadmapsController],
   providers: [RoadmapsService],

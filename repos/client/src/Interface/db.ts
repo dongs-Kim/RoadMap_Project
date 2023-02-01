@@ -29,7 +29,8 @@ export interface IRoadMapItem {
 
 export interface IReply {
   id: string;
-  user_nickname: string;
   contents: string;
   created_at: string;
+  user_id: string;
+  user_nickname: string;
 }

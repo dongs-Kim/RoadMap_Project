@@ -2,13 +2,13 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import fs from 'fs-extra';
 import glob from 'glob';
 import shortUUID from 'short-uuid';
 import { EN_ROADMAP_ITEM_STATUS } from 'src/common/enums';
-import { Reply } from 'src/entities/reply.entity';
 import { Roadmap } from 'src/entities/roadmap.entity';
 import { RoadmapEdge } from 'src/entities/roadmap_edge.entity';
 import { RoadmapItem } from 'src/entities/roadmap_item.entity';
@@ -26,8 +26,6 @@ export class RoadmapsService {
     private roadmapsRepository: Repository<Roadmap>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(Reply)
-    private repliesRepository: Repository<Reply>,
     private dataSource: DataSource,
   ) {}
 
@@ -107,14 +105,32 @@ export class RoadmapsService {
     });
   }
 
-  async update(id: string, updateRoadmapDto: UpdateRoadmapDto) {
+  async update(id: string, updateRoadmapDto: UpdateRoadmapDto, user: User) {
+    const roadmap = await this.roadmapsRepository.findOne({
+      where: { id },
+      relations: { User: true },
+    });
+    if (!roadmap) {
+      throw new BadRequestException();
+    }
+    if (roadmap.User.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
     await this.roadmapsRepository.update(id, updateRoadmapDto);
+    return true;
   }
 
-  async remove(id: string) {
-    const roadmap = await this.roadmapsRepository.findOneBy({ id });
+  async remove(id: string, user: User) {
+    const roadmap = await this.roadmapsRepository.findOne({
+      where: { id },
+      relations: { User: true },
+    });
     if (!roadmap) {
-      return false;
+      throw new BadRequestException();
+    }
+    if (roadmap.User.id !== user.id) {
+      throw new UnauthorizedException();
     }
 
     await this.roadmapsRepository.delete(id);
@@ -273,34 +289,6 @@ export class RoadmapsService {
     const files = glob.sync(`public/${UPLOAD_THUMBNAIL_PATH}/${id}*`);
     files.forEach((file) => {
       fs.removeSync(file);
-    });
-  }
-
-  async saveReply(id: string, user: User, contents: string) {
-    const roadmap = await this.roadmapsRepository.findOneBy({ id });
-    if (!roadmap) {
-      throw new BadRequestException();
-    }
-    const reply = new Reply();
-    reply.id = shortUUID.generate();
-    reply.user_nickname = user.nickname;
-    reply.contents = contents;
-    reply.User = user;
-    reply.Roadmap = roadmap;
-    await this.repliesRepository.save(reply);
-    return true;
-  }
-
-  async getReplies(id: string) {
-    return await this.repliesRepository.find({
-      where: {
-        Roadmap: {
-          id: id,
-        },
-      },
-      order: {
-        created_at: 'desc',
-      },
     });
   }
 }
