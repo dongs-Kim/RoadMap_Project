@@ -28,9 +28,8 @@ export interface IRoadMapItem {
 }
 
 export interface IReply {
-  reply_id: string;
-  user_id: string;
-  roadmap_id: string;
-  contents?: string;
-  created_at: Date;
+  id: string;
+  user_nickname: string;
+  contents: string;
+  created_at: string;
 }

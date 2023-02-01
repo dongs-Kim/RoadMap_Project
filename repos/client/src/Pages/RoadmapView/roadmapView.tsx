@@ -7,11 +7,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toPng } from 'html-to-image';
 import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
 import { RoadmapItem, RoadmapSetDto } from '../../Interface/roadmap';
-import { IUser } from '../../Interface/db';
+import { IReply, IUser } from '../../Interface/db';
 import { toastError, toastSuccess } from '../../Utils/toast';
 import { FlowView } from './FlowView';
 import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
 import { downloadImage } from '../../Utils/roadmap';
+import { RoadmapReply } from './RoadmapReply';
 
 const RoadmapView = () => {
   const { roadmapId } = useParams();
@@ -22,6 +23,7 @@ const RoadmapView = () => {
   const [user, setUser] = useState<IUser | null>(null);
   const [isLike, setIsLike] = useState(false);
   const [isStore, setIsStore] = useState(false);
+  const [replies, setReplies] = useState<IReply[]>([]);
 
   useEffect(() => {
     if (!roadmapId) {
@@ -40,6 +42,7 @@ const RoadmapView = () => {
         axios.get<IUser>('/api/users').then(({ data }) => setUser(data));
         axios.get<boolean>(`/api/roadmaps/${roadmapId}/isLike`).then(({ data }) => setIsLike(data));
         axios.get<boolean>(`/api/users/isStore/${roadmapId}`).then(({ data }) => setIsStore(data));
+        axios.get<IReply[]>(`/api/roadmaps/${roadmapId}/reply`).then(({ data }) => setReplies(data));
       } catch {
         // 로그인 안 한 상태
       }
@@ -169,6 +172,24 @@ const RoadmapView = () => {
     [roadmapSet],
   );
 
+  const onSaveReply = useCallback(
+    _.debounce(async (contents: string) => {
+      if (!contents) {
+        toastError('댓글을 작성해 주세요');
+        return;
+      }
+
+      try {
+        await axios.post(`/api/roadmaps/${roadmapId}/reply`, { contents });
+        toastSuccess('댓글을 저장했습니다');
+        axios.get<IReply[]>(`/api/roadmaps/${roadmapId}/reply`).then(({ data }) => setReplies(data));
+      } catch {
+        toastError('댓글을 저장하지 못했습니다');
+      }
+    }, 200),
+    [],
+  );
+
   if (!roadmapId) {
     toastError('잘못된 접근입니다');
     navigate(-1);
@@ -236,6 +257,9 @@ const RoadmapView = () => {
         <label>로드맵</label>
         <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} openModal={openModal} />
       </div>
+
+      <RoadmapReply replies={replies} onSave={onSaveReply} />
+
       {isOpen && roadmapItem && <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} />}
     </div>
   );

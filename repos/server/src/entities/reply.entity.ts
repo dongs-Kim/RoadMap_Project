@@ -7,6 +7,9 @@ export class Reply {
   @PrimaryColumn('char', { length: 22 })
   id: string;
 
+  @Column({ length: 50 })
+  user_nickname: string;
+
   @Column('text', { nullable: true })
   contents?: string;
 

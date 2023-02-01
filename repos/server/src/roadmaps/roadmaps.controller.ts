@@ -23,6 +23,7 @@ import {
   thumbnailOption,
   UPLOAD_THUMBNAIL_PATH,
 } from './thumbnail-upload.option';
+import { SaveRoadmapReplyDto } from './dto/save-roadmap-reply.dto';
 
 @ApiTags('roadmaps')
 @Controller('api/roadmaps')
@@ -101,5 +102,22 @@ export class RoadmapsController {
     const url = `/${UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
     await this.roadmapsService.uploadThumbnail(id, url);
     return url;
+  }
+
+  @ApiOperation({ summary: '댓글 작성' })
+  @UseGuards(LoggedInGuard)
+  @Post(':id/reply')
+  saveReply(
+    @User() user: UserEntity,
+    @Param('id') id: string,
+    @Body() reply: SaveRoadmapReplyDto,
+  ) {
+    return this.roadmapsService.saveReply(id, user, reply.contents);
+  }
+
+  @ApiOperation({ summary: '댓글 조회' })
+  @Get(':id/reply')
+  getReplies(@Param('id') id: string) {
+    return this.roadmapsService.getReplies(id);
   }
 }
