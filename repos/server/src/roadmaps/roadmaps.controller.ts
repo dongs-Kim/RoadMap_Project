@@ -51,8 +51,12 @@ export class RoadmapsController {
 
   @ApiOperation({ summary: '특정 로드맵 조회' })
   @Get(':id')
-  findOne(@Param('id') id: string, @Query('mode') mode?: string) {
-    return this.roadmapsService.findOneSet(id, mode);
+  findOne(
+    @Param('id') id: string,
+    @Query('mode') mode?: string,
+    @User() user?: UserEntity,
+  ) {
+    return this.roadmapsService.findOneSet(id, mode, user);
   }
 
   @ApiOperation({ summary: '로드맵 수정' })

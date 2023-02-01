@@ -47,25 +47,27 @@ export class RoadmapsService {
   }
 
   findAll() {
-    return this.roadmapsRepository.find();
-  }
-
-  findOne(id: string, relations?: FindOptionsRelations<Roadmap>) {
-    return this.roadmapsRepository.findOne({
-      where: { id },
-      relations,
+    return this.roadmapsRepository.find({
+      where: {
+        public: true,
+      },
     });
   }
 
-  async findOneSet(id: string, mode?: string) {
+  async findOneSet(id: string, mode?: string, user?: User) {
     const dbRoadmap = await this.roadmapsRepository.findOne({
       where: { id },
       relations: {
         RoadmapItems: true,
         RoadmapEdges: true,
+        User: true,
         LikeUsers: mode === 'view' ? true : false,
       },
     });
+
+    if (!dbRoadmap.public && (!user || dbRoadmap.User.id !== user.id)) {
+      throw new UnauthorizedException();
+    }
 
     const roadmapDto = new SaveRoadmapDto();
     roadmapDto.roadmap = {
