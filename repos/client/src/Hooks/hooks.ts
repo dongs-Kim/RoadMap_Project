@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../Store/store';
 
-const useCustomState = () => {
-  const [hookTest, setHookTest] = useState(null);
-};
-
-export default useCustomState;
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -12,7 +12,7 @@ const Layout = () => {
     axios
       .post('/api/users/logout', null, {
         withCredentials: true,
-      })
+      }) 
       .then((res) => {
         revalidateUser(false);
       });
