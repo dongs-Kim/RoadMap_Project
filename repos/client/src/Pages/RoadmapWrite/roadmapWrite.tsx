@@ -33,6 +33,7 @@ const RoadmapWrite = () => {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | null>(null);
+  const [modalNodeType, setModalNodeType] = useState<string | undefined>(undefined);
   const modalResolveRef = useRef<((value?: RoadmapItem) => void) | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -85,9 +86,10 @@ const RoadmapWrite = () => {
   }, []);
 
   const openModal = useCallback(
-    (data: RoadmapItem) => {
+    (data: RoadmapItem, nodeType?: string) => {
       return new Promise<RoadmapItem | void>((resolve) => {
         setRoadmapItem(data);
+        setModalNodeType(nodeType);
         onOpen();
         modalResolveRef.current = resolve;
       });
@@ -149,6 +151,18 @@ const RoadmapWrite = () => {
     setThumbnail(null);
   }, []);
 
+  const onClickSticker = useCallback(() => {
+    setNodes([
+      ...nodes,
+      {
+        id: shortUUID.generate(),
+        type: 'stickerNode',
+        data: { name: '', description: '스티커' },
+        position: { x: 0, y: 0 },
+      },
+    ]);
+  }, [setNodes, nodes]);
+
   if (loading) {
     return <div>loading...</div>;
   }
@@ -199,17 +213,22 @@ const RoadmapWrite = () => {
       </div>
       <div>
         <label>로드맵</label>
-        <Flow
-          nodes={nodes}
-          setNodes={setNodes}
-          onNodesChange={onNodesChange}
-          edges={edges}
-          setEdges={setEdges}
-          onEdgesChange={onEdgesChange}
-          openModal={openModal}
-        />
+        <div>
+          <Button onClick={onClickSticker}>스티커</Button>
+          <Flow
+            nodes={nodes}
+            setNodes={setNodes}
+            onNodesChange={onNodesChange}
+            edges={edges}
+            setEdges={setEdges}
+            onEdgesChange={onEdgesChange}
+            openModal={openModal}
+          />
+        </div>
       </div>
-      {isOpen && roadmapItem && <RoadmapItemInputModal onClose={onCloseModal} data={roadmapItem} />}
+      {isOpen && roadmapItem && (
+        <RoadmapItemInputModal onClose={onCloseModal} data={roadmapItem} nodeType={modalNodeType} />
+      )}
     </div>
   );
 };

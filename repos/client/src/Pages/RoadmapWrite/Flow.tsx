@@ -17,6 +17,7 @@ import { DownNode } from '../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../Components/RoadmapItem/RightNode';
 import { StartNode } from '../../Components/RoadmapItem/StartNode';
+import { StickerNode } from '../../Components/RoadmapItem/StickerNode';
 import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
 
 const nodeTypes = {
@@ -24,6 +25,7 @@ const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode,
   [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
   [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
+  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode,
 };
 
 const getClientXY = (event: MouseEvent | TouchEvent) => {
@@ -61,7 +63,7 @@ interface FlowProps {
   edges: ReturnType<typeof useEdgesState>[0];
   setEdges: ReturnType<typeof useEdgesState>[1];
   onEdgesChange: ReturnType<typeof useEdgesState>[2];
-  openModal(data: RoadmapItem): Promise<RoadmapItem | void>;
+  openModal(data: RoadmapItem, nodeType?: string): Promise<RoadmapItem | void>;
 }
 
 export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange, openModal }: FlowProps) => {
@@ -121,7 +123,7 @@ export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesC
 
   const onNodeDoubleClick = useCallback(
     async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
-      const data = await openModal({ ...targetNode.data });
+      const data = await openModal({ ...targetNode.data }, targetNode.type);
       if (data) {
         setNodes((nds) =>
           nds.map((node) => {

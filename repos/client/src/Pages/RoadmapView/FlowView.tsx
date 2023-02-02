@@ -4,6 +4,7 @@ import { DownNode } from '../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../Components/RoadmapItem/RightNode';
 import { StartNode } from '../../Components/RoadmapItem/StartNode';
+import { StickerNode } from '../../Components/RoadmapItem/StickerNode';
 import { EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
 
 const nodeTypes = {
@@ -11,6 +12,7 @@ const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode,
   [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
   [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
+  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode,
 };
 
 const nodeStateHook = useNodesState<RoadmapItem>;

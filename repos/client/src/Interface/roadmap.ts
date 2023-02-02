@@ -12,6 +12,7 @@ export enum EN_ROADMAP_NODE_TYPE {
   DownNode = 'downNode',
   LeftNode = 'leftNode',
   RigthNode = 'rightNode',
+  StickerNode = 'stickerNode',
 }
 
 export enum EN_ROADMAP_HANDLE_ID {
