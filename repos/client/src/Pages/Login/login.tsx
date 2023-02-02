@@ -70,7 +70,7 @@ const Login = () => {
         <button formAction="">Login</button>
         <p>
           <Link to="/SignUp">회원가입</Link> <br></br>
-          <text>비밀번호 찾기</text>
+          <span>비밀번호 찾기</span>
         </p>
       </form>
     </div>

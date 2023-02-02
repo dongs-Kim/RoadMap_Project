@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useCallback } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
 
@@ -18,16 +18,17 @@ const Layout = () => {
       });
   }, []);
 
+
   return (
     <div>
       <header style={{ backgroundColor: 'grey' }}>
         Header Test
+        <Link to = '/Profile'>프로필</Link>
         <button style={{ float: 'right' }} onClick={onClickLogOut}>
           {' '}
           로그아웃
         </button>
       </header>
-
       <main>
         <Outlet></Outlet>
       </main>

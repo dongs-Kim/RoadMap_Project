@@ -21,8 +21,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const apiAction = dispatch(getUser());
-    console.log("Test");
+    dispatch(getUser());    
     console.log(userInitData.user);
     if (userInitData.nickname){
       setNickName(userInitData.nickname)
@@ -31,7 +30,6 @@ const Profile = () => {
 
   return (
     <div>
-      {userInitData && <div>나오는거 마는겨</div>}
       <ProfileImage></ProfileImage>
       <span>Email</span>
       <div>
