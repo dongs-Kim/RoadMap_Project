@@ -16,10 +16,10 @@ function App() {
     <ChakraProvider>
       <Routes>
         <Route path="/Login" element={<Login />} />
-        <Route path="/SignUp" element={<SignUp />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route path="/SignUp" element={<SignUp />} />        
         <Route element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="/Profile" element={<Profile />} />
           <Route path="/Mypage" element={<Mypage />} />
           <Route path="/Userinfo" element={<UserInfo />} />
           <Route path="/Roadmap/list/:category" element={<RoadMapList />} />

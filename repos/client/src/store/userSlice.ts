@@ -44,10 +44,8 @@ const userSlice = createSlice({
     });
     builder.addCase(getUser.fulfilled, (state, action) => {
       state.loading = false;
-      state = action.payload;
+      Object.assign(state, action.payload)
       console.log("fulfilled")
-      console.log(action);
-      console.log(state);
     });
     builder.addCase(getUser.rejected, (state) => {
       state.loading = false;
