@@ -5,7 +5,7 @@ import fetcher from '../../Utils/fetchers';
 
 const Home = () => {
   const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
-  if (userData === false) {
+  if (!userData) {
     return <Navigate to="/login"></Navigate>;
   }
 

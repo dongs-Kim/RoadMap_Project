@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ReactFlowProvider } from 'reactflow';
 import { Provider } from 'react-redux';
-import { store } from './Store/store'; 
+import { store } from './store/store'; 
 
 import 'react-toastify/dist/ReactToastify.css';
 import 'reactflow/dist/style.css';

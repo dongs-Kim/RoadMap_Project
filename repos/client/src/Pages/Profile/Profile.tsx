@@ -3,11 +3,12 @@ import React, { ChangeEvent, HTMLInputTypeAttribute, useCallback, useEffect, use
 import ProfileImage from './ProfileImage';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../Hooks/hooks';
-import { getUser, InitailStateType } from '../../Store/userSlice';
+import { getUser, InitailStateType } from '../../store/userSlice'
+import { IUser } from '../../Interface/db';
 
 const Profile = () => {
   const dispatch = useAppDispatch();
-  const userInitData = useSelector((state: InitailStateType) => state.userData);
+  const userInitData = useSelector((state: any) => state);
   const [nickname, setNickName] = useState('');
   const email = '';
   const [introduction, setIntroduction] = useState('');
@@ -20,8 +21,12 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const apiAction = dispatch(getUser);
-    console.log(apiAction);
+    const apiAction = dispatch(getUser());
+    console.log("Test");
+    console.log(userInitData.user);
+    if (userInitData.nickname){
+      setNickName(userInitData.nickname)
+    }
   }, [dispatch]);
 
   return (
