@@ -20,13 +20,13 @@ const nodeStateHook = useNodesState<RoadmapItem>;
 interface FlowProps {
   nodes: ReturnType<typeof nodeStateHook>[0];
   edges: ReturnType<typeof useEdgesState>[0];
-  openModal(data: RoadmapItem): void;
+  openModal(data: RoadmapItem, nodeType?: string): void;
 }
 
 export const FlowView = ({ nodes, edges, openModal }: FlowProps) => {
   const onNodeClick = useCallback(
     async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
-      openModal({ ...targetNode.data });
+      openModal({ ...targetNode.data }, targetNode.type);
     },
     [openModal],
   );

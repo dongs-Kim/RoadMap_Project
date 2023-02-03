@@ -24,6 +24,7 @@ const RoadmapView = () => {
   const [isLike, setIsLike] = useState(false);
   const [isStore, setIsStore] = useState(false);
   const [replies, setReplies] = useState<IReply[]>([]);
+  const [modalNodeType, setModalNodeType] = useState<string | undefined>();
 
   useEffect(() => {
     if (!roadmapId) {
@@ -55,8 +56,9 @@ const RoadmapView = () => {
   );
 
   const openModal = useCallback(
-    (data: RoadmapItem) => {
+    (data: RoadmapItem, nodeType?: string) => {
       setRoadmapItem(data);
+      setModalNodeType(nodeType);
       onOpen();
     },
     [onOpen],
@@ -264,7 +266,9 @@ const RoadmapView = () => {
 
       <RoadmapReply replies={replies} user={user} onSave={onSaveReply} onDelete={loadReplies} onUpdate={loadReplies} />
 
-      {isOpen && roadmapItem && <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} />}
+      {isOpen && roadmapItem && (
+        <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} nodeType={modalNodeType} />
+      )}
     </div>
   );
 };

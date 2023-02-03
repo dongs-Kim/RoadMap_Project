@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent } from 'react';
+import { useState, useCallback, ChangeEvent, useEffect, useRef } from 'react';
 import {
   Button,
   FormControl,
@@ -17,20 +17,41 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import { EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
 import { ROADMAP_ITEM_NAME_LIST } from '../../Constants/roadmap';
 import { RoadmapItemStatus } from '../../Constants/roadmapItemStatus';
+import { useEditor } from '../../Hooks/useEditor';
 
 interface RoadmapItemInputModalProps {
   onClose(data?: RoadmapItem): void;
-  data: RoadmapItem;
+  data?: RoadmapItem;
   nodeType?: string;
+  containerRef?: React.RefObject<HTMLElement | null>;
 }
 
 const autocompleteItems = ROADMAP_ITEM_NAME_LIST.map(({ name }, i) => ({ id: i, name }));
 
-export const RoadmapItemInputModal = ({ onClose, data, nodeType }: RoadmapItemInputModalProps) => {
-  const [name, setName] = useState<string>(data.name);
-  const [description, setDescription] = useState<string>(data.description);
-  const [status, setStatus] = useState<string | undefined>(data.status);
+export const RoadmapItemInputModal = ({ onClose, data, nodeType, containerRef }: RoadmapItemInputModalProps) => {
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [status, setStatus] = useState<string | undefined>('');
   const [maxResults, setMaxResults] = useState<number>(0);
+  const editorElRef = useRef<HTMLDivElement | null>(null);
+  const editor = useEditor(editorElRef);
+
+  const isSticker = useCallback(() => {
+    return nodeType === EN_ROADMAP_NODE_TYPE.StickerNode;
+  }, [nodeType]);
+
+  // 데이터 설정
+  useEffect(() => {
+    if (data) {
+      setName(data.name);
+      setStatus(data.status);
+      if (isSticker()) {
+        setDescription(data.description);
+      } else {
+        editor?.setMarkdown(data.description);
+      }
+    }
+  }, [data, isSticker, editor]);
 
   const onChangeDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
@@ -43,7 +64,11 @@ export const RoadmapItemInputModal = ({ onClose, data, nodeType }: RoadmapItemIn
     onClose();
   };
   const onApply = () => {
-    onClose({ name, description, status: status as RoadmapItemStatus | undefined });
+    onClose({
+      name,
+      description: isSticker() ? description : editor?.getMarkdown() ?? '',
+      status: status as RoadmapItemStatus | undefined,
+    });
   };
 
   const handleOnSearch = (name: string) => {
@@ -58,12 +83,8 @@ export const RoadmapItemInputModal = ({ onClose, data, nodeType }: RoadmapItemIn
     setMaxResults(5);
   };
 
-  const isSticker = useCallback(() => {
-    return nodeType === EN_ROADMAP_NODE_TYPE.StickerNode;
-  }, [nodeType]);
-
   return (
-    <Modal isOpen={true} onClose={onModalClose}>
+    <Modal isOpen={true} size="3xl" onClose={onModalClose} portalProps={{ containerRef }}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>로드맵 항목</ModalHeader>
@@ -86,7 +107,8 @@ export const RoadmapItemInputModal = ({ onClose, data, nodeType }: RoadmapItemIn
           )}
           <FormControl>
             <FormLabel>설명</FormLabel>
-            <Textarea value={description} onChange={onChangeDescription} />
+            {isSticker() && <Textarea value={description} onChange={onChangeDescription} />}
+            <div ref={editorElRef} style={{ display: isSticker() ? 'none' : 'block' }}></div>
           </FormControl>
           {!isSticker() && (
             <FormControl>

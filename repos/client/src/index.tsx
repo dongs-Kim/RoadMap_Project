@@ -6,10 +6,11 @@ import { ToastContainer } from 'react-toastify';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ReactFlowProvider } from 'reactflow';
 import { Provider } from 'react-redux';
-import { store } from './store/store'; 
+import { store } from './store/store';
 
 import 'react-toastify/dist/ReactToastify.css';
 import 'reactflow/dist/style.css';
+import '@toast-ui/editor/dist/toastui-editor.css';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

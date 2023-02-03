@@ -10,6 +10,7 @@ import { toastError, toastSuccess } from '../../Utils/toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ImageUploading from 'react-images-uploading';
 import { ExportInterface, ImageType } from 'react-images-uploading/dist/typings';
+import { useEditor } from '../../Hooks/useEditor';
 
 const initialNodes: Node<RoadmapItem>[] = [
   {
@@ -29,15 +30,17 @@ const RoadmapWrite = () => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('back_end');
   const [isPublic, setIsPublic] = useState(true);
-  const [contents, setContents] = useState('');
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | null>(null);
-  const [modalNodeType, setModalNodeType] = useState<string | undefined>(undefined);
+  const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | undefined>();
+  const [modalNodeType, setModalNodeType] = useState<string | undefined>();
   const modalResolveRef = useRef<((value?: RoadmapItem) => void) | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, setLoading] = useState(isEditing ? true : false);
+  const modalContainerRef = useRef<HTMLDivElement | null>(null);
+  const editorElRef = useRef<HTMLDivElement | null>(null);
+  const editor = useEditor(editorElRef);
 
   useEffect(() => {
     // 복사한 경우
@@ -64,13 +67,13 @@ const RoadmapWrite = () => {
       setTitle(data.roadmap.title);
       setCategory(data.roadmap.category);
       setIsPublic(data.roadmap.public);
-      setContents(data.roadmap.contents);
       setThumbnail(data.roadmap.thumbnail ?? null);
       setNodes(data.nodes);
       setEdges(data.edges);
       setLoading(false);
+      editor?.setMarkdown(data.roadmap.contents);
     }
-  }, [isEditing, navigate, roadmapId, setNodes, setEdges, location.state]);
+  }, [isEditing, navigate, roadmapId, setNodes, setEdges, location.state, editor]);
 
   const onChangeTitle = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -80,9 +83,6 @@ const RoadmapWrite = () => {
   }, []);
   const onChangeIsPublic = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setIsPublic(e.target.checked);
-  }, []);
-  const onChangeContents = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    setContents(e.target.value);
   }, []);
 
   const openModal = useCallback(
@@ -105,19 +105,22 @@ const RoadmapWrite = () => {
       }
 
       modalResolveRef.current = null;
-      setRoadmapItem(null);
+      setRoadmapItem(undefined);
     },
     [onClose],
   );
 
   const onSave = useCallback(async () => {
+    if (!editor) {
+      return;
+    }
     const saveDto: RoadmapSetDto = {
       roadmap: {
         id,
         title,
         category,
         public: isPublic,
-        contents,
+        contents: editor.getMarkdown(),
         thumbnail,
       },
       nodes,
@@ -132,7 +135,7 @@ const RoadmapWrite = () => {
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [id, title, category, isPublic, contents, nodes, edges, navigate, thumbnail, isEditing]);
+  }, [id, title, category, isPublic, nodes, edges, navigate, thumbnail, isEditing, editor]);
 
   const onChangeThumbnail = useCallback(
     async (imageList: ImageType[]) => {
@@ -189,12 +192,12 @@ const RoadmapWrite = () => {
       </div>
       <div>
         <label>설명</label>
-        <textarea value={contents} onChange={onChangeContents} />
+        <div ref={editorElRef}></div>
       </div>
       <div>
         <label>썸네일</label>
         <ImageUploading value={[]} onChange={onChangeThumbnail} dataURLKey="thumbnail">
-          {({ onImageUpload, onImageUpdate, onImageRemove, isDragging, dragProps }: ExportInterface) => (
+          {({ onImageUpload, isDragging, dragProps }: ExportInterface) => (
             <div>
               <Button style={isDragging ? { color: 'red' } : undefined} onClick={onImageUpload} {...dragProps}>
                 이미지 업로드
@@ -226,9 +229,14 @@ const RoadmapWrite = () => {
           />
         </div>
       </div>
-      {isOpen && roadmapItem && (
-        <RoadmapItemInputModal onClose={onCloseModal} data={roadmapItem} nodeType={modalNodeType} />
-      )}
+      <div style={{ display: isOpen ? 'block' : 'none' }} ref={modalContainerRef}>
+        <RoadmapItemInputModal
+          onClose={onCloseModal}
+          data={roadmapItem}
+          nodeType={modalNodeType}
+          containerRef={modalContainerRef}
+        />
+      </div>
     </div>
   );
 };
