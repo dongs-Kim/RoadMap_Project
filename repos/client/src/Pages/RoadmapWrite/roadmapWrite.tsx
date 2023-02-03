@@ -40,7 +40,7 @@ const RoadmapWrite = () => {
   const [loading, setLoading] = useState(isEditing ? true : false);
   const modalContainerRef = useRef<HTMLDivElement | null>(null);
   const editorElRef = useRef<HTMLDivElement | null>(null);
-  const editor = useEditor(editorElRef);
+  const editor = useEditor(editorElRef, loading);
 
   useEffect(() => {
     // 복사한 경우

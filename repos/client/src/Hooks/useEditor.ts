@@ -1,7 +1,7 @@
 import Editor from '@toast-ui/editor';
 import { useEffect, useRef } from 'react';
 
-export const useEditor = (editorElRef: React.RefObject<HTMLElement | null>) => {
+export const useEditor = (editorElRef: React.RefObject<HTMLElement | null>, loader?: any) => {
   const editorRef = useRef<Editor | null>(null);
 
   // 에디터 생성
@@ -17,7 +17,7 @@ export const useEditor = (editorElRef: React.RefObject<HTMLElement | null>) => {
         });
       }
     });
-  }, [editorElRef]);
+  }, [editorElRef, loader]);
 
   return editorRef.current;
 };

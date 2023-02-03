@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { Button, Heading, useDisclosure } from '@chakra-ui/react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -13,6 +13,7 @@ import { FlowView } from './FlowView';
 import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
 import { downloadImage } from '../../Utils/roadmap';
 import { RoadmapReply } from './RoadmapReply';
+import { useViewer } from '../../Hooks/useViewer';
 
 const RoadmapView = () => {
   const { roadmapId } = useParams();
@@ -25,6 +26,8 @@ const RoadmapView = () => {
   const [isStore, setIsStore] = useState(false);
   const [replies, setReplies] = useState<IReply[]>([]);
   const [modalNodeType, setModalNodeType] = useState<string | undefined>();
+  const viewerElRef = useRef<HTMLDivElement | null>(null);
+  const viewer = useViewer(viewerElRef, roadmapSet?.roadmap.contents);
 
   useEffect(() => {
     if (!roadmapId) {
@@ -34,6 +37,7 @@ const RoadmapView = () => {
       try {
         const { data } = await axios.get<RoadmapSetDto>(`/api/roadmaps/${roadmapId}`, { params: { mode: 'view' } });
         setRoadmapSet(data);
+        viewer?.setMarkdown(data.roadmap.contents);
       } catch {
         toastError('로드맵을 불러오지 못했습니다');
         navigate(-1);
@@ -162,6 +166,7 @@ const RoadmapView = () => {
       if (!roadmapSet) {
         return;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...restRoadmap } = roadmapSet.roadmap;
       const cloneRoadmapSet: RoadmapSetDto = {
         ...roadmapSet,
@@ -246,7 +251,7 @@ const RoadmapView = () => {
       </div>
       <div>
         <label>설명</label>
-        <span>{roadmapSet.roadmap.contents}</span>
+        <div ref={viewerElRef}></div>
       </div>
       <div>
         <label>좋아요</label>
