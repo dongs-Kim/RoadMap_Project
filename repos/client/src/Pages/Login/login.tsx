@@ -4,6 +4,7 @@ import { Link, Navigate } from 'react-router-dom';
 import useSWR from 'swr';
 
 import fetcher from '../../Utils/fetchers';
+import { Button, Input } from '@chakra-ui/react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -57,7 +58,7 @@ const Login = () => {
       }}
     >
       <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={onSubmit}>
-        <label>Email</label>
+        <span>Email</span>
         <input type="email" value={email} onChange={onChangeEmail} />
         <label>Password</label>
         <input type="password" value={password} onChange={onChangePassword} />
@@ -67,7 +68,7 @@ const Login = () => {
           </div>
         )}
         <br />
-        <button formAction="">Login</button>
+        <button>Login</button>
         <p>
           <Link to="/SignUp">회원가입</Link> <br></br>
           <span>비밀번호 찾기</span>

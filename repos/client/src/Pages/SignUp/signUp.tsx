@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Button, Input } from '@chakra-ui/react';
 
 const SignUp = () => {
   //상태
@@ -110,28 +111,28 @@ const SignUp = () => {
         <label>
           <span>이메일 주소</span>
           <div>
-            <input type="email" id="email" name="email" value={email} onChange={onChangeEmail} />
+            <Input type="email" id="email" name="email" value={email} onChange={onChangeEmail} />
             {email.length > 0 && <span>{emailMessage}</span>}
           </div>
         </label>
         <label>
           <span>닉네임</span>
           <div>
-            <input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname} />
+            <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname} />
             {nickname.length > 0 && <span>{nameMessage}</span>}
           </div>
         </label>
         <label>
           <span>비밀번호</span>
           <div>
-            <input type="password" id="password" name="password" value={password_origin} onChange={onChangePassword} />
+            <Input type="password" id="password" name="password" value={password_origin} onChange={onChangePassword} />
             {password_origin.length > 0 && <span>{passwordMessage}</span>}
           </div>
         </label>
         <label>
           <span>비밀번호 확인</span>
           <div>
-            <input
+            <Input
               type="password"
               id="password-check"
               name="password-check"
@@ -141,9 +142,9 @@ const SignUp = () => {
             {passwordConfirm.length > 0 && <span>{passwordConfirmMessage}</span>}
           </div>
         </label>
-        <button type="submit" disabled={!(isName && isEmail && isPassword && isPasswordConfirm)}>
+        <Button type="submit" disabled={!(isName && isEmail && isPassword && isPasswordConfirm)}>
           회원가입
-        </button>
+        </Button>
         <div>{signUpSuccess && <span>회원가입되었습니다! 로그인해주세요.</span>}</div>
       </form>
       <span>
