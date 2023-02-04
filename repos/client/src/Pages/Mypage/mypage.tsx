@@ -69,18 +69,12 @@ const Mypage = () => {
         {!loading && (
           <ul>
             {myRoadmaps.map((roadmap) => (
-              <li key={roadmap.id}>
+              <li style={{ listStyle: 'none' }} key={roadmap.id}>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <div>{roadmap.title}</div>
-                  <Link as={RouterLink} to={`/Roadmap/write/${roadmap.id}`}>
-                    수정
-                  </Link>
                   <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
-                    보기
+                    {!roadmap.thumbnail && <img src={'/img/NoImage.png'} alt="" width="250"></img>}
+                    {roadmap.thumbnail && <img src={roadmap.thumbnail} alt="" width="250"></img>}
                   </Link>
-                  <Button colorScheme="teal" size="xs" onClick={() => onClickDelete(roadmap.id)}>
-                    삭제
-                  </Button>
                 </div>
               </li>
             ))}

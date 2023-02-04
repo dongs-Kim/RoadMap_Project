@@ -107,6 +107,14 @@ export class RoadmapsService {
     });
   }
 
+  findCategory(category: string) {
+    return this.roadmapsRepository.find({
+      where: {
+        category: category,
+      },
+    });
+  }
+
   async update(id: string, updateRoadmapDto: UpdateRoadmapDto, user: User) {
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id },

@@ -1,15 +1,18 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Button } from '@chakra-ui/react';
+import React, { useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
+import axios from 'axios';
 
 const Home = () => {
-  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
-  if (!userData) {
-    return <Navigate to="/login"></Navigate>;
-  }
-
-  return <div>첫화면 / 요약페이지 입니다.</div>;
+  return (
+    <div>
+      <header style={{ backgroundColor: 'white' }}>로드맵 페이지</header>
+      <span>첫화면 / 요약페이지</span>
+      <div></div>
+    </div>
+  );
 };
 
 export default Home;

@@ -49,6 +49,13 @@ export class RoadmapsController {
     return this.roadmapsService.findMyAll(user);
   }
 
+  @ApiOperation({ summary: '로드맵 카테고리별 조회' })
+  @UseGuards(LoggedInGuard)
+  @Get('list/:category')
+  findCategory(@Param('category') category: string) {
+    return this.roadmapsService.findCategory(category);
+  }
+
   @ApiOperation({ summary: '특정 로드맵 조회' })
   @Get(':id')
   findOne(

@@ -44,7 +44,7 @@ const Login = () => {
   );
 
   if (userData) {
-    return <Navigate to="/"></Navigate>;
+    return <Navigate to="/Roadmap/list"></Navigate>;
   }
 
   return (
