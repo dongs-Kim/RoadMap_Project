@@ -56,7 +56,9 @@ const Layout = () => {
       {/* 헤더 */}
       <Flex as="header" justifyContent="space-between" p={3} borderBottom="1px #ccc solid">
         <Box>
-          <Heading size="lg">Dev Roadmap</Heading>
+          <Link as={RouterLink} to="/">
+            <Heading size="lg">Dev Roadmap</Heading>
+          </Link>
         </Box>
         <Box>
           <Button size="sm" colorScheme="teal" variant="ghost" onClick={onClickNewRoadMap}>

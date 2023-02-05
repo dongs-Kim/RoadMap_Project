@@ -75,6 +75,12 @@ const Mypage = () => {
                     {!roadmap.thumbnail && <img src={'/img/NoImage.png'} alt="" width="250"></img>}
                     {roadmap.thumbnail && <img src={roadmap.thumbnail} alt="" width="250"></img>}
                   </Link>
+                  <Link as={RouterLink} to={`/Roadmap/write/${roadmap.id}`}>
+                    수정
+                  </Link>
+                  <Button colorScheme="teal" size="xs" onClick={() => onClickDelete(roadmap.id)}>
+                    삭제
+                  </Button>
                 </div>
               </li>
             ))}
