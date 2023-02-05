@@ -84,7 +84,6 @@ const SignUp = () => {
   const onSubmit = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
-
       try {
         axios
           .post(

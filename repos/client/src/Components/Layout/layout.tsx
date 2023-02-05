@@ -18,6 +18,7 @@ import { useCallback } from 'react';
 import { Link as RouterLink, useNavigate, Outlet, useLocation, Router } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
+import { menuCategories } from '../Menu/menu';
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -41,8 +42,8 @@ const Layout = () => {
   const onClickNewRoadMap = useCallback(() => {
     navigate('/Roadmap/write');
   }, [navigate]);
-  const onClickRoadMapList = useCallback(() => {
-    navigate('/Roadmap/List');
+  const onClickFavoriteList = useCallback(() => {
+    navigate(`/Favorite/List/${userData.id}`);
   }, [navigate]);
   const onClickMypage = useCallback(() => {
     navigate('/Mypage');
@@ -56,9 +57,9 @@ const Layout = () => {
       {/* 헤더 */}
       <Flex as="header" justifyContent="space-between" p={3} borderBottom="1px #ccc solid">
         <Box>
-          <Link as={RouterLink} to="/">
-            <Heading size="lg">Dev Roadmap</Heading>
-          </Link>
+          <Heading size="lg" color="teal.400">
+            <RouterLink to="/">Dev Roadmap</RouterLink>
+          </Heading>
         </Box>
         <Box>
           <Button size="sm" colorScheme="teal" variant="ghost" onClick={onClickNewRoadMap}>
@@ -69,8 +70,11 @@ const Layout = () => {
               카테고리
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={onClickRoadMapList}>백엔드</MenuItem>
-              <MenuItem onClick={onClickRoadMapList}>프론트엔드</MenuItem>
+              {menuCategories.map((category) => (
+                <MenuItem key={category.type}>
+                  <RouterLink to={`Roadmap/list/${category.type}`}>{category.name}</RouterLink>
+                </MenuItem>
+              ))}
             </MenuList>
           </Menu>
           {userData && (
@@ -80,8 +84,8 @@ const Layout = () => {
                   작업메뉴
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={onClickRoadMapList}>전체 로드맵</MenuItem>
                   <MenuItem onClick={onClickMypage}>내 로드맵</MenuItem>
+                  <MenuItem onClick={onClickFavoriteList}>저장된 로드맵</MenuItem>
                   <MenuItem onClick={onClickProfile}>프로필 수정</MenuItem>
                   <MenuItem onClick={onClickLogOut}>로그아웃</MenuItem>
                 </MenuList>

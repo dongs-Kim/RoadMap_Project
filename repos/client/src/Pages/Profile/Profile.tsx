@@ -32,6 +32,7 @@ const Profile = () => {
       setIsName(true);
     }
   }, []);
+
   const onChangeComment = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
   }, []);

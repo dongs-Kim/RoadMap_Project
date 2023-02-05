@@ -1,24 +1,20 @@
-import { Button, Card, CardBody, CardFooter, Divider, Heading, Image, Link, List, Stack, Text } from '@chakra-ui/react';
+import { Card, CardBody, Heading, Image, Link, List, Stack, Text } from '@chakra-ui/react';
 import axios from 'axios';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
+import { toastError } from '../../../Utils/toast';
 import { RoadmapDto } from '../../../Interface/roadmap';
-import { AiFillHeart } from 'react-icons/ai';
 
-interface Props {
-  category: string | undefined;
-}
-
-export const CardItem = ({ category }: Props) => {
-  const [roadmaps, setRoadmaps] = useState<RoadmapDto[]>([]);
+export const CardItem = () => {
+  const [myRoadmaps, setMyRoadmaps] = useState<RoadmapDto[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const loadRoadmaps = useCallback(async () => {
+  const loadMyRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapDto[]>(`/api/roadmaps/list/${category}`);
-      setRoadmaps(data);
-    } catch (err) {
-      console.error(err);
+      const { data } = await axios.get<RoadmapDto[]>('/api/users/favoriteList/1');
+      setMyRoadmaps(data);
+    } catch {
+      toastError('내 로드맵을 불러오지 못했습니다');
     } finally {
       setLoading(false);
     }
@@ -26,17 +22,17 @@ export const CardItem = ({ category }: Props) => {
 
   useEffect(() => {
     setLoading(true);
-    loadRoadmaps();
-  }, [loadRoadmaps]);
+    loadMyRoadmaps();
+  }, [loadMyRoadmaps]);
 
   return (
     <List display="flex">
       {loading && <div>Loading....</div>}
       {!loading &&
-        roadmaps.map((roadmap) => (
+        myRoadmaps.map((roadmap) => (
           <List display="flex" key={roadmap.id} paddingLeft="5">
-            <Card w="200px" alignContent="center">
-              <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
+            <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
+              <Card w="200px" alignContent="center">
                 {!roadmap.thumbnail && (
                   <CardBody>
                     <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
@@ -53,12 +49,8 @@ export const CardItem = ({ category }: Props) => {
                     </Stack>
                   </CardBody>
                 )}
-              </Link>
-              <Divider />
-              <CardFooter>
-                <AiFillHeart className="icon" size="15" color="red" />
-              </CardFooter>
-            </Card>
+              </Card>
+            </Link>
           </List>
         ))}
     </List>

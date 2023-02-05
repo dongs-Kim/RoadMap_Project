@@ -48,7 +48,6 @@ export class RoadmapsController {
   }
 
   @ApiOperation({ summary: '로드맵 카테고리별 조회' })
-  @UseGuards(LoggedInGuard)
   @Get('list/:category')
   findCategory(@Param('category') category: string) {
     return this.roadmapsService.findCategory(category);

@@ -1,5 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Button, Heading, Link, useDisclosure } from '@chakra-ui/react';
+import {
+  Button,
+  Heading,
+  Link,
+  useDisclosure,
+  List,
+  Card,
+  CardBody,
+  Image,
+  Stack,
+  CardFooter,
+  Divider,
+  ButtonGroup,
+} from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { RoadmapDto } from '../../Interface/roadmap';
@@ -29,10 +42,6 @@ const Mypage = () => {
     loadMyRoadmaps();
   }, [loadMyRoadmaps]);
 
-  const onClickCreate = useCallback(() => {
-    navigate('/Roadmap/write');
-  }, [navigate]);
-
   const onClickDelete = useCallback(
     (roadmapId?: string) => {
       if (roadmapId) {
@@ -42,6 +51,11 @@ const Mypage = () => {
     },
     [onOpen],
   );
+  const onClickModify = useCallback((roadmapId?: string) => {
+    if (roadmapId) {
+      navigate(`/Roadmap/write/${roadmapId}`);
+    }
+  }, []);
 
   const onRoadmapDelete = useCallback(async () => {
     if (toDeleteId) {
@@ -55,38 +69,48 @@ const Mypage = () => {
 
   return (
     <div>
-      <Heading as="h2" size="xl">
-        마이 페이지
+      <Heading as="h2" size="xl" color="teal.400" pb="8">
+        My page
       </Heading>
-      <Button colorScheme="teal" onClick={onClickCreate}>
-        로드맵 만들기
-      </Button>
-      <div>
-        <Heading as="h3" size="lg">
-          내 로드맵
-        </Heading>
+      <List display="flex">
         {loading && <div>...loading...</div>}
-        {!loading && (
-          <ul>
-            {myRoadmaps.map((roadmap) => (
-              <li style={{ listStyle: 'none' }} key={roadmap.id}>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
-                    {!roadmap.thumbnail && <img src={'/img/NoImage.png'} alt="" width="250"></img>}
-                    {roadmap.thumbnail && <img src={roadmap.thumbnail} alt="" width="250"></img>}
-                  </Link>
-                  <Link as={RouterLink} to={`/Roadmap/write/${roadmap.id}`}>
-                    수정
-                  </Link>
-                  <Button colorScheme="teal" size="xs" onClick={() => onClickDelete(roadmap.id)}>
-                    삭제
-                  </Button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        {!loading &&
+          myRoadmaps.map((roadmap) => (
+            <List display="flex" key={roadmap.id} paddingLeft="7">
+              <Card w="200px" alignContent="center">
+                <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
+                  {!roadmap.thumbnail && (
+                    <CardBody>
+                      <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
+                      <Stack mt="6" spacing="3">
+                        <Heading size="md">{roadmap.title}</Heading>
+                      </Stack>
+                    </CardBody>
+                  )}
+                  {roadmap.thumbnail && (
+                    <CardBody>
+                      <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
+                      <Stack mt="6" spacing="3">
+                        <Heading size="md">{roadmap.title}</Heading>
+                      </Stack>
+                    </CardBody>
+                  )}
+                </Link>
+                <Divider />
+                <CardFooter>
+                  <ButtonGroup spacing="2">
+                    <Button colorScheme="teal" size="xs" onClick={() => onClickModify(roadmap.id)}>
+                      수정
+                    </Button>
+                    <Button colorScheme="teal" size="xs" onClick={() => onClickDelete(roadmap.id)}>
+                      삭제
+                    </Button>
+                  </ButtonGroup>
+                </CardFooter>
+              </Card>
+            </List>
+          ))}
+      </List>
       <RoadmapDeleteDialog isOpen={isOpen} onClose={onClose} onDelete={onRoadmapDelete} />
     </div>
   );

@@ -114,6 +114,13 @@ export class UsersController {
     return this.usersService.isStore(user, roadmap_id);
   }
 
+  @ApiOperation({ summary: '즐겨찾기 로드맵' })
+  @UseGuards(LoggedInGuard)
+  @Get('favoriteList/:id')
+  findFavorite(@Param('id') id: string) {
+    return this.usersService.getFavoriteRoadmaps(id);
+  }
+
   @ApiOperation({ summary: '프로필 이미지 업로드' })
   @UseGuards(LoggedInGuard)
   @UseInterceptors(FileInterceptor('image', profileImageOption))

@@ -1,7 +1,4 @@
-import React from "react";
-
-const Menu = () => {
-  return <div>test</div>;
-};
-
-export default Menu;
+export const menuCategories = [
+  { type: 'back_end', name: '백엔드' },
+  { type: 'front_end', name: '프론트엔드' },
+];

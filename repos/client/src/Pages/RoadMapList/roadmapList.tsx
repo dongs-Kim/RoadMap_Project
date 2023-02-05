@@ -5,50 +5,18 @@ import fetcher from '../../Utils/fetchers';
 import axios from 'axios';
 import { RoadmapDto } from '../../Interface/roadmap';
 import { Button, Flex, Heading, Link, List, ListItem } from '@chakra-ui/react';
+import { CardItem } from '../Home/Components/CardItem';
 
 const RoadMapList = () => {
-  const { categoryParam } = useParams();
-  const [allRoadmaps, setAllRoadmaps] = useState<RoadmapDto[]>([]);
-  const [loading, setLoading] = useState(false);
-  const loadMyRoadmaps = useCallback(async () => {
-    try {
-      const { data } = await axios.get<RoadmapDto[]>('/api/roadmaps');
-      setAllRoadmaps(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    loadMyRoadmaps();
-  }, [loadMyRoadmaps]);
+  const { category } = useParams();
+  const title = category == 'back_end' ? '백엔드' : '프론트엔드';
 
   return (
     <div>
-      <Heading as="h2" size="xl">
-        전체 로드맵 리스트
+      <Heading as="h2" size="xl" color="teal.400" pb="7">
+        {title}
       </Heading>
-      <div>
-        {loading && <div>...loading...</div>}
-        {!loading && (
-          <ul>
-            {allRoadmaps.map((roadmap) => (
-              <li style={{ listStyle: 'none' }} key={roadmap.id}>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
-                    {!roadmap.thumbnail && <img src={'/img/NoImage.png'} alt="" width="250"></img>}
-                    {roadmap.thumbnail && <img src={roadmap.thumbnail} alt="" width="250"></img>}
-                  </Link>
-                  <div>{roadmap.title}</div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <CardItem category={category}></CardItem>
     </div>
   );
 };
