@@ -41,6 +41,16 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  async getFavoriteRoadmaps(id: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        StoredRoadmaps: true,
+      },
+    });
+    return user.StoredRoadmaps;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.usersRepository.update(id, updateUserDto);
     return true;

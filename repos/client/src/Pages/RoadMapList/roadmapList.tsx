@@ -4,14 +4,12 @@ import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
 import axios from 'axios';
 import { RoadmapDto } from '../../Interface/roadmap';
-import { Button, Heading, Link } from '@chakra-ui/react';
+import { Button, Flex, Heading, Link, List, ListItem } from '@chakra-ui/react';
 
 const RoadMapList = () => {
   const { categoryParam } = useParams();
   const [allRoadmaps, setAllRoadmaps] = useState<RoadmapDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
   const loadMyRoadmaps = useCallback(async () => {
     try {
       const { data } = await axios.get<RoadmapDto[]>('/api/roadmaps');
@@ -27,10 +25,6 @@ const RoadMapList = () => {
     setLoading(true);
     loadMyRoadmaps();
   }, [loadMyRoadmaps]);
-
-  if (!userData) {
-    return <Navigate to="/login"></Navigate>;
-  }
 
   return (
     <div>
