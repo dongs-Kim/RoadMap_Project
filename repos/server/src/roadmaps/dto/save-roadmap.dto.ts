@@ -31,6 +31,8 @@ export class RoadmapNodeDto {
     name: string;
     description?: string;
     status?: EN_ROADMAP_ITEM_STATUS;
+    bgcolor: string;
+    border: boolean;
   };
 }
 

@@ -4,6 +4,8 @@ import { RoadmapItemStatus } from '../Constants/roadmapItemStatus';
 export interface RoadmapItem {
   name: string;
   description: string;
+  bgcolor: string;
+  border: boolean;
   status?: RoadmapItemStatus;
 }
 
@@ -32,9 +34,9 @@ export interface RoadmapSetDto {
 export interface RoadmapDto {
   id?: string;
   title: string;
-  category: string;
+  category?: string;
   public: boolean;
   contents: string;
   like?: number;
-  thumbnail?: string | null;
+  thumbnail?: string;
 }

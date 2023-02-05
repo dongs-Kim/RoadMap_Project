@@ -13,10 +13,8 @@ import { Roadmap } from 'src/entities/roadmap.entity';
 import { RoadmapEdge } from 'src/entities/roadmap_edge.entity';
 import { RoadmapItem } from 'src/entities/roadmap_item.entity';
 import { User } from 'src/entities/user.entity';
-import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
-import { CreateRoadmapDto } from './dto/create-roadmap.dto';
+import { DataSource, Repository } from 'typeorm';
 import { SaveRoadmapDto } from './dto/save-roadmap.dto';
-import { UpdateRoadmapDto } from './dto/update-roadmap.dto';
 import { UPLOAD_THUMBNAIL_PATH } from './thumbnail-upload.option';
 
 @Injectable()
@@ -28,23 +26,6 @@ export class RoadmapsService {
     private usersRepository: Repository<User>,
     private dataSource: DataSource,
   ) {}
-
-  async create(createRoadmapDto: CreateRoadmapDto, user_id: string) {
-    // user 조회
-    const user = await this.usersRepository.findOneBy({ id: user_id });
-    if (!user) {
-      throw new BadRequestException();
-    }
-
-    const roadmap = new Roadmap();
-    roadmap.id = shortUUID.generate();
-    roadmap.category = createRoadmapDto.category;
-    roadmap.public = createRoadmapDto.public;
-    roadmap.title = createRoadmapDto.title;
-    roadmap.User = user;
-
-    await this.roadmapsRepository.save(roadmap);
-  }
 
   findAll() {
     return this.roadmapsRepository.find({
@@ -86,6 +67,8 @@ export class RoadmapsService {
         name: item.name,
         description: item.description,
         status: item.status as EN_ROADMAP_ITEM_STATUS | null,
+        bgcolor: item.bgcolor,
+        border: item.border,
       },
       position: {
         x: item.positionX,
@@ -113,22 +96,6 @@ export class RoadmapsService {
         category: category,
       },
     });
-  }
-
-  async update(id: string, updateRoadmapDto: UpdateRoadmapDto, user: User) {
-    const roadmap = await this.roadmapsRepository.findOne({
-      where: { id },
-      relations: { User: true },
-    });
-    if (!roadmap) {
-      throw new BadRequestException();
-    }
-    if (roadmap.User.id !== user.id) {
-      throw new UnauthorizedException();
-    }
-
-    await this.roadmapsRepository.update(id, updateRoadmapDto);
-    return true;
   }
 
   async remove(id: string, user: User) {
@@ -238,6 +205,8 @@ export class RoadmapsService {
         roadmapItem.name = node.data.name;
         roadmapItem.description = node.data.description;
         roadmapItem.status = node.data.status;
+        roadmapItem.bgcolor = node.data.bgcolor;
+        roadmapItem.border = node.data.border;
         roadmapItem.type = node.type;
         roadmapItem.positionX = node.position.x;
         roadmapItem.positionY = node.position.y;

@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -12,7 +11,6 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { RoadmapsService } from './roadmaps.service';
-import { UpdateRoadmapDto } from './dto/update-roadmap.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoggedInGuard } from 'src/auth/logged-in.guard';
 import { User } from 'src/common/decorators/user.decorator';
@@ -64,17 +62,6 @@ export class RoadmapsController {
     @User() user?: UserEntity,
   ) {
     return this.roadmapsService.findOneSet(id, mode, user);
-  }
-
-  @ApiOperation({ summary: '로드맵 수정' })
-  @UseGuards(LoggedInGuard)
-  @Patch(':id')
-  update(
-    @User() user: UserEntity,
-    @Param('id') id: string,
-    @Body() updateRoadmapDto: UpdateRoadmapDto,
-  ) {
-    return this.roadmapsService.update(id, updateRoadmapDto, user);
   }
 
   @ApiOperation({ summary: '로드맵 삭제' })

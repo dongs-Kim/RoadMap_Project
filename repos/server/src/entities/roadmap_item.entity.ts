@@ -28,6 +28,12 @@ export class RoadmapItem {
   @Column('int')
   positionY: number;
 
+  @Column('char', { length: 7 })
+  bgcolor: string;
+
+  @Column()
+  border: boolean;
+
   @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems, {
     onDelete: 'CASCADE',
   })

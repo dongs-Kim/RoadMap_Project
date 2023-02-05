@@ -3,22 +3,32 @@ import ReactFlow, {
   MiniMap,
   Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
   Connection,
   Edge,
   OnConnectStartParams,
   useReactFlow,
   Node,
+  NodeChange,
+  applyNodeChanges,
+  EdgeChange,
+  applyEdgeChanges,
 } from 'reactflow';
 import shortUUID from 'short-uuid';
-import { DownNode } from '../../Components/RoadmapItem/DownNode';
-import { LeftNode } from '../../Components/RoadmapItem/LeftNode';
-import { RightNode } from '../../Components/RoadmapItem/RightNode';
-import { StartNode } from '../../Components/RoadmapItem/StartNode';
-import { StickerNode } from '../../Components/RoadmapItem/StickerNode';
-import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
+import { DownNode } from '../../../Components/RoadmapItem/DownNode';
+import { LeftNode } from '../../../Components/RoadmapItem/LeftNode';
+import { RightNode } from '../../../Components/RoadmapItem/RightNode';
+import { StartNode } from '../../../Components/RoadmapItem/StartNode';
+import { StickerNode } from '../../../Components/RoadmapItem/StickerNode';
+import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
+import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../../Interface/roadmap';
+import {
+  addEdge,
+  addEdgeByConnection,
+  addNode,
+  setEdges,
+  setNodes,
+  updateNode,
+} from '../../../store/roadmapWriteSlice';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
@@ -54,28 +64,36 @@ const getNodeType = (handleId: string) => {
   }
 };
 
-const nodeStateHook = useNodesState<RoadmapItem>;
-
 interface FlowProps {
-  nodes: ReturnType<typeof nodeStateHook>[0];
-  setNodes: ReturnType<typeof nodeStateHook>[1];
-  onNodesChange: ReturnType<typeof nodeStateHook>[2];
-  edges: ReturnType<typeof useEdgesState>[0];
-  setEdges: ReturnType<typeof useEdgesState>[1];
-  onEdgesChange: ReturnType<typeof useEdgesState>[2];
   openModal(data: RoadmapItem, nodeType?: string): Promise<RoadmapItem | void>;
 }
 
-export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange, openModal }: FlowProps) => {
+export const RoadmapFlow = ({ openModal }: FlowProps) => {
+  const { nodes, edges } = useAppSelector((staet) => staet.roadmapWrite);
+  const dispatch = useAppDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const connectingRef = useRef<Pick<OnConnectStartParams, 'nodeId' | 'handleId'> | null>(null);
   const { project } = useReactFlow();
 
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      dispatch(setNodes(applyNodeChanges(changes, nodes)));
+    },
+    [dispatch, nodes],
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      dispatch(setEdges(applyEdgeChanges(changes, edges)));
+    },
+    [dispatch, edges],
+  );
+
   const onConnect = useCallback(
     (params: Connection) => {
-      setEdges((eds: Edge[]) => addEdge(params, eds));
+      dispatch(addEdgeByConnection(params));
     },
-    [setEdges],
+    [dispatch],
   );
 
   const onConnectStart = useCallback(
@@ -106,7 +124,7 @@ export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesC
         id: nodeId,
         position,
         type: getNodeType(connectingRef.current.handleId),
-        data: { name: '항목', description: '' },
+        data: { name: '항목', description: '', bgcolor: '#ffffff', border: true },
       };
       const newEdge: Edge = {
         id: shortUUID.generate(),
@@ -115,32 +133,25 @@ export const Flow = ({ nodes, setNodes, onNodesChange, edges, setEdges, onEdgesC
         target: nodeId,
       };
 
-      setNodes((nds) => nds.concat(newNode));
-      setEdges((eds) => eds.concat(newEdge));
+      dispatch(addNode(newNode));
+      dispatch(addEdge(newEdge));
     },
-    [project, setEdges, setNodes],
+    [project, dispatch],
   );
 
   const onNodeDoubleClick = useCallback(
     async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
       const data = await openModal({ ...targetNode.data }, targetNode.type);
       if (data) {
-        setNodes((nds) =>
-          nds.map((node) => {
-            if (node.id === targetNode.id) {
-              node.data = data;
-            }
-            return node;
-          }),
-        );
+        dispatch(updateNode({ id: targetNode.id, data }));
       }
     },
-    [openModal, setNodes],
+    [openModal, dispatch],
   );
 
   return (
     <>
-      <div ref={containerRef} style={{ height: 600 }}>
+      <div ref={containerRef} style={{ height: 'calc(100% - 64.67px)' }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
