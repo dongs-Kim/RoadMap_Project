@@ -1,9 +1,12 @@
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { Button, Input } from '@chakra-ui/react';
+import { Link as RouterLink , Navigate} from 'react-router-dom';
+import { Button, Input , Flex, Stack, Heading, Box, FormControl, InputLeftElement, InputGroup, Text, Link} from '@chakra-ui/react';
+import useSWR from 'swr'
+import fetcher from '../../Utils/fetchers';
 
 const SignUp = () => {
+  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
   //상태
   const [email, setEmail] = useState('');
   const [nickname, setNickName] = useState('');
@@ -30,7 +33,7 @@ const SignUp = () => {
     setEmail(e.target.value);
 
     if (!emailRegex.test(e.target.value)) {
-      setEmailMessage('이메일 형식이 틀렸어요! 다시 확인해주세요!');
+      setEmailMessage('이메일을 확인해주세요');
       setIsEmail(false);
     } else {
       setEmailMessage('올바른 이메일 형식이에요!');
@@ -104,52 +107,76 @@ const SignUp = () => {
     [email, nickname, password_origin],
   );
 
+  if (userData) {
+    return <Navigate to="/"></Navigate>;
+  }  
+  
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <label>
-          <span>이메일 주소</span>
-          <div>
-            <Input type="email" id="email" name="email" value={email} onChange={onChangeEmail} />
-            {email.length > 0 && <span>{emailMessage}</span>}
-          </div>
-        </label>
-        <label>
-          <span>닉네임</span>
-          <div>
-            <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname} />
-            {nickname.length > 0 && <span>{nameMessage}</span>}
-          </div>
-        </label>
-        <label>
-          <span>비밀번호</span>
-          <div>
-            <Input type="password" id="password" name="password" value={password_origin} onChange={onChangePassword} />
-            {password_origin.length > 0 && <span>{passwordMessage}</span>}
-          </div>
-        </label>
-        <label>
-          <span>비밀번호 확인</span>
-          <div>
-            <Input
-              type="password"
-              id="password-check"
-              name="password-check"
-              value={passwordConfirm}
-              onChange={onChangePasswordConfirm}
-            />
-            {passwordConfirm.length > 0 && <span>{passwordConfirmMessage}</span>}
-          </div>
-        </label>
-        <Button type="submit" disabled={!(isName && isEmail && isPassword && isPasswordConfirm)}>
-          회원가입
-        </Button>
-        <div>{signUpSuccess && <span>회원가입되었습니다! 로그인해주세요.</span>}</div>
-      </form>
-      <span>
-        이미 회원이신가요?&nbsp;
-        <Link to="/login">로그인 하러가기</Link>
-      </span>
+    <Flex 
+      flexDirection="column"
+      width="100wh"
+      height="100vh"
+      backgroundColor="gray.200"
+      justifyContent="center"
+      alignItems="center"
+    >
+       <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
+        <Heading color="teal.400">Sign Up</Heading>
+        <Box minW={{ base: '90%', md: '468px' }}>
+          <form onSubmit={onSubmit}>
+            <Stack spacing={5} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input type="email" id = "email" value={email} onChange={onChangeEmail} placeholder="Email Address" />
+                </InputGroup>
+                <InputGroup >
+                {email.length > 0 && <Text fontSize="sm" fontStyle= "xs" color= "rgb(230,30,30)" fontFamily="arial" fontWeight= "bold">{emailMessage}</Text>}
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input type="nickname" id= "nickname" value={nickname} onChange={onChangeNickname} placeholder="Nickname" />                  
+                </InputGroup>
+                <InputGroup >
+                  {nickname.length > 0 && <Text fontSize="sm" fontStyle= "xs" color= "rgb(230,30,30)" fontFamily="arial" fontWeight= "bold">{nameMessage}</Text>}
+                  </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input type="password" id= "password" value={password_origin} onChange={onChangePassword} placeholder="Password" />                  
+                </InputGroup>
+                <InputGroup>
+                  {nickname.length > 0 && <Text fontSize="sm" fontStyle= "xs" color= "rgb(230,30,30)" fontFamily="arial" fontWeight= "bold">{passwordMessage}</Text>}
+                  </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input type="password" id="password-check" value={passwordConfirm} onChange={onChangePasswordConfirm} placeholder="Check Password" />                  
+                </InputGroup>
+                <InputGroup>
+                  {passwordConfirm.length > 0 && <Text fontSize="sm" fontStyle= "xs" color= "rgb(230,30,30)" fontFamily="arial" fontWeight= "bold">{passwordConfirmMessage}</Text>}
+                  </InputGroup>
+              </FormControl>
+              <Button borderRadius={0} type="submit" variant="solid" colorScheme="teal" width="full" disabled={!(isName && isEmail && isPassword && isPasswordConfirm)}>
+                  Login
+              </Button>
+              {signUpSuccess && <Text>회원가입되었습니다! 로그인해주세요.</Text>}
+            </Stack>
+          </form>
+        </Box>
+      </Stack>
+      <Box>
+        Already have an account?
+        <RouterLink to="/login">
+          <Link color="teal.500"> Sign In</Link>
+        </RouterLink>
+      </Box>
+    </Flex>
     </div>
   );
 };

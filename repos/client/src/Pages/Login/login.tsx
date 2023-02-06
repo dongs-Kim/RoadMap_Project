@@ -98,7 +98,7 @@ const Login = () => {
       <Box>
         New to us?
         <RouterLink to="/SignUp">
-          <Link color="teal.500"> Sign In</Link>
+          <Link color="teal.500"> Sign Up</Link>
         </RouterLink>
       </Box>
     </Flex>
