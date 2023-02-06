@@ -17,6 +17,10 @@ export enum EN_ROADMAP_NODE_TYPE {
   StickerNode = 'stickerNode',
 }
 
+export enum EN_ROADMAP_EDGE_TYPE {
+  RoadmapEdge = 'roadmapEdge',
+}
+
 export enum EN_ROADMAP_HANDLE_ID {
   Top = 'top',
   Bottom = 'bottom',

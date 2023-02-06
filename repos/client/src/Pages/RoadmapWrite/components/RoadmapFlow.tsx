@@ -17,10 +17,16 @@ import shortUUID from 'short-uuid';
 import { DownNode } from '../../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../../Components/RoadmapItem/RightNode';
+import { RoadmapEdge } from '../../../Components/RoadmapItem/RoadmapEdge';
 import { StartNode } from '../../../Components/RoadmapItem/StartNode';
 import { StickerNode } from '../../../Components/RoadmapItem/StickerNode';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
-import { EN_ROADMAP_HANDLE_ID, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../../Interface/roadmap';
+import {
+  EN_ROADMAP_EDGE_TYPE,
+  EN_ROADMAP_HANDLE_ID,
+  EN_ROADMAP_NODE_TYPE,
+  RoadmapItem,
+} from '../../../Interface/roadmap';
 import {
   addEdge,
   addEdgeByConnection,
@@ -36,6 +42,10 @@ const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
   [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
   [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode,
+};
+
+const edgeTypes = {
+  [EN_ROADMAP_EDGE_TYPE.RoadmapEdge]: RoadmapEdge,
 };
 
 const getClientXY = (event: MouseEvent | TouchEvent) => {
@@ -131,6 +141,7 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
         source: connectingRef.current.nodeId,
         sourceHandle: connectingRef.current.handleId,
         target: nodeId,
+        type: EN_ROADMAP_EDGE_TYPE.RoadmapEdge,
       };
 
       dispatch(addNode(newNode));
@@ -149,6 +160,16 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
     [openModal, dispatch],
   );
 
+  const onEdgeDoubleClick = useCallback(
+    async (event: React.MouseEvent, targetEdge: Edge) => {
+      const data = await openModal({ ...targetEdge.data }, targetEdge.type);
+      if (data) {
+        dispatch(updateNode({ id: targetEdge.id, data }));
+      }
+    },
+    [openModal, dispatch],
+  );
+
   return (
     <>
       <div ref={containerRef} style={{ height: 'calc(100% - 64.67px)' }}>
@@ -161,7 +182,10 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
           onConnectStart={onConnectStart}
           onConnectEnd={onConnectEnd}
           onNodeDoubleClick={onNodeDoubleClick}
+          onEdgeDoubleClick={onEdgeDoubleClick}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          snapToGrid={true}
         >
           <MiniMap />
           <Controls />
