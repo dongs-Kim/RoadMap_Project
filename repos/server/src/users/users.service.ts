@@ -41,6 +41,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  findEmail(email: string): Promise<User> {
+    return this.usersRepository.findOneBy({ email });
+  }
+
   async getFavoriteRoadmaps(id: string) {
     const user = await this.usersRepository.findOne({
       where: { id },

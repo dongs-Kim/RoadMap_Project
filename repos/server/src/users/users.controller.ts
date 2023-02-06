@@ -25,6 +25,7 @@ import { User as UserEntity } from 'src/entities/user.entity';
 import { StoreRoadmapDto } from './dto/store-roadmap.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { profileImageOption, UPLOAD_PROFILE_PATH } from './image-upload.option';
+import { DuplicateUserDto } from './dto/duplicate-user.dto';
 
 @ApiTags('users')
 @Controller('api/users')
@@ -61,6 +62,13 @@ export class UsersController {
   @Get()
   getUser(@User() user: UserEntity) {
     return user;
+  }
+
+  @ApiOperation({ summary: 'ID 중복체크' })
+  @UseGuards(NotLoggedInGuard)
+  @Post('email')
+  getDuplicateID(@Body() DuplicateUserDto: DuplicateUserDto) {
+    return this.usersService.findEmail(DuplicateUserDto.email);
   }
 
   @ApiOperation({ summary: '사용자 수정' })

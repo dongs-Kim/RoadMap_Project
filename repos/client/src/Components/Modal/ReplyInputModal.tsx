@@ -63,7 +63,7 @@ export const ReplyInputModal = ({ onClose, onUpdate, data }: ReplyInputModalProp
             저장
           </Button>
           <Button variant="ghost" onClick={onModalClose}>
-            취소
+            취소z
           </Button>
         </ModalFooter>
       </ModalContent>
