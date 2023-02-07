@@ -6,7 +6,7 @@ export const StartNode = ({ data }: NodeProps<RoadmapItem>) => {
   return (
     <>
       <Box p={3}>
-        <Heading size="lg" fontFamily="'Mochiy Pop One', 'Gamja Flower', sans-serif">
+        <Heading size="lg" fontFamily="'Gamja Flower', sans-serif">
           {data.name}
         </Heading>
       </Box>

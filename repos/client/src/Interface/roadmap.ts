@@ -1,6 +1,5 @@
 import { Edge, Node } from 'reactflow';
 import { RoadmapItemStatus } from '../Constants/roadmapItemStatus';
-import { Roadmap } from '../Pages/RoadmapWrite/components/Roadmap';
 
 export interface RoadmapItem {
   name: string;
@@ -8,6 +7,7 @@ export interface RoadmapItem {
   bgcolor: string;
   border: boolean;
   status?: RoadmapItemStatus;
+  url?: string;
 }
 
 export enum EN_ROADMAP_NODE_TYPE {
@@ -36,13 +36,19 @@ export interface User {
   nickname?: string;
   comment: string;
   image: string;
-  created_at: Date; 
+  created_at: Date;
 }
+
+export enum EN_EDGE_LINE_TYPE {
+  solid = '실선',
+  dash = '점선',
+}
+export type EdgeLineType = keyof typeof EN_EDGE_LINE_TYPE;
 
 export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
-  edges: Edge[];
+  edges: Edge<EdgeData>[];
   isUpdate?: boolean;
 }
 
@@ -56,7 +62,11 @@ export interface RoadmapDto {
   thumbnail?: string;
 }
 
+export interface RoadmapLikeDto extends RoadmapDto {
+  LikeUsers: User[];
+}
 
-export interface RoadmapLikeDto extends RoadmapDto{
-  LikeUsers : User[]
+export interface EdgeData {
+  color: string;
+  lineType: EdgeLineType;
 }

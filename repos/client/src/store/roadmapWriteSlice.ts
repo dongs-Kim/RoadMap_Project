@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Connection, Edge, Node, addEdge as flowAddEdge } from 'reactflow';
 import shortUUID from 'short-uuid';
 import _ from 'lodash';
-import { RoadmapItem, RoadmapSetDto } from '../Interface/roadmap';
+import { EdgeData, RoadmapItem, RoadmapSetDto } from '../Interface/roadmap';
 
 interface RoadmapWriteState {
   id: string;
@@ -11,7 +11,7 @@ interface RoadmapWriteState {
   public: boolean;
   contents: string;
   nodes: Node<RoadmapItem>[];
-  edges: Edge[];
+  edges: Edge<EdgeData>[];
   category?: string;
   thumbnail?: string;
 }
@@ -84,13 +84,13 @@ const roadmapWriteSlice = createSlice({
     setNodes: (state, action: PayloadAction<Node<RoadmapItem>[]>) => {
       state.nodes = action.payload;
     },
-    setEdges: (state, action: PayloadAction<Edge[]>) => {
+    setEdges: (state, action: PayloadAction<Edge<EdgeData>[]>) => {
       state.edges = action.payload;
     },
-    addNode: (state, action: PayloadAction<Node>) => {
+    addNode: (state, action: PayloadAction<Node<RoadmapItem>>) => {
       state.nodes.push(action.payload);
     },
-    addEdge: (state, action: PayloadAction<Edge>) => {
+    addEdge: (state, action: PayloadAction<Edge<EdgeData>>) => {
       state.edges.push(action.payload);
     },
     addEdgeByConnection: (state, action: PayloadAction<Connection>) => {
@@ -100,6 +100,12 @@ const roadmapWriteSlice = createSlice({
       const node = state.nodes.find((node) => node.id === action.payload.id);
       if (node) {
         node.data = action.payload.data;
+      }
+    },
+    updateEdge: (state, action: PayloadAction<{ id: string; data: EdgeData }>) => {
+      const edge = state.edges.find((edge) => edge.id === action.payload.id);
+      if (edge) {
+        edge.data = action.payload.data;
       }
     },
   },
@@ -112,7 +118,17 @@ const roadmapWriteSlice = createSlice({
       state.contents = roadmap.contents;
       state.category = roadmap.category;
       state.thumbnail = roadmap.thumbnail;
-      state.nodes = nodes;
+      state.nodes = nodes.map((node) => {
+        if (node.width) {
+          node.style = node.style ?? {};
+          node.style.width = node.width;
+        }
+        if (node.height) {
+          node.style = node.style ?? {};
+          node.style.height = node.height;
+        }
+        return node;
+      });
       state.edges = edges;
     });
   },
@@ -132,6 +148,7 @@ export const {
   addEdge,
   addEdgeByConnection,
   updateNode,
+  updateEdge,
 } = roadmapWriteSlice.actions;
 
 export default roadmapWriteSlice.reducer;

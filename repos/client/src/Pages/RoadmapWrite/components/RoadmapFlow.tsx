@@ -22,6 +22,7 @@ import { StartNode } from '../../../Components/RoadmapItem/StartNode';
 import { StickerNode } from '../../../Components/RoadmapItem/StickerNode';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
 import {
+  EdgeData,
   EN_ROADMAP_EDGE_TYPE,
   EN_ROADMAP_HANDLE_ID,
   EN_ROADMAP_NODE_TYPE,
@@ -33,6 +34,7 @@ import {
   addNode,
   setEdges,
   setNodes,
+  updateEdge,
   updateNode,
 } from '../../../store/roadmapWriteSlice';
 
@@ -76,9 +78,10 @@ const getNodeType = (handleId: string) => {
 
 interface FlowProps {
   openModal(data: RoadmapItem, nodeType?: string): Promise<RoadmapItem | void>;
+  openEdgeModal(data: EdgeData): Promise<EdgeData | void>;
 }
 
-export const RoadmapFlow = ({ openModal }: FlowProps) => {
+export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
   const { nodes, edges } = useAppSelector((staet) => staet.roadmapWrite);
   const dispatch = useAppDispatch();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -134,14 +137,18 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
         id: nodeId,
         position,
         type: getNodeType(connectingRef.current.handleId),
-        data: { name: '항목', description: '', bgcolor: '#ffffff', border: true },
+        data: { name: '', description: '', bgcolor: '#ffffff', border: true },
       };
-      const newEdge: Edge = {
+      const newEdge: Edge<EdgeData> = {
         id: shortUUID.generate(),
         source: connectingRef.current.nodeId,
         sourceHandle: connectingRef.current.handleId,
         target: nodeId,
         type: EN_ROADMAP_EDGE_TYPE.RoadmapEdge,
+        data: {
+          color: '#2b78e4',
+          lineType: newNode.type === EN_ROADMAP_NODE_TYPE.DownNode ? 'solid' : 'dash',
+        },
       };
 
       dispatch(addNode(newNode));
@@ -162,12 +169,12 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
 
   const onEdgeDoubleClick = useCallback(
     async (event: React.MouseEvent, targetEdge: Edge) => {
-      const data = await openModal({ ...targetEdge.data }, targetEdge.type);
+      const data = await openEdgeModal({ ...targetEdge.data });
       if (data) {
-        dispatch(updateNode({ id: targetEdge.id, data }));
+        dispatch(updateEdge({ id: targetEdge.id, data }));
       }
     },
-    [openModal, dispatch],
+    [openEdgeModal, dispatch],
   );
 
   return (
@@ -185,7 +192,11 @@ export const RoadmapFlow = ({ openModal }: FlowProps) => {
           onEdgeDoubleClick={onEdgeDoubleClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          snapToGrid={true}
+          snapToGrid
+          fitView
+          fitViewOptions={{
+            maxZoom: 1,
+          }}
         >
           <MiniMap />
           <Controls />

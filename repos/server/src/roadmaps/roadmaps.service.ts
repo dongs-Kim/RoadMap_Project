@@ -63,19 +63,32 @@ export class RoadmapsService {
     roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
       id: item.id,
       type: item.type,
+      width: item.width,
+      height: item.height,
       data: {
         name: item.name,
         description: item.description,
         status: item.status as EN_ROADMAP_ITEM_STATUS | null,
         bgcolor: item.bgcolor,
         border: item.border,
+        url: item.url,
       },
       position: {
         x: item.positionX,
         y: item.positionY,
       },
     }));
-    roadmapDto.edges = dbRoadmap.RoadmapEdges;
+    roadmapDto.edges = dbRoadmap.RoadmapEdges.map((edge) => ({
+      id: edge.id,
+      type: edge.type,
+      source: edge.source,
+      sourceHandle: edge.sourceHandle,
+      target: edge.target,
+      data: {
+        color: edge.color,
+        lineType: edge.lineType,
+      },
+    }));
 
     return roadmapDto;
   }
@@ -213,6 +226,9 @@ export class RoadmapsService {
         roadmapItem.type = node.type;
         roadmapItem.positionX = node.position.x;
         roadmapItem.positionY = node.position.y;
+        roadmapItem.url = node.data.url;
+        roadmapItem.width = node.width;
+        roadmapItem.height = node.height;
         return roadmapItem;
       });
       await queryRunner.manager
@@ -223,9 +239,12 @@ export class RoadmapsService {
       const newRoadmapEdges = edges.map((edge) => {
         const roadmapEdge = new RoadmapEdge();
         roadmapEdge.id = edge.id;
+        roadmapEdge.type = edge.type;
         roadmapEdge.source = edge.source;
         roadmapEdge.sourceHandle = edge.sourceHandle;
         roadmapEdge.target = edge.target;
+        roadmapEdge.color = edge.data.color;
+        roadmapEdge.lineType = edge.data.lineType;
         return roadmapEdge;
       });
       await queryRunner.manager

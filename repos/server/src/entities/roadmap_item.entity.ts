@@ -34,6 +34,15 @@ export class RoadmapItem {
   @Column()
   border: boolean;
 
+  @Column({ nullable: true })
+  url?: string;
+
+  @Column('int', { nullable: true })
+  width?: number;
+
+  @Column('int', { nullable: true })
+  height?: number;
+
   @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems, {
     onDelete: 'CASCADE',
   })

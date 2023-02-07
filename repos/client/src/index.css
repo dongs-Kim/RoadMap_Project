@@ -7,6 +7,56 @@
   text-align: center;
 }
 
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+}
+
+.react-flow__resize-control.handle {
+  width: 7px;
+  height: 7px;
+  opacity: 0.5;
+  border: 1px solid black;
+}
+.react-flow__resize-control.handle.top {
+  top: -1px !important;
+}
+.react-flow__resize-control.handle.bottom {
+  top: unset !important;
+  bottom: -8px;
+}
+.react-flow__resize-control.handle.left {
+  left: -3px !important;
+}
+.react-flow__resize-control.handle.right {
+  left: unset !important;
+  right: -10px;
+}
+.react-flow__resize-control.line.top {
+  background: url('/public/img/move-dotted-h.gif') repeat-x center 11px;
+}
+.react-flow__resize-control.line.bottom {
+  background: url('/public/img/move-dotted-h.gif') repeat-x center 18px;
+}
+.react-flow__resize-control.line.left {
+  background: url('/public/img/move-dotted-v.gif') repeat-y 9px center;
+}
+.react-flow__resize-control.line.right {
+  background: url('/public/img/move-dotted-v.gif') repeat-y 20px center;
+}
+.react-flow__resize-control.line.left,
+.react-flow__resize-control.line.right {
+  width: 30px;
+  border-style: hidden;
+  opacity: 0.5;
+}
+.react-flow__resize-control.line.top,
+.react-flow__resize-control.line.bottom {
+  height: 30px;
+  border-style: hidden;
+  opacity: 0.5;
+}
+
 .toastui-editor-main {
   background: white;
 }

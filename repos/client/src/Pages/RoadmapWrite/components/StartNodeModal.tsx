@@ -1,11 +1,6 @@
-/* eslint-disable react/no-children-prop */
 import { useCallback, useReducer, useEffect, ChangeEvent } from 'react';
 import {
-  Box,
   Button,
-  Flex,
-  FormControl,
-  FormLabel,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -16,13 +11,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Switch,
-  Textarea,
+  Text,
 } from '@chakra-ui/react';
-import { ColorResult } from 'react-color';
-import { ImLink } from 'react-icons/im';
 import { RoadmapItem } from '../../../Interface/roadmap';
-import { ColorPicker } from './ColorPicker';
 
 //---------------------
 // state
@@ -34,24 +25,25 @@ const initialState: State = {
   bgcolor: '#ffffff',
   border: true,
   status: '',
-  url: '',
 };
 type SetRoadmapItemAction = { type: 'setRoadmapItem'; roadmapItem: RoadmapItem };
 type ClearRoadmapItemAction = { type: 'clearRoadmapItem' };
+type SetNameAction = { type: 'setName'; name: string };
 type SetBgColorAction = { type: 'setBgColor'; bgcolor: string };
 type SetDescriptionAction = { type: 'setDescription'; description: string };
 type SetBorderAction = { type: 'setBorder'; border: boolean };
-type SetUrlAction = { type: 'setUrl'; url: string };
 type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
+  | SetNameAction
   | SetDescriptionAction
   | SetBorderAction
-  | ClearRoadmapItemAction
-  | SetUrlAction;
+  | ClearRoadmapItemAction;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case 'setName':
+      return { ...state, name: action.name };
     case 'setDescription':
       return { ...state, description: action.description };
     case 'setBgColor':
@@ -60,8 +52,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, border: action.border };
     case 'setRoadmapItem':
       return { ...action.roadmapItem };
-    case 'setUrl':
-      return { ...state, url: action.url };
     case 'clearRoadmapItem':
       return initialState;
     default:
@@ -72,13 +62,13 @@ function reducer(state: State, action: Action): State {
 //---------------------
 // component
 //---------------------
-interface StickerModalProps {
+interface StartNodeModalProps {
   isOpen: boolean;
   onClose(data?: RoadmapItem): void;
   roadmapItem?: RoadmapItem;
 }
 
-export const StickerModal = ({ isOpen, onClose, roadmapItem }: StickerModalProps) => {
+export const StartNodeModal = ({ isOpen, onClose, roadmapItem }: StartNodeModalProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   // 데이터 설정
@@ -88,20 +78,8 @@ export const StickerModal = ({ isOpen, onClose, roadmapItem }: StickerModalProps
     }
   }, [roadmapItem]);
 
-  const onChangeBgColor = useCallback((color: ColorResult) => {
-    dispatch({ type: 'setBgColor', bgcolor: color.hex });
-  }, []);
-
-  const onChangeBorder = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'setBorder', border: e.target.checked });
-  }, []);
-
-  const onChangeDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch({ type: 'setDescription', description: e.target.value });
-  }, []);
-
-  const onChangeUrl = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'setUrl', url: e.target.value });
+  const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: 'setName', name: e.target.value });
   }, []);
 
   const onClickApply = useCallback(() => {
@@ -120,39 +98,14 @@ export const StickerModal = ({ isOpen, onClose, roadmapItem }: StickerModalProps
     <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>스티커 작성</ModalHeader>
+        <ModalHeader>항목 수정</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Flex mb={5} alignItems="center" justifyContent="space-between">
-            {/* 배경색 */}
-            <Box flex={1} mr={2}>
-              <ColorPicker color={state.bgcolor} onChange={onChangeBgColor} />
-            </Box>
-
-            {/* 테두리 */}
-            <FormControl display="flex" alignItems="center" width={90} justifyContent="flex-end">
-              <FormLabel mb="0" color="#666" fontWeight="thin" fontSize="sm">
-                테두리
-              </FormLabel>
-              <Switch colorScheme="teal" isChecked={state.border} onChange={onChangeBorder} />
-            </FormControl>
-          </Flex>
-
-          {/* 내용 */}
-          <Textarea
-            placeholder="내용을 입력하세요"
-            height={300}
-            mb={5}
-            value={state.description}
-            onChange={onChangeDescription}
-          />
-
-          {/* url */}
           <InputGroup>
             <InputLeftAddon>
-              <ImLink />
+              <Text fontSize="sm">항목명</Text>
             </InputLeftAddon>
-            <Input type="url" placeholder="url을 입력하세요 (선택)" value={state.url} onChange={onChangeUrl} />
+            <Input placeholder="항목명을 입력하세요" value={state.name} onChange={onChangeName} />
           </InputGroup>
         </ModalBody>
 

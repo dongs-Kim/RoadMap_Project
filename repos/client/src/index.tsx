@@ -10,6 +10,7 @@ import { store } from './store/store';
 
 import 'react-toastify/dist/ReactToastify.css';
 import 'reactflow/dist/style.css';
+import '@reactflow/node-resizer/dist/style.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './index.css';
 

@@ -26,6 +26,10 @@ export class RoadmapNodeDto {
   @IsNotEmpty()
   type: string;
 
+  width?: number;
+
+  height?: number;
+
   @IsNotEmptyObject()
   data: {
     name: string;
@@ -33,12 +37,16 @@ export class RoadmapNodeDto {
     status?: EN_ROADMAP_ITEM_STATUS;
     bgcolor: string;
     border: boolean;
+    url?: string;
   };
 }
 
 export class RoadmapEdgeDto {
   @IsNotEmpty()
   id: string;
+
+  @IsNotEmpty()
+  type: string;
 
   @IsNotEmpty()
   source: string;
@@ -48,4 +56,10 @@ export class RoadmapEdgeDto {
 
   @IsNotEmpty()
   target: string;
+
+  @IsNotEmptyObject()
+  data: {
+    color: string;
+    lineType: string;
+  };
 }

@@ -5,6 +5,8 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  InputGroup,
+  InputLeftAddon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -14,6 +16,7 @@ import {
   ModalOverlay,
   Select,
   Switch,
+  Text,
 } from '@chakra-ui/react';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import Editor from '@toast-ui/editor';
@@ -198,13 +201,18 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
           </Flex>
 
           {/* 진행상태 */}
-          <Select placeholder="-- 진행상태 --" mb={5} size="sm" value={state.status ?? ''} onChange={onChangeStatus}>
-            {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </Select>
+          <InputGroup mb={5}>
+            <InputLeftAddon>
+              <Text fontSize="sm">진행상태</Text>
+            </InputLeftAddon>
+            <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
+              {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </Select>
+          </InputGroup>
 
           {/* 에디터 */}
           <div ref={editorElRef} style={{ minHeight: '400px' }}></div>

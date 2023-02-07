@@ -1,22 +1,12 @@
-import { Box } from '@chakra-ui/react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { RoadmapItem } from '../../Interface/roadmap';
+import { NodeBase } from './NodeBase';
 
-export const RightNode = ({ data, selected }: NodeProps<RoadmapItem>) => {
+export const RightNode = (props: NodeProps<RoadmapItem>) => {
   return (
     <>
       <Handle type="target" position={Position.Left} />
-      <Box
-        bg={data.bgcolor}
-        p="10px"
-        borderWidth="1px"
-        borderStyle="solid"
-        borderColor={data.border ? 'black' : ''}
-        borderRadius="3px"
-        filter={selected ? 'brightness(0.8)' : ''}
-      >
-        {data.name}
-      </Box>
+      <NodeBase {...props} />
       <Handle type="source" position={Position.Right} id="right" />
       <Handle type="source" position={Position.Bottom} id="bottom" />
     </>

@@ -8,6 +8,10 @@ export class RoadmapEdge {
   id: string;
 
   @IsNotEmpty()
+  @Column({ length: 20 })
+  type: string;
+
+  @IsNotEmpty()
   @Column({ length: 22 })
   source: string;
 
@@ -18,6 +22,14 @@ export class RoadmapEdge {
   @IsNotEmpty()
   @Column({ length: 22 })
   target: string;
+
+  @IsNotEmpty()
+  @Column('char', { length: 7 })
+  color: string;
+
+  @IsNotEmpty()
+  @Column({ length: 10 })
+  lineType: string;
 
   @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapEdges, {
     onDelete: 'CASCADE',
