@@ -6,14 +6,14 @@ import { CardItem } from './Components/CardItem';
 const RoadMapList = () => {
   const { category } = useParams();
   const title = category == 'back_end' ? '백엔드' : '프론트엔드';
-  const [like, setLike] = useState(false);
+  const [sort, setSort] = useState('');
 
   const onClickAllSearch = useCallback(() => {
-    setLike(false);
+    setSort('');
   },[])
 
   const onClickLikeSearch = useCallback(() => {
-    setLike(true);
+    setSort("like");
   },[])
 
   return (
@@ -33,7 +33,7 @@ const RoadMapList = () => {
         </Link>
       </ListItem>      
       </List>
-      <CardItem category={category} like ={like}></CardItem>
+      <CardItem category={category} sort = {sort}></CardItem>
     </div>
   );
 };

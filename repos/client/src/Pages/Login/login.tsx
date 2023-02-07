@@ -64,13 +64,13 @@ const Login = () => {
       flexDirection="column"
       width="100wh"
       height="100vh"
-      backgroundColor="gray.200"
+      backgroundColor="gray.300"
       justifyContent="center"
       alignItems="center"
     >
       <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
         <Heading color="teal.400">Welcome</Heading>
-        <Box minW={{ base: '90%', md: '468px' }}>
+        <Box minW={{ base: '90%', md: '468px' }} >
           <form onSubmit={onSubmit}>
             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
               <FormControl>

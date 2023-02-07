@@ -2,40 +2,39 @@ import { background, Button, Card, CardBody, CardFooter, Divider, Heading, Image
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
-import { RoadmapDto } from '../../../Interface/roadmap';
+import { RoadmapDto, RoadmapLikeDto } from '../../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
 
 interface Props {
   category: string | undefined;
-  like : boolean;
+  sort : string | undefined;  
 }
 
-export const CardItem = ({ category , like}: Props) => {
-  const [roadmaps, setRoadmaps] = useState<RoadmapDto[]>([]);
+export const CardItem = ({ category, sort }: Props) => {
+  const [roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadRoadmaps = useCallback(async () => {
-    try {
-      if(!like){
-        const { data } = await axios.get<RoadmapDto[]>(`/api/roadmaps/list/${category}`);
-        setRoadmaps(data);
-      }
-      else{
-        const { data } = await axios.get<RoadmapDto[]>(`/api/roadmaps/list/${category}/like`);
-        setRoadmaps(data);
-      }      
-      
+    try {      
+      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
+      setRoadmaps(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [category]);
+
 
   useEffect(() => {
     setLoading(true);
     loadRoadmaps();
   }, [loadRoadmaps]);
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   loadRoadmaps();
+  // }, [loadRoadmaps]);
 
   return (
     <List display="flex">
@@ -73,8 +72,9 @@ export const CardItem = ({ category , like}: Props) => {
                 )}
               </Link>
               <Divider />
-              <CardFooter>
+              <CardFooter>                
                 <AiFillHeart className="icon" size="15" color="red" />
+                <Text pl= '1' fontSize='small'>{roadmap.LikeUsers.length}</Text>
               </CardFooter>
             </Card>
           </List>

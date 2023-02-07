@@ -95,9 +95,12 @@ export class RoadmapsService {
       where: {
         category: category,
       },
+      relations: {
+        LikeUsers: true,
+      },
     });
   }
-
+  
   async remove(id: string, user: User) {
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id },

@@ -2,27 +2,28 @@ import { background, Button, Card, CardBody, CardFooter, Divider, Heading, Image
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
-import { RoadmapDto } from '../../../Interface/roadmap';
+import { RoadmapDto, RoadmapLikeDto } from '../../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
+
 
 interface Props {
   category: string | undefined;
 }
 
 export const CardItem = ({ category }: Props) => {
-  const [roadmaps, setRoadmaps] = useState<RoadmapDto[]>([]);
+  const [roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapDto[]>(`/api/roadmaps/list/${category}`);
+      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
       setRoadmaps(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [category]);
 
   useEffect(() => {
     setLoading(true);
@@ -65,8 +66,9 @@ export const CardItem = ({ category }: Props) => {
                 )}
               </Link>
               <Divider />
-              <CardFooter>
-                <AiFillHeart className="icon" size="15" color="red" />
+              <CardFooter>                
+                <AiFillHeart className="icon" size="15" color="red" />                
+                <Text pl= '1' fontSize='small'>{roadmap.LikeUsers.length}</Text>                
               </CardFooter>
             </Card>
           </List>

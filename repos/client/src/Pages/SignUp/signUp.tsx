@@ -67,7 +67,12 @@ const SignUp = () => {
     if (!passwordRegex.test(passwordCurrent)) {
       setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요!');
       setIsPassword(false);
-    } else {
+    } 
+    else if (passwordConfirm.length > 0 && passwordCurrent != passwordConfirm) {
+      setPasswordConfirmMessage('비밀번호를 다시 확인해주세요');
+      setIsPasswordConfirm(false);
+    }
+    else {
       setPasswordMessage('');
       setIsPassword(true);
     }
@@ -146,7 +151,7 @@ const SignUp = () => {
       flexDirection="column"
       width="100wh"
       height="100vh"
-      backgroundColor="gray.200"
+      backgroundColor="gray.300"
       justifyContent="center"
       alignItems="center"
     >

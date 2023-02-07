@@ -1,7 +1,7 @@
 import React, { ChangeEvent, HTMLInputTypeAttribute, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import { getUser } from '../../store/userSlice';
-import { Button, Input, Textarea } from '@chakra-ui/react';
+import { Box, Button, Image, Input, Textarea } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ImageUploading, { ImageType } from 'react-images-uploading';
@@ -97,23 +97,25 @@ const Profile = () => {
 
   return (
     <div>
-      <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image">
+      <Box width= "180px">
+      <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image"  >
         {({ onImageUpload, onImageUpdate, onImageRemove, isDragging, dragProps }: ExportInterface) => (
-          <div>
-            <Button onClick={onImageUpload} {...dragProps}>
-              이미지 업로드
-            </Button>
+          <div>            
             {image && (
               <div>
-                <img src={image} alt="" width="200" />
+                <Image src={image} alt=""  borderRadius= "70%"  />
                 <Button colorScheme="teal" size="sm" onClick={handleDeleteFile}>
                   삭제
                 </Button>
               </div>
             )}
+            <Button onClick={onImageUpload} {...dragProps}>
+              이미지 업로드
+            </Button>
           </div>
         )}
       </ImageUploading>
+      </Box>
       <span>
         Email
         <div>

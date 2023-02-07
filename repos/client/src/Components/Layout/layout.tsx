@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  Text,
   Link,
   List,
   ListItem,
@@ -12,6 +13,7 @@ import {
   MenuItem,
   MenuList,
   UnorderedList,
+  Image,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useCallback } from 'react';
@@ -19,6 +21,7 @@ import { Link as RouterLink, useNavigate, Outlet, useLocation, Router } from 're
 import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
 import { menuCategories } from '../Menu/menu';
+import { CgProfile } from 'react-icons/cg';
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -51,29 +54,30 @@ const Layout = () => {
   const onClickProfile = useCallback(() => {
     navigate('/Profile');
   }, [navigate]);
+  const onClickCategory = useCallback((category : string) => {
+    navigate(`Roadmap/list/${category}`);
+  }, [navigate]);
 
   return (
     <div>
       {/* 헤더 */}
       <Flex as="header" justifyContent="space-between" p={3} borderBottom="1px #ccc solid">
-        <Box>
-          <Heading size="lg" color="teal.400">
-            <RouterLink to="/">Dev Roadmap</RouterLink>
-          </Heading>
+        <Box>          
+          <RouterLink to="/">
+            <Text color="teal.400" fontSize="xl" fontFamily="'Mochiy Pop One', sans-serif">Dev Roadmap</Text>
+          </RouterLink>          
         </Box>
         <Box>
-          <Button size="sm" colorScheme="teal" variant="ghost" onClick={onClickNewRoadMap}>
+          <Button size="sm" colorScheme="teal" variant="outline" onClick={onClickNewRoadMap}>
             새 로드맵 작성
           </Button>
           <Menu>
             <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-              카테고리
+              Category
             </MenuButton>
-            <MenuList>
+            <MenuList color="teal.600" fontFamily= "monospace">
               {menuCategories.map((category) => (
-                <MenuItem key={category.type}>
-                  <RouterLink to={`Roadmap/list/${category.type}`}>{category.name}</RouterLink>
-                </MenuItem>
+                <MenuItem pb = {4} key={category.type} onClick={() => onClickCategory(category.type)}>{category.name}</MenuItem>
               ))}
             </MenuList>
           </Menu>
@@ -81,13 +85,14 @@ const Layout = () => {
             <span>
               <Menu>
                 <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-                  작업메뉴
+                  {!userData.image && <CgProfile className="icon" size="25"  />}
+                  {userData.image && <Box boxSize= '35'  justifyContent= "center" alignContent= "center" ><Image src={userData.image} borderRadius = "70%" alt="" sizes = "1" /></Box>}
                 </MenuButton>
-                <MenuList>
-                  <MenuItem onClick={onClickMypage}>내 로드맵</MenuItem>
-                  <MenuItem onClick={onClickFavoriteList}>저장된 로드맵</MenuItem>
-                  <MenuItem onClick={onClickProfile}>프로필 수정</MenuItem>
-                  <MenuItem onClick={onClickLogOut}>로그아웃</MenuItem>
+                <MenuList color="teal.600" fontFamily= "monospace">
+                  <MenuItem pb = {3} onClick={onClickMypage}>내 로드맵</MenuItem>
+                  <MenuItem pb = {3} onClick={onClickFavoriteList}>저장된 로드맵</MenuItem>
+                  <MenuItem pb = {3} onClick={onClickProfile}>프로필 수정</MenuItem>
+                  <MenuItem pb = {3} onClick={onClickLogOut}>로그아웃</MenuItem>
                 </MenuList>
               </Menu>
             </span>

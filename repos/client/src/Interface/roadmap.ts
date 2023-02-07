@@ -1,5 +1,6 @@
 import { Edge, Node } from 'reactflow';
 import { RoadmapItemStatus } from '../Constants/roadmapItemStatus';
+import { Roadmap } from '../Pages/RoadmapWrite/components/Roadmap';
 
 export interface RoadmapItem {
   name: string;
@@ -28,6 +29,16 @@ export enum EN_ROADMAP_HANDLE_ID {
   Right = 'right',
 }
 
+export interface User {
+  id: string;
+  email: string;
+  password?: string;
+  nickname?: string;
+  comment: string;
+  image: string;
+  created_at: Date; 
+}
+
 export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
@@ -43,4 +54,9 @@ export interface RoadmapDto {
   contents: string;
   like?: number;
   thumbnail?: string;
+}
+
+
+export interface RoadmapLikeDto extends RoadmapDto{
+  LikeUsers : User[]
 }
