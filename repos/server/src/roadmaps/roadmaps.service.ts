@@ -100,7 +100,7 @@ export class RoadmapsService {
       },
     });
   }
-  
+
   async remove(id: string, user: User) {
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id },
