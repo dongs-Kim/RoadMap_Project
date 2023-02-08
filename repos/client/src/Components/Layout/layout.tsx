@@ -86,7 +86,7 @@ const Layout = () => {
               <Menu>
                 <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
                   {!userData.image && <CgProfile className="icon" size="25"  />}
-                  {userData.image && <Box boxSize= '35'  justifyContent= "center" alignContent= "center" ><Image src={userData.image} borderRadius = "70%" alt="" sizes = "1" /></Box>}
+                  {userData.image && <Box boxSize= '35' justifyContent= "center" alignContent= "center"><Image src={userData.image} borderRadius = "70%" alt="" sizes = "1" /></Box>}
                 </MenuButton>
                 <MenuList color="teal.600" fontFamily= "monospace">
                   <MenuItem pb = {3} onClick={onClickMypage}>내 로드맵</MenuItem>

@@ -16,14 +16,29 @@ export const CardItem = ({ category, sort }: Props) => {
 
   const loadRoadmaps = useCallback(async () => {
     try {      
-      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
+    const { data }  = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
+      if(data && sort == "like") {
+        data.sort((a, b) => {
+          if (a.LikeUsers.length > b.LikeUsers.length) {
+            return -1
+          } 
+          if (a.LikeUsers.length < b.LikeUsers.length) {
+            return 1
+          }
+          return 0
+        })
+    }
       setRoadmaps(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [category]);
+  }, [category, sort]);
+
+  // useEffect(() => {
+  //   setRoadmaps(roadmaps.sort());
+  // },[sort])
 
 
   useEffect(() => {
@@ -31,10 +46,6 @@ export const CardItem = ({ category, sort }: Props) => {
     loadRoadmaps();
   }, [loadRoadmaps]);
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   loadRoadmaps();
-  // }, [loadRoadmaps]);
 
   return (
     <List display="flex">
@@ -46,7 +57,7 @@ export const CardItem = ({ category, sort }: Props) => {
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
                 {!roadmap.thumbnail && (
                   <Tooltip label={roadmap.contents} >
-                  <CardBody position= "relative" _hover={{background : "teal", color : "white", transition : "opacity 0.35s ease-in-out" , opacity: "1"}}>
+                  <CardBody position= "relative" _hover={{background : "teal.500", color : "white", transition : "opacity 0.35s ease-in-out" , opacity: "1"}}>
                     <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />                    
                     <div style={{ color : "#fff", position : "absolute", left : 0, bottom :0, background: "rgba(0,0,0,0.5)" ,width :"100%",  padding : "15px" , boxSizing : "border-box", opacity : 0 , transition : "opacity 0.35s ease-in-out"}}>
                       <h3 style={{fontSize : "10px", paddingBottom : "0.4em", overflow : "hidden", textOverflow : "ellipsis" , whiteSpace : "nowrap" , textTransform : "uppercase"}}>
@@ -62,7 +73,7 @@ export const CardItem = ({ category, sort }: Props) => {
                 )}
                 {roadmap.thumbnail && (
                   <Tooltip label={roadmap.contents}>
-                  <CardBody>
+                  <CardBody position= "relative" _hover={{background : "teal.300", color : "white", transition : "opacity 0.35s ease-in-out" , opacity: "1"}}>
                     <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
                     <Stack mt="6" spacing="3">
                       <Heading size="md">{roadmap.title}</Heading>
