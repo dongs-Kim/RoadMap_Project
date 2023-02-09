@@ -1,4 +1,4 @@
-import { background, Button, Card, CardBody, CardFooter, Divider, Heading, Image, Link, List, Stack, Text, Tooltip } from '@chakra-ui/react';
+import { background, Box, Button, Card, CardBody, CardFooter, Divider, Flex, Heading, Image, Link, List, Stack, Text, Tooltip } from '@chakra-ui/react';
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
@@ -30,12 +30,18 @@ export const CardItem = ({ category }: Props) => {
     loadRoadmaps();
   }, [loadRoadmaps]);
 
-  return (
-    <List display="flex">
+  return (    
+    // <Flex whiteSpace= "nowrap" w = "80%" overflowX="auto" scrollBehavior="smooth" sx = {{
+    //   '&::-webkit-scrollbar': {
+    //     display : 'none'
+    //   },
+    // }}>
+    <Flex whiteSpace= "nowrap" overflowX= "auto" w = "80%">
+      <List display = "flex">
       {loading && <div>Loading....</div>}
       {!loading &&
-        roadmaps.map((roadmap) => (
-          <List display="flex" key={roadmap.id} paddingLeft="5">
+        roadmaps.map((roadmap) => (          
+          <List display="flex" key={roadmap.id} paddingLeft="5">            
             <Card w="200px" alignContent="center">
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
                 {!roadmap.thumbnail && (
@@ -66,13 +72,14 @@ export const CardItem = ({ category }: Props) => {
                 )}
               </Link>
               <Divider />
-              <CardFooter>                
-                <AiFillHeart className="icon" size="15" color="red" />                
-                <Text pl= '1' fontSize='small'>{roadmap.LikeUsers.length}</Text>                
-              </CardFooter>
-            </Card>
-          </List>
+              <CardFooter alignContent="right">                          
+                <AiFillHeart className="icon" size="15" color="red"/>                
+                <Text pl= '1' fontSize='small'>{roadmap.LikeUsers.length} </Text>                              
+              </CardFooter>              
+            </Card>            
+          </List>          
         ))}
-    </List>
+        </List>
+    </Flex>
   );
 };
