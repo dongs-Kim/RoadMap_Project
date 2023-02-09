@@ -23,12 +23,12 @@ function App() {
         <Route path="/Favorite/list/:id" element={<FavoriteList />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Mypage" element={<Mypage />} />
+        <Route path="/Roadmap/view/:roadmapId" element={<RoadmapView />} />
       </Route>
       <Route path="/Roadmap/write">
         <Route index element={<RoadmapWrite />} />
         <Route path=":roadmapId" element={<RoadmapWrite />} />
       </Route>
-      <Route path="/Roadmap/view/:roadmapId" element={<RoadmapView />} />
     </Routes>
   );
 }
