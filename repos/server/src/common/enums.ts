@@ -8,3 +8,8 @@ export enum EN_ROADMAP_ITEM_STATUS {
   Ing = 'ing',
   Completed = 'completed',
 }
+
+export enum EN_ROADMAP_ITEM_REQUIRED {
+  Required = 'required',
+  Optional = 'optional',
+}

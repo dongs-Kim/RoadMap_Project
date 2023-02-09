@@ -22,6 +22,7 @@ const initialNodes: Node<RoadmapItem>[] = [
     type: 'startNode',
     data: { name: '시작', description: '', bgcolor: '#ffffff', border: true },
     position: { x: 100, y: 50 },
+    zIndex: 0,
   },
 ];
 
@@ -122,10 +123,14 @@ const roadmapWriteSlice = createSlice({
         if (node.width) {
           node.style = node.style ?? {};
           node.style.width = node.width;
+        } else {
+          delete node.width;
         }
         if (node.height) {
           node.style = node.style ?? {};
           node.style.height = node.height;
+        } else {
+          delete node.height;
         }
         return node;
       });

@@ -24,7 +24,12 @@ import { ColorResult } from 'react-color';
 import { RoadmapItem } from '../../../Interface/roadmap';
 import { ColorPicker } from './ColorPicker';
 import { ROADMAP_ITEM_NAME_LIST } from '../../../Constants/roadmap';
-import { RoadmapItemStatus, ROADMAP_ITEM_STATUS } from '../../../Constants/roadmapItemStatus';
+import {
+  RoadmapItemRequired,
+  RoadmapItemStatus,
+  ROADMAP_ITEM_REQUIRED,
+  ROADMAP_ITEM_STATUS,
+} from '../../../Constants/roadmapItem';
 
 const autocompleteItems = ROADMAP_ITEM_NAME_LIST.map(({ name }, i) => ({ id: i, name }));
 
@@ -38,6 +43,7 @@ const initialState: State = {
   bgcolor: '#ffffff',
   border: true,
   status: '',
+  required: '',
 };
 type SetRoadmapItemAction = { type: 'setRoadmapItem'; roadmapItem: RoadmapItem };
 type ClearRoadmapItemAction = { type: 'clearRoadmapItem' };
@@ -46,6 +52,7 @@ type SetBgColorAction = { type: 'setBgColor'; bgcolor: string };
 type SetDescriptionAction = { type: 'setDescription'; description: string };
 type SetStatusAction = { type: 'setStatus'; status?: RoadmapItemStatus };
 type SetBorderAction = { type: 'setBorder'; border: boolean };
+type SetRequiredAction = { type: 'setRequired'; required?: RoadmapItemRequired };
 type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
@@ -53,7 +60,8 @@ type Action =
   | SetDescriptionAction
   | SetStatusAction
   | SetBorderAction
-  | ClearRoadmapItemAction;
+  | ClearRoadmapItemAction
+  | SetRequiredAction;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -67,6 +75,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, status: action.status };
     case 'setBorder':
       return { ...state, border: action.border };
+    case 'setRequired':
+      return { ...state, required: action.required };
     case 'setRoadmapItem':
       return { ...action.roadmapItem };
     case 'clearRoadmapItem':
@@ -129,6 +139,10 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
 
   const onChangeStatus = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
     dispatch({ type: 'setStatus', status: e.target.value as RoadmapItemStatus });
+  }, []);
+
+  const onChangeRequired = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: 'setRequired', required: e.target.value as RoadmapItemRequired });
   }, []);
 
   const onChangeBorder = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +221,20 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
             </InputLeftAddon>
             <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
               {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </Select>
+          </InputGroup>
+
+          {/* 필수여부 */}
+          <InputGroup mb={5}>
+            <InputLeftAddon>
+              <Text fontSize="sm">필수여부</Text>
+            </InputLeftAddon>
+            <Select placeholder="----" value={state.required ?? ''} onChange={onChangeRequired}>
+              {Object.entries(ROADMAP_ITEM_REQUIRED).map(([key, value]) => (
                 <option key={key} value={key}>
                   {value}
                 </option>

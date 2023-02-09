@@ -1,15 +1,17 @@
-import { Box, Heading } from '@chakra-ui/react';
+import { Center, Heading } from '@chakra-ui/react';
+import { NodeResizer } from '@reactflow/node-resizer';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { RoadmapItem } from '../../Interface/roadmap';
 
-export const StartNode = ({ data }: NodeProps<RoadmapItem>) => {
+export const StartNode = ({ data, selected }: NodeProps<RoadmapItem>) => {
   return (
     <>
-      <Box p={3}>
+      <NodeResizer color="#fff" isVisible={selected} minWidth={100} minHeight={42} />
+      <Center p={3} h="100%">
         <Heading size="lg" fontFamily="'Gamja Flower', sans-serif">
           {data.name}
         </Heading>
-      </Box>
+      </Center>
       <Handle type="source" position={Position.Bottom} id="bottom" />
     </>
   );

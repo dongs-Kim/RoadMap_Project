@@ -1,6 +1,6 @@
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import { useCallback, useRef } from 'react';
-import { getRoadmapItemStatusName } from '../../Constants/roadmapItemStatus';
+import { getRoadmapItemStatusName } from '../../Constants/roadmapItem';
 import { useViewer } from '../../Hooks/useViewer';
 import { EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../Interface/roadmap';
 

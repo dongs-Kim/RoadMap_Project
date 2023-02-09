@@ -14,6 +14,7 @@ import ReactFlow, {
   applyEdgeChanges,
 } from 'reactflow';
 import shortUUID from 'short-uuid';
+import _ from 'lodash';
 import { DownNode } from '../../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../../Components/RoadmapItem/RightNode';
@@ -28,15 +29,7 @@ import {
   EN_ROADMAP_NODE_TYPE,
   RoadmapItem,
 } from '../../../Interface/roadmap';
-import {
-  addEdge,
-  addEdgeByConnection,
-  addNode,
-  setEdges,
-  setNodes,
-  updateEdge,
-  updateNode,
-} from '../../../store/roadmapWriteSlice';
+import { addEdge, addNode, setEdges, setNodes, updateEdge, updateNode } from '../../../store/roadmapWriteSlice';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
@@ -104,7 +97,23 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      dispatch(addEdgeByConnection(params));
+      if (!params.source || !params.sourceHandle || !params.target) {
+        return;
+      }
+
+      const newEdge: Edge<EdgeData> = {
+        id: shortUUID.generate(),
+        source: params.source,
+        sourceHandle: params.sourceHandle,
+        target: params.target,
+        targetHandle: params.targetHandle,
+        type: EN_ROADMAP_EDGE_TYPE.RoadmapEdge,
+        data: {
+          color: '#2b78e4',
+          lineType: params.sourceHandle === EN_ROADMAP_HANDLE_ID.Bottom ? 'solid' : 'dash',
+        },
+      };
+      dispatch(addEdge(newEdge));
     },
     [dispatch],
   );
@@ -133,11 +142,14 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
       const nodeId = shortUUID.generate();
       const { clientX, clientY } = getClientXY(event);
       const position = project({ x: clientX - left - 75, y: clientY - top });
+      const maxZIndex = _.maxBy(nodes, (node) => node.zIndex ?? 0)?.zIndex ?? 0;
+
       const newNode: Node<RoadmapItem> = {
         id: nodeId,
         position,
         type: getNodeType(connectingRef.current.handleId),
         data: { name: '', description: '', bgcolor: '#ffffff', border: true },
+        zIndex: maxZIndex + 1,
       };
       const newEdge: Edge<EdgeData> = {
         id: shortUUID.generate(),
@@ -154,7 +166,7 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
       dispatch(addNode(newNode));
       dispatch(addEdge(newEdge));
     },
-    [project, dispatch],
+    [project, dispatch, nodes],
   );
 
   const onNodeDoubleClick = useCallback(

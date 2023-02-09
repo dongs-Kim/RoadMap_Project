@@ -1,5 +1,13 @@
-import { IsDefined, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
-import { EN_ROADMAP_ITEM_STATUS } from 'src/common/enums';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsNumber,
+} from 'class-validator';
+import {
+  EN_ROADMAP_ITEM_REQUIRED,
+  EN_ROADMAP_ITEM_STATUS,
+} from 'src/common/enums';
 import { CreateRoadmapDto } from './create-roadmap.dto';
 
 export class SaveRoadmapDto {
@@ -26,6 +34,9 @@ export class RoadmapNodeDto {
   @IsNotEmpty()
   type: string;
 
+  @IsNumber()
+  zIndex: number;
+
   width?: number;
 
   height?: number;
@@ -38,6 +49,7 @@ export class RoadmapNodeDto {
     bgcolor: string;
     border: boolean;
     url?: string;
+    required?: EN_ROADMAP_ITEM_REQUIRED;
   };
 }
 

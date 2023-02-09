@@ -11,6 +11,9 @@
   width: 10px;
   height: 10px;
 }
+.react-flow__handle.target {
+  background-color: darkred;
+}
 
 .react-flow__resize-control.handle {
   width: 7px;

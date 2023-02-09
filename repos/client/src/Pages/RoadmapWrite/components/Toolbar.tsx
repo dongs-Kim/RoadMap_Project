@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
 import { addNode } from '../../../store/roadmapWriteSlice';
 import { EditorContext } from '../contexts/EditorContext';
-import { RoadmapItem, RoadmapSetDto } from '../../../Interface/roadmap';
+import { EN_ROADMAP_NODE_TYPE, RoadmapItem, RoadmapSetDto } from '../../../Interface/roadmap';
 import { saveRoadmapAsync } from '../../../Apis/roadmapApi';
 import { toastError, toastSuccess } from '../../../Utils/toast';
 import { Node, useReactFlow } from 'reactflow';
+import _ from 'lodash';
+import { BsBoundingBoxCircles } from 'react-icons/bs';
 
 export const Toolbar = () => {
   const { nodes, edges, ...roadmap } = useAppSelector((state) => state.roadmapWrite);
@@ -18,16 +20,46 @@ export const Toolbar = () => {
   const navigate = useNavigate();
   const { project } = useReactFlow();
 
+  const getNumber = useCallback((value?: number | string): number | null => {
+    if (!value) {
+      return null;
+    }
+    if (_.isNumber(value)) {
+      return value;
+    }
+    if (typeof value === 'string' && parseInt(value)) {
+      return parseInt(value);
+    }
+    return null;
+  }, []);
+
   const onClickAddSticker = useCallback(() => {
     const position = project({ x: 100, y: 100 });
-    const stickerNode = {
+    const maxZIndex = _.maxBy(nodes, (node) => node.zIndex ?? 0)?.zIndex ?? 0;
+
+    const stickerNode: Node<RoadmapItem> = {
       id: shortUUID.generate(),
       type: 'stickerNode',
       data: { name: '', description: '', bgcolor: '#d9e3f0', border: true },
       position,
+      zIndex: maxZIndex + 1,
     };
     dispatch(addNode(stickerNode));
-  }, [dispatch, project]);
+  }, [dispatch, project, nodes]);
+
+  const onClickAddRoadmapItem = useCallback(() => {
+    const position = project({ x: 100, y: 100 });
+    const maxZIndex = _.maxBy(nodes, (node) => node.zIndex ?? 0)?.zIndex ?? 0;
+
+    const newNode: Node<RoadmapItem> = {
+      id: shortUUID.generate(),
+      position,
+      type: EN_ROADMAP_NODE_TYPE.DownNode,
+      data: { name: '', description: '', bgcolor: '#ffffff', border: true },
+      zIndex: maxZIndex + 1,
+    };
+    dispatch(addNode(newNode));
+  }, [dispatch, project, nodes]);
 
   const onClickOut = useCallback(() => {
     navigate(-1);
@@ -39,13 +71,9 @@ export const Toolbar = () => {
     }
 
     const saveNodes = nodes.map((node) => {
-      const newNode: Node<RoadmapItem> = { ...node, width: null, height: null };
-      if (node.style?.width && typeof node.style.width === 'string' && parseInt(node.style.width)) {
-        newNode.width = parseInt(node.style.width);
-      }
-      if (node.style?.height && typeof node.style.height === 'string' && parseInt(node.style.height)) {
-        newNode.height = parseInt(node.style.height);
-      }
+      const newNode: Node<RoadmapItem> = { ...node };
+      newNode.width = getNumber(node.style?.width);
+      newNode.height = getNumber(node.style?.height);
       return newNode;
     });
 
@@ -66,11 +94,15 @@ export const Toolbar = () => {
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [nodes, edges, roadmap, editor, mode, navigate]);
+  }, [nodes, edges, roadmap, editor, mode, navigate, getNumber]);
 
   return (
     <Flex p="12px" justifyContent="space-between" alignItems="center" borderBottom="1px #ccc solid">
       <Box>
+        <Button size="sm" variant="ghost" colorScheme="teal" onClick={onClickAddRoadmapItem}>
+          <BsBoundingBoxCircles />
+          <Text ml={2}>항목추가</Text>
+        </Button>
         <Button size="sm" variant="ghost" colorScheme="teal" onClick={onClickAddSticker}>
           <ChatIcon />
           <Text ml={2}>스티커</Text>

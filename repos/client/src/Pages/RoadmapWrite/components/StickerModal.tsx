@@ -152,7 +152,7 @@ export const StickerModal = ({ isOpen, onClose, roadmapItem }: StickerModalProps
             <InputLeftAddon>
               <ImLink />
             </InputLeftAddon>
-            <Input type="url" placeholder="url을 입력하세요 (선택)" value={state.url} onChange={onChangeUrl} />
+            <Input type="url" placeholder="url을 입력하세요 (선택)" value={state.url ?? ''} onChange={onChangeUrl} />
           </InputGroup>
         </ModalBody>
 

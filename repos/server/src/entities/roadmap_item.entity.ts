@@ -1,5 +1,8 @@
 import { IsIn, IsNotEmpty } from 'class-validator';
-import { EN_ROADMAP_ITEM_STATUS } from '../common/enums';
+import {
+  EN_ROADMAP_ITEM_REQUIRED,
+  EN_ROADMAP_ITEM_STATUS,
+} from '../common/enums';
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Roadmap } from './roadmap.entity';
 
@@ -19,6 +22,10 @@ export class RoadmapItem {
   @Column({ length: 10, nullable: true })
   status?: string;
 
+  @IsIn(Object.values(EN_ROADMAP_ITEM_REQUIRED).concat(undefined))
+  @Column({ length: 10, nullable: true })
+  required?: string;
+
   @Column({ length: 20 })
   type: string;
 
@@ -33,6 +40,9 @@ export class RoadmapItem {
 
   @Column()
   border: boolean;
+
+  @Column('int')
+  zIndex: number;
 
   @Column({ nullable: true })
   url?: string;

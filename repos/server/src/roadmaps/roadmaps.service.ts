@@ -8,7 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import fs from 'fs-extra';
 import glob from 'glob';
 import shortUUID from 'short-uuid';
-import { EN_ROADMAP_ITEM_STATUS } from 'src/common/enums';
+import {
+  EN_ROADMAP_ITEM_REQUIRED,
+  EN_ROADMAP_ITEM_STATUS,
+} from 'src/common/enums';
 import { Roadmap } from 'src/entities/roadmap.entity';
 import { RoadmapEdge } from 'src/entities/roadmap_edge.entity';
 import { RoadmapItem } from 'src/entities/roadmap_item.entity';
@@ -65,6 +68,7 @@ export class RoadmapsService {
       type: item.type,
       width: item.width,
       height: item.height,
+      zIndex: item.zIndex,
       data: {
         name: item.name,
         description: item.description,
@@ -72,6 +76,7 @@ export class RoadmapsService {
         bgcolor: item.bgcolor,
         border: item.border,
         url: item.url,
+        required: item.required as EN_ROADMAP_ITEM_REQUIRED | null,
       },
       position: {
         x: item.positionX,
@@ -229,6 +234,8 @@ export class RoadmapsService {
         roadmapItem.url = node.data.url;
         roadmapItem.width = node.width;
         roadmapItem.height = node.height;
+        roadmapItem.zIndex = node.zIndex;
+        roadmapItem.required = node.data.required;
         return roadmapItem;
       });
       await queryRunner.manager

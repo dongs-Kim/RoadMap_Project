@@ -33,7 +33,6 @@ const StickerBox = ({ nodeProps, children }: { nodeProps: NodeProps<RoadmapItem>
         borderWidth={data.border ? '1.5px' : ''}
         borderStyle="solid"
         borderColor="black"
-        filter={selected ? 'brightness(0.95)' : ''}
         fontSize="0.9rem"
         whiteSpace="pre-line"
         justifyContent="center"

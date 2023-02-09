@@ -1,5 +1,5 @@
 import { Edge, Node } from 'reactflow';
-import { RoadmapItemStatus } from '../Constants/roadmapItemStatus';
+import { RoadmapItemRequired, RoadmapItemStatus } from '../Constants/roadmapItem';
 
 export interface RoadmapItem {
   name: string;
@@ -8,6 +8,7 @@ export interface RoadmapItem {
   border: boolean;
   status?: RoadmapItemStatus;
   url?: string;
+  required?: RoadmapItemRequired;
 }
 
 export enum EN_ROADMAP_NODE_TYPE {
