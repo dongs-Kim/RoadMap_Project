@@ -70,7 +70,7 @@ const Login = () => {
     >
       <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
         <Heading color="teal.400">Welcome</Heading>
-        <Box minW={{ base: '90%', md: '468px' }} >
+        <Box minW={{ base: '90%', md: '468px' }}>
           <form onSubmit={onSubmit}>
             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">
               <FormControl>
@@ -85,7 +85,9 @@ const Login = () => {
                   <Input type={'password'} value={password} onChange={onChangePassword} placeholder="Password" />
                 </InputGroup>
                 <FormHelperText textAlign="right">
-                  <Link>forgot password?</Link>
+                  <RouterLink to="/SearchPassword">
+                    <Link>forgot password?</Link>
+                  </RouterLink>
                 </FormHelperText>
               </FormControl>
               <Button borderRadius={0} type="submit" variant="solid" colorScheme="teal" width="full">

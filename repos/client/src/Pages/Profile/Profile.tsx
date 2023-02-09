@@ -97,24 +97,24 @@ const Profile = () => {
 
   return (
     <div>
-      <Box width= "180px">
-      <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image"  >
-        {({ onImageUpload, onImageUpdate, onImageRemove, isDragging, dragProps }: ExportInterface) => (
-          <div>            
-            {image && (
-              <div>
-                <Image src={image} alt=""  borderRadius= "70%"  />
-                <Button colorScheme="teal" size="sm" onClick={handleDeleteFile}>
-                  삭제
-                </Button>
-              </div>
-            )}
-            <Button onClick={onImageUpload} {...dragProps}>
-              이미지 업로드
-            </Button>
-          </div>
-        )}
-      </ImageUploading>
+      <Box width="180px">
+        <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image">
+          {({ onImageUpload, onImageUpdate, onImageRemove, isDragging, dragProps }: ExportInterface) => (
+            <div>
+              {image && (
+                <div>
+                  <Image src={image} alt="" borderRadius="70%" />
+                  <Button colorScheme="teal" size="sm" onClick={handleDeleteFile}>
+                    삭제
+                  </Button>
+                </div>
+              )}
+              <Button onClick={onImageUpload} {...dragProps}>
+                이미지 업로드
+              </Button>
+            </div>
+          )}
+        </ImageUploading>
       </Box>
       <span>
         Email

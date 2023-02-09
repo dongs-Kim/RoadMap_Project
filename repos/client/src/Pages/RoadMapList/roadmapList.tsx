@@ -10,11 +10,11 @@ const RoadMapList = () => {
 
   const onClickAllSearch = useCallback(() => {
     setSort('');
-  },[])
+  }, []);
 
   const onClickLikeSearch = useCallback(() => {
-    setSort("like");
-  },[])
+    setSort('like');
+  }, []);
 
   return (
     <div>
@@ -22,18 +22,14 @@ const RoadMapList = () => {
         {title}
       </Heading>
       <List display="flex" paddingLeft="5">
-      <ListItem display = "inline">
-          <Link onClick={onClickAllSearch}>
-          전체
-          </Link>
-      </ListItem>
-      <ListItem display = "inline"paddingLeft="5">
-        <Link onClick={onClickLikeSearch}>
-          좋아요 순
-        </Link>
-      </ListItem>      
+        <ListItem display="inline">
+          <Link onClick={onClickAllSearch}>전체</Link>
+        </ListItem>
+        <ListItem display="inline" paddingLeft="5">
+          <Link onClick={onClickLikeSearch}>좋아요 순</Link>
+        </ListItem>
       </List>
-      <CardItem category={category} sort = {sort}></CardItem>
+      <CardItem category={category} sort={sort}></CardItem>
     </div>
   );
 };
