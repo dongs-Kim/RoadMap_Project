@@ -1,5 +1,8 @@
 import { Avatar, Badge, Flex, Heading, Link, Text } from '@chakra-ui/react';
-import { BiLike } from 'react-icons/bi';
+import { BiLike, BiBookmark, BiShareAlt } from 'react-icons/bi';
+import { BsBookmarkFill, BsFillBookmarkFill } from 'react-icons/bs';
+import { HiBookmark } from 'react-icons/hi';
+import { AiFillLike } from 'react-icons/ai';
 
 const RoadmapView = () => {
   return (
@@ -30,10 +33,16 @@ const RoadmapView = () => {
             <Text>9일전</Text>
             <span>·</span>
           </Flex>
-          <Flex alignItems="center" gap={1} fontSize="sm">
-            <Text>
-              <BiLike /> 9
-            </Text>
+          <Flex alignItems="center" gap={3} fontSize="2xl">
+            <Link>
+              <AiFillLike fill="none" strokeWidth="80" className="roadmap-bookmark" />
+            </Link>
+            <Link>
+              <HiBookmark fill="none" strokeWidth="1.5" className="roadmap-bookmark" />
+            </Link>
+            <Link _hover={{ color: '#ff5722' }}>
+              <BiShareAlt />
+            </Link>
           </Flex>
         </Flex>
       </Flex>
