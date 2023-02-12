@@ -18,4 +18,6 @@ export class CreateRoadmapDto {
   like?: number;
 
   thumbnail?: string;
+
+  created_at?: Date;
 }

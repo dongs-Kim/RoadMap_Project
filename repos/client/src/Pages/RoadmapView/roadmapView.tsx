@@ -1,52 +1,108 @@
-import { Avatar, Badge, Flex, Heading, Link, Text } from '@chakra-ui/react';
-import { BiLike, BiBookmark, BiShareAlt } from 'react-icons/bi';
-import { BsBookmarkFill, BsFillBookmarkFill } from 'react-icons/bs';
-import { HiBookmark } from 'react-icons/hi';
-import { AiFillLike } from 'react-icons/ai';
+import { Badge, Box, Flex, Heading, Image, Link } from '@chakra-ui/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useViewer } from '../../Hooks/useViewer';
+import { FlowView } from './components/FlowView';
+import { RoadmapReply } from './components/RoadmapReply';
+import { HeaderToolbar } from './components/HeaderToolbar';
+import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
+import { getIsStore, getRoadmapView } from '../../store/roadmapViewSlice';
+import { Loading } from '../../Components/Page/Loading';
+import { getRoadmapCategoryName } from '../../Constants/roadmap';
 
 const RoadmapView = () => {
+  const { roadmapId } = useParams();
+  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
+  const viewerElRef = useRef<HTMLDivElement | null>(null);
+  useViewer(viewerElRef, roadmapSet?.roadmap?.contents);
+
+  const initRoadmap = useCallback(async () => {
+    if (roadmapId) {
+      await dispatch(getRoadmapView({ id: roadmapId }));
+
+      dispatch(getIsStore({ id: roadmapId }));
+    }
+    setLoading(false);
+  }, [dispatch, roadmapId]);
+
+  // 데이터 조회
+  useEffect(() => {
+    initRoadmap();
+  }, [initRoadmap]);
+
   return (
-    <Flex width="100%" justifyContent="center">
-      <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10}>
-        {/* 카테고리 */}
-        <Flex pb={3}>
-          <Link>
-            <Badge colorScheme="green">프론트엔드</Badge>
-          </Link>
-        </Flex>
+    <>
+      {/* 로딩 */}
+      <Loading isOpen={loading} />
 
-        {/* 제목 */}
-        <Flex pb={5}>
-          <Heading size="xl">리액트 개발자 로드맵</Heading>
-        </Flex>
-
-        <Flex pb={5} justifyContent="space-between">
-          {/* 작성자 */}
-          <Flex alignItems="center" gap={1} fontSize="sm">
-            <Link mr={1}>
-              <Avatar size="sm" name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-            </Link>
+      <Flex width="100%" justifyContent="center">
+        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10}>
+          {/* 카테고리 */}
+          <Flex pb={3}>
             <Link>
-              <Text>흑염의개발자</Text>
-            </Link>
-            <span>·</span>
-            <Text>9일전</Text>
-            <span>·</span>
-          </Flex>
-          <Flex alignItems="center" gap={3} fontSize="2xl">
-            <Link>
-              <AiFillLike fill="none" strokeWidth="80" className="roadmap-bookmark" />
-            </Link>
-            <Link>
-              <HiBookmark fill="none" strokeWidth="1.5" className="roadmap-bookmark" />
-            </Link>
-            <Link _hover={{ color: '#ff5722' }}>
-              <BiShareAlt />
+              <Badge colorScheme="green">
+                {roadmapSet?.roadmap && getRoadmapCategoryName(roadmapSet?.roadmap.category)}
+              </Badge>
             </Link>
           </Flex>
+
+          {/* 제목 */}
+          <Flex pb={5}>
+            <Heading size="xl">{roadmapSet?.roadmap?.title}</Heading>
+          </Flex>
+
+          {/* 툴바 */}
+          <HeaderToolbar />
+
+          {/* 썸네일 */}
+          {roadmapSet?.roadmap?.thumbnail && (
+            <Flex justifyContent="center">
+              <Image src={roadmapSet?.roadmap.thumbnail} w="100%" maxW="800px" />
+            </Flex>
+          )}
+
+          {/* 설명 */}
+          <Flex mb={5}>
+            <Box ref={viewerElRef}></Box>
+          </Flex>
+
+          {/* 로드맵 */}
+          <Flex mb={10}>
+            {roadmapSet?.nodes && roadmapSet?.edges && (
+              <FlowView
+                nodes={roadmapSet.nodes}
+                edges={roadmapSet.edges}
+                openModal={() => {
+                  //
+                }}
+              />
+            )}
+          </Flex>
+
+          {/* 댓글 */}
+          <RoadmapReply
+            replies={[
+              {
+                id: '1',
+                contents: '감사합니다 :)\n도움이 되었습니다!',
+                user_id: 'aaa',
+                user_nickname: '호호',
+                created_at: '',
+              },
+              {
+                id: '2',
+                contents: '감사합니다 :)',
+                user_id: 'aaa',
+                user_nickname: '호호',
+                created_at: '',
+              },
+            ]}
+          />
         </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };
 

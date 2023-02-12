@@ -21,3 +21,6 @@ export const ROADMAP_CATEGORY = [
   { id: 'front_end', name: '프론트엔드 ' },
   { id: 'back_end', name: '백엔드' },
 ];
+export const getRoadmapCategoryName = (id: string) => {
+  return ROADMAP_CATEGORY.find((data) => data.id === id)?.name;
+};

@@ -8,6 +8,7 @@ import {
   EN_ROADMAP_ITEM_REQUIRED,
   EN_ROADMAP_ITEM_STATUS,
 } from 'src/common/enums';
+import { User } from 'src/entities/user.entity';
 import { CreateRoadmapDto } from './create-roadmap.dto';
 
 export class SaveRoadmapDto {
@@ -22,6 +23,8 @@ export class SaveRoadmapDto {
 
   @IsDefined()
   isUpdate: boolean;
+
+  user?: User;
 }
 
 export class RoadmapNodeDto {

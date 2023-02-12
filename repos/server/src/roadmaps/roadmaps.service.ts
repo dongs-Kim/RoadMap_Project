@@ -54,6 +54,7 @@ export class RoadmapsService {
     }
 
     const roadmapDto = new SaveRoadmapDto();
+    roadmapDto.user = { ...dbRoadmap.User, password: '' };
     roadmapDto.roadmap = {
       id: dbRoadmap.id,
       title: dbRoadmap.title,
@@ -62,6 +63,7 @@ export class RoadmapsService {
       contents: dbRoadmap.contents,
       thumbnail: dbRoadmap.thumbnail,
       like: dbRoadmap.LikeUsers?.length,
+      created_at: dbRoadmap.created_at,
     };
     roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
       id: item.id,

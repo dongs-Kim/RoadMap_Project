@@ -12,7 +12,7 @@ interface RoadmapWriteState {
   contents: string;
   nodes: Node<RoadmapItem>[];
   edges: Edge<EdgeData>[];
-  category?: string;
+  category: string;
   thumbnail?: string;
 }
 
@@ -76,7 +76,7 @@ const roadmapWriteSlice = createSlice({
     setContents: (state, action: PayloadAction<string>) => {
       state.contents = action.payload;
     },
-    setCategory: (state, action: PayloadAction<string | undefined>) => {
+    setCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
     setThumbnail: (state, action: PayloadAction<string | undefined>) => {

@@ -64,7 +64,6 @@
   background: white;
 }
 
-.roadmap-bookmark:hover {
-  fill: #ff5722;
-  color: #ff5722 !important;
+.toastui-editor-contents {
+  font-size: 15px;
 }

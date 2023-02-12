@@ -12,3 +12,13 @@ export const saveRoadmapAsync = async (saveDto: RoadmapSetDto) => {
   const { data } = await axios.post<boolean>('/api/roadmaps', saveDto);
   return data;
 };
+
+export const bookmarkRoadmapAsync = async (id: string) => {
+  const { data } = await axios.post<boolean>(`/api/users/store-roadmap/`, { roadmap_id: id });
+  return data;
+};
+
+export const unbookmarkRoadmapAsync = async (id: string) => {
+  const { data } = await axios.post<boolean>(`/api/users/unstore-roadmap/`, { roadmap_id: id });
+  return data;
+};

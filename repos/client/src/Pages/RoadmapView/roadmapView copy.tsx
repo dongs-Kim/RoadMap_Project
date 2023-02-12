@@ -9,10 +9,10 @@ import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
 import { RoadmapItem, RoadmapSetDto } from '../../Interface/roadmap';
 import { IReply, IUser } from '../../Interface/db';
 import { toastError, toastSuccess } from '../../Utils/toast';
-import { FlowView } from './FlowView';
+import { FlowView } from './components/FlowView';
 import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
 import { downloadImage } from '../../Utils/roadmap';
-import { RoadmapReply } from './RoadmapReply';
+import { RoadmapReply } from './components/RoadmapReply';
 import { useViewer } from '../../Hooks/useViewer';
 
 const RoadmapView = () => {

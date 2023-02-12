@@ -50,17 +50,19 @@ export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
   edges: Edge<EdgeData>[];
+  user?: User;
   isUpdate?: boolean;
 }
 
 export interface RoadmapDto {
   id?: string;
   title: string;
-  category?: string;
+  category: string;
   public: boolean;
   contents: string;
   like?: number;
   thumbnail?: string;
+  created_at?: string;
 }
 
 export interface RoadmapLikeDto extends RoadmapDto {
