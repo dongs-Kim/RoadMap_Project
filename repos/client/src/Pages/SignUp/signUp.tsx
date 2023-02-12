@@ -14,11 +14,10 @@ import {
   Text,
   Link,
 } from '@chakra-ui/react';
-import useSWR from 'swr';
-import fetcher from '../../Utils/fetchers';
+import { useUser } from '../../Hooks/dataFetch/useUser';
 
 const SignUp = () => {
-  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
+  const { userData, error, mutate } = useUser();
   //상태
   const [email, setEmail] = useState('');
   const [nickname, setNickName] = useState('');

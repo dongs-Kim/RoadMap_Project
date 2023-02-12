@@ -1,9 +1,6 @@
-import React, { useState, ChangeEvent, useCallback } from 'react';
+import { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import { Link as RouterLink, Navigate } from 'react-router-dom';
-import useSWR from 'swr';
-
-import fetcher from '../../Utils/fetchers';
+import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -17,13 +14,22 @@ import {
   Link,
   FormHelperText,
 } from '@chakra-ui/react';
+import { useUser } from '../../Hooks/dataFetch/useUser';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [logInError, setLogInError] = useState(false);
+  const { userData, error, mutate } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const { data: userData, error, mutate } = useSWR('/api/users', fetcher);
+  useEffect(() => {
+    if (userData) {
+      navigate(location.state?.forward ?? '/');
+    }
+  }, [userData, navigate, location]);
+
   const onChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
   };
@@ -52,12 +58,8 @@ const Login = () => {
           setLogInError(error.response?.data?.statusCode === 403);
         });
     },
-    [email, password],
+    [email, password, mutate],
   );
-
-  if (userData) {
-    return <Navigate to="/"></Navigate>;
-  }
 
   return (
     <Flex

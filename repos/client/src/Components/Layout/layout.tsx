@@ -15,20 +15,22 @@ import {
   UnorderedList,
   Image,
   Divider,
+  useDisclosure,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useCallback } from 'react';
-import { Link as RouterLink, useNavigate, Outlet, useLocation, Router } from 'react-router-dom';
-import useSWR from 'swr';
-import fetcher from '../../Utils/fetchers';
+import { Link as RouterLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { menuCategories } from '../Menu/menu';
 import { CgProfile } from 'react-icons/cg';
 import { HiOutlineMail } from 'react-icons/hi';
+import { useUser } from '../../Hooks/dataFetch/useUser';
+import { LoginDialog } from '../Dialog/LoginDialog';
 
 const Layout = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { data: userData, mutate: revalidateUser } = useSWR('/api/users', fetcher);
+  const { userData, mutate: revalidateUser, isLogined } = useUser();
+  const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
 
   const onClickLogIn = useCallback(() => {
     navigate('/login');
@@ -45,8 +47,12 @@ const Layout = () => {
   }, []);
 
   const onClickNewRoadMap = useCallback(() => {
-    navigate('/Roadmap/write');
-  }, [navigate]);
+    if (isLogined) {
+      navigate('/Roadmap/write');
+    } else {
+      onOpenLogin();
+    }
+  }, [navigate, isLogined, onOpenLogin]);
   const onClickFavoriteList = useCallback(() => {
     navigate(`/Favorite/List/${userData.id}`);
   }, [navigate]);
@@ -157,6 +163,8 @@ const Layout = () => {
           </Flex>
         </Flex>
       </Flex>
+
+      <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </div>
   );
 };

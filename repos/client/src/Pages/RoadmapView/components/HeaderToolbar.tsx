@@ -30,8 +30,10 @@ import { RoadmapSetDto } from '../../../Interface/roadmap';
 import { useNavigate } from 'react-router-dom';
 import { CloneConfirmDialog } from './CloneConfirmDialog';
 import { toggleBookmark } from '../../../store/roadmapViewSlice';
-import { toastError, toastSuccess } from '../../../Utils/toast';
+import { toastSuccess } from '../../../Utils/toast';
 import { bookmarkRoadmapAsync, unbookmarkRoadmapAsync } from '../../../Apis/roadmapApi';
+import { useUser } from '../../../Hooks/dataFetch/useUser';
+import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -42,6 +44,8 @@ export const HeaderToolbar = () => {
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const isBookmark = useAppSelector((state) => state.roadmapView.isStore);
   const { isOpen: isOpenCopy, onOpen: onOpenCopy, onClose: onCloseCopy } = useDisclosure();
+  const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
+  const { isLogined } = useUser();
 
   const onClickDownloadImage = useCallback(
     _.debounce(async () => {
@@ -61,6 +65,14 @@ export const HeaderToolbar = () => {
     }, 200),
     [],
   );
+
+  const onClickCopy = useCallback(() => {
+    if (isLogined) {
+      onOpenCopy();
+    } else {
+      onOpenLogin();
+    }
+  }, []);
 
   const onCopyRoadmap = useCallback(
     _.debounce(async () => {
@@ -161,7 +173,7 @@ export const HeaderToolbar = () => {
 
         {/* 복사 */}
         <Tooltip label="복사">
-          <IconButton aria-label="clone" icon={<IoCopyOutline size="18px" />} variant="ghost" onClick={onOpenCopy} />
+          <IconButton aria-label="clone" icon={<IoCopyOutline size="18px" />} variant="ghost" onClick={onClickCopy} />
         </Tooltip>
 
         {/* 북마크 */}
@@ -207,6 +219,7 @@ export const HeaderToolbar = () => {
       </Flex>
 
       <CloneConfirmDialog isOpen={isOpenCopy} onClose={onCloseCopy} onCopy={onCopyRoadmap} />
+      <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </Flex>
   );
 };
