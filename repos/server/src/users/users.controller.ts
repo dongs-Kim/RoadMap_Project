@@ -58,7 +58,6 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '내 정보 조회' })
-  @UseGuards(LoggedInGuard)
   @Get()
   getUser(@User() user: UserEntity) {
     return user;

@@ -23,6 +23,7 @@ import useSWR from 'swr';
 import fetcher from '../../Utils/fetchers';
 import { menuCategories } from '../Menu/menu';
 import { CgProfile } from 'react-icons/cg';
+import { HiOutlineMail } from 'react-icons/hi';
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -146,7 +147,14 @@ const Layout = () => {
           <Flex fontWeight="500" mb={3}>
             © 2023 Dev Roadmap
           </Flex>
-          <Flex>developed by inhan, donghyuk</Flex>
+          <Flex mb={3}>developed by inhan, donghyuk</Flex>
+          <Flex gap={3}>
+            <Link display="flex" gap={1} alignItems="center" href="mailto:superman@test.com">
+              <HiOutlineMail />
+              문의하기
+            </Link>
+            <Text>superman@test.com</Text>
+          </Flex>
         </Flex>
       </Flex>
     </div>
