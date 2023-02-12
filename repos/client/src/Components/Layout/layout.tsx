@@ -56,7 +56,7 @@ const Layout = () => {
   }, [navigate, isLogined, onOpenLogin]);
   const onClickFavoriteList = useCallback(() => {
     navigate(`/Favorite/List/${userData.id}`);
-  }, [navigate, userData.id]);
+  }, [navigate]);
   const onClickMypage = useCallback(() => {
     navigate('/Mypage');
   }, [navigate]);
