@@ -67,6 +67,7 @@ export interface RoadmapDto {
 
 export interface RoadmapLikeDto extends RoadmapDto {
   LikeUsers: User[];
+  User: User;
 }
 
 export interface EdgeData {

@@ -7,13 +7,6 @@ import { RoadmapDto } from '../../Interface/roadmap';
 import { menuCategories } from '../../Components/Menu/menu';
 
 const Home = () => {
-  const theme = extendTheme({
-    fonts: {
-      heading: `'Open Sans', sans-serif`,
-      body: `'Raleway', sans-serif`,
-    },
-  });
-
   return (
     <Flex flexDir="column">
       <Flex flexDir="column" paddingBottom="20">

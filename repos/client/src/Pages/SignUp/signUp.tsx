@@ -1,6 +1,6 @@
 import React, { ChangeEvent, MouseEventHandler, useCallback, useState } from 'react';
 import axios from 'axios';
-import { Link as RouterLink, Navigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import {
   Button,
   Input,
@@ -17,6 +17,7 @@ import {
 import { useUser } from '../../Hooks/dataFetch/useUser';
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const { userData, error, mutate } = useUser();
   //상태
   const [email, setEmail] = useState('');
@@ -70,22 +71,25 @@ const SignUp = () => {
   }, []);
 
   // 비밀번호
-  const onChangePassword = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
-    const passwordCurrent = e.target.value;
-    setPassword(passwordCurrent);
+  const onChangePassword = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
+      const passwordCurrent = e.target.value;
+      setPassword(passwordCurrent);
 
-    if (!passwordRegex.test(passwordCurrent)) {
-      setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요!');
-      setIsPassword(false);
-    } else if (passwordConfirm.length > 0 && passwordCurrent != passwordConfirm) {
-      setPasswordConfirmMessage('비밀번호를 다시 확인해주세요');
-      setIsPasswordConfirm(false);
-    } else {
-      setPasswordMessage('');
-      setIsPassword(true);
-    }
-  }, []);
+      if (!passwordRegex.test(passwordCurrent)) {
+        setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요!');
+        setIsPassword(false);
+      } else if (passwordConfirm.length > 0 && passwordCurrent != passwordConfirm) {
+        setPasswordConfirmMessage('비밀번호를 다시 확인해주세요');
+        setIsPasswordConfirm(false);
+      } else {
+        setPasswordMessage('');
+        setIsPassword(true);
+      }
+    },
+    [passwordConfirm],
+  );
 
   // 비밀번호 확인
   const onChangePasswordConfirm = useCallback(
@@ -148,135 +152,136 @@ const SignUp = () => {
   if (userData) {
     return <Navigate to="/"></Navigate>;
   }
+
   return (
-    <div>
-      <Flex
-        flexDirection="column"
-        width="100wh"
-        height="100vh"
-        backgroundColor="gray.300"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
-          <Heading color="teal.400">Sign Up</Heading>
-          <Box minW={{ base: '90%', md: '468px' }}>
-            <form onSubmit={onSubmit}>
-              <Stack spacing={7} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="2xl" h="100%">
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none" />
-                    <Input type="email" id="email" value={email} onChange={onChangeEmail} placeholder="Email Address" />
-                    <Button id="duplicated" colorScheme="teal" onClick={onClickIdCheck} isDisabled={!isEmail}>
-                      중복확인
-                    </Button>
-                  </InputGroup>
-                  {email.length > 0 && (
-                    <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
-                      {emailMessage}
-                    </Text>
-                  )}
-                  <div>
-                    {email.length > 0 && !isNotDuplicate && (
-                      <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
-                        {duplicateMessage}
-                      </Text>
-                    )}
-                  </div>
-                  <div>
-                    {email.length > 0 && isNotDuplicate && (
-                      <Text fontSize="sm" fontStyle="xs" color="rgb(50,180,40)" fontFamily="arial" fontWeight="bold">
-                        {duplicateMessage}
-                      </Text>
-                    )}
-                  </div>
-                </FormControl>
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none" />
-                    <Input
-                      type="nickname"
-                      id="nickname"
-                      value={nickname}
-                      onChange={onChangeNickname}
-                      placeholder="Nickname"
-                    />
-                  </InputGroup>
-                  <InputGroup>
-                    {nickname.length > 0 && (
-                      <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
-                        {nameMessage}
-                      </Text>
-                    )}
-                  </InputGroup>
-                </FormControl>
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none" />
-                    <Input
-                      type="password"
-                      id="password"
-                      value={password_origin}
-                      onChange={onChangePassword}
-                      placeholder="Password"
-                    />
-                  </InputGroup>
-                  <InputGroup>
-                    {nickname.length > 0 && (
-                      <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
-                        {passwordMessage}
-                      </Text>
-                    )}
-                  </InputGroup>
-                </FormControl>
-                <FormControl>
-                  <InputGroup>
-                    <InputLeftElement pointerEvents="none" />
-                    <Input
-                      type="password"
-                      id="password-check"
-                      value={passwordConfirm}
-                      onChange={onChangePasswordConfirm}
-                      placeholder="Check Password"
-                    />
-                  </InputGroup>
-                  <InputGroup>
-                    {passwordConfirm.length > 0 && (
-                      <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
-                        {passwordConfirmMessage}
-                      </Text>
-                    )}
-                  </InputGroup>
-                </FormControl>
-                {!signUpSuccess && (
-                  <Button
-                    borderRadius={0}
-                    type="submit"
-                    variant="solid"
-                    colorScheme="teal"
-                    width="full"
-                    isDisabled={!(isName && isEmail && isPassword && isPasswordConfirm && isNotDuplicate)}
-                  >
-                    Sigin Up
+    <Flex
+      flexDirection="column"
+      width="100wh"
+      height="100vh"
+      backgroundColor="gray.300"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
+        <Heading color="teal.400">회원가입</Heading>
+        <Box minW={{ base: '90%', md: '468px' }}>
+          <form onSubmit={onSubmit}>
+            <Stack spacing={7} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="2xl" h="100%">
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input type="email" id="email" value={email} onChange={onChangeEmail} placeholder="이메일 주소" />
+                  <Button id="duplicated" colorScheme="teal" onClick={onClickIdCheck} isDisabled={!isEmail}>
+                    중복확인
                   </Button>
-                )}
-                {signUpSuccess && (
-                  <Text fontSize="md" fontStyle="md" fontFamily="arial" fontWeight="bold">
-                    회원가입되었습니다! <RouterLink to="/login">로그인</RouterLink> 해주세요.
+                </InputGroup>
+                {email.length > 0 && (
+                  <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
+                    {emailMessage}
                   </Text>
                 )}
-              </Stack>
-            </form>
-          </Box>
-        </Stack>
-        <Box>
-          Already have an account?
-          <RouterLink to="/login">
-            <Link color="teal.500"> Sign In</Link>
-          </RouterLink>
+                <div>
+                  {email.length > 0 && !isNotDuplicate && (
+                    <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
+                      {duplicateMessage}
+                    </Text>
+                  )}
+                </div>
+                <div>
+                  {email.length > 0 && isNotDuplicate && (
+                    <Text fontSize="sm" fontStyle="xs" color="rgb(50,180,40)" fontFamily="arial" fontWeight="bold">
+                      {duplicateMessage}
+                    </Text>
+                  )}
+                </div>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input
+                    type="nickname"
+                    id="nickname"
+                    value={nickname}
+                    onChange={onChangeNickname}
+                    placeholder="닉네임"
+                  />
+                </InputGroup>
+                <InputGroup>
+                  {nickname.length > 0 && (
+                    <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
+                      {nameMessage}
+                    </Text>
+                  )}
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input
+                    type="password"
+                    id="password"
+                    value={password_origin}
+                    onChange={onChangePassword}
+                    placeholder="비밀번호"
+                  />
+                </InputGroup>
+                <InputGroup>
+                  {nickname.length > 0 && (
+                    <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
+                      {passwordMessage}
+                    </Text>
+                  )}
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none" />
+                  <Input
+                    type="password"
+                    id="password-check"
+                    value={passwordConfirm}
+                    onChange={onChangePasswordConfirm}
+                    placeholder="비밀번호"
+                  />
+                </InputGroup>
+                <InputGroup>
+                  {passwordConfirm.length > 0 && (
+                    <Text fontSize="sm" fontStyle="xs" color="rgb(230,30,30)" fontFamily="arial" fontWeight="bold">
+                      {passwordConfirmMessage}
+                    </Text>
+                  )}
+                </InputGroup>
+              </FormControl>
+              {!signUpSuccess && (
+                <Button
+                  borderRadius={0}
+                  type="submit"
+                  variant="solid"
+                  colorScheme="teal"
+                  width="full"
+                  isDisabled={!(isName && isEmail && isPassword && isPasswordConfirm && isNotDuplicate)}
+                >
+                  Sigin Up
+                </Button>
+              )}
+              {signUpSuccess && (
+                <Text fontSize="md" fontStyle="md" fontFamily="arial" fontWeight="bold">
+                  회원가입되었습니다! <RouterLink to="/login">로그인</RouterLink> 해주세요.
+                </Text>
+              )}
+            </Stack>
+          </form>
         </Box>
-      </Flex>
-    </div>
+      </Stack>
+      <Box>
+        <Text display="inline-block" marginRight="2">
+          가입한 계정이 있으신가요?
+        </Text>
+        <Text display="inline-block" color="teal.500">
+          <RouterLink to="/login">로그인 하기</RouterLink>
+        </Text>
+      </Box>
+    </Flex>
   );
 };
 

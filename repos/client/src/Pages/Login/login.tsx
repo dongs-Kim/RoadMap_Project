@@ -11,6 +11,7 @@ import {
   InputGroup,
   InputLeftElement,
   Stack,
+  Text,
   Link,
   FormHelperText,
 } from '@chakra-ui/react';
@@ -52,13 +53,14 @@ const Login = () => {
         )
         .then((response) => {
           console.log(response);
+          navigate(-1);
           mutate();
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 403);
         });
     },
-    [email, password, mutate],
+    [email, password, mutate, navigate],
   );
 
   return (
@@ -78,35 +80,31 @@ const Login = () => {
               <FormControl>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" />
-                  <Input type="email" value={email} onChange={onChangeEmail} placeholder="email address" />
+                  <Input type="email" value={email} onChange={onChangeEmail} placeholder="이메일" />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" color="gray.300" />
-                  <Input type={'password'} value={password} onChange={onChangePassword} placeholder="Password" />
+                  <Input type={'password'} value={password} onChange={onChangePassword} placeholder="비밀번호" />
                 </InputGroup>
-                <FormHelperText textAlign="right">
-                  <RouterLink to="/SearchPassword">
-                    <Link>forgot password?</Link>
-                  </RouterLink>
-                </FormHelperText>
               </FormControl>
               <Button borderRadius={0} type="submit" variant="solid" colorScheme="teal" width="full">
-                Login
+                로그인
               </Button>
             </Stack>
           </form>
         </Box>
       </Stack>
-      <Box>
-        New to us?
-        <RouterLink to="/SignUp">
-          <Link color="teal.500"> Sign Up</Link>
-        </RouterLink>
+      <Box textAlign="center">
+        <Text display="inline-block" marginRight="2">
+          계정이 없으신가요?
+        </Text>
+        <Text display="inline-block" color="teal.500">
+          <RouterLink to="/ConfirmTerms">회원가입하기</RouterLink>
+        </Text>
       </Box>
     </Flex>
-    // </div>
   );
 };
 

@@ -9,14 +9,14 @@ import RoadmapWrite from './Pages/RoadmapWrite/roadmapWrite';
 import RoadmapView from './Pages/RoadmapView/roadmapView';
 import Profile from './Pages/Profile/Profile';
 import FavoriteList from './Pages/Faivorte/FavoriteList';
-import SearchPassword from './Pages/Login/Components/SearchPassword';
+import { ConfirmTerms } from './Pages/SignUp/confirmTerms';
 
 function App() {
   return (
     <Routes>
       <Route path="/Login" element={<Login />} />
       <Route path="/SignUp" element={<SignUp />} />
-      {/* <Route path="/SearchPassword" element={<SearchPassword />} /> */}
+      <Route path="/ConfirmTerms" element={<ConfirmTerms />} />
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/Roadmap/list/:category" element={<RoadMapList />} />

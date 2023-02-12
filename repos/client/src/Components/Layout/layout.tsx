@@ -43,8 +43,9 @@ const Layout = () => {
       })
       .then((res) => {
         revalidateUser(false);
+        navigate('/');
       });
-  }, []);
+  }, [navigate, revalidateUser]);
 
   const onClickNewRoadMap = useCallback(() => {
     if (isLogined) {
@@ -55,7 +56,7 @@ const Layout = () => {
   }, [navigate, isLogined, onOpenLogin]);
   const onClickFavoriteList = useCallback(() => {
     navigate(`/Favorite/List/${userData.id}`);
-  }, [navigate]);
+  }, [navigate, userData.id]);
   const onClickMypage = useCallback(() => {
     navigate('/Mypage');
   }, [navigate]);
@@ -121,7 +122,7 @@ const Layout = () => {
                     내 로드맵
                   </MenuItem>
                   <MenuItem pb={3} onClick={onClickFavoriteList}>
-                    저장된 로드맵
+                    북마크
                   </MenuItem>
                   <MenuItem pb={3} onClick={onClickProfile}>
                     프로필 수정

@@ -114,9 +114,14 @@ export class RoadmapsService {
     return this.roadmapsRepository.find({
       where: {
         category: category,
+        public: true,
       },
       relations: {
         LikeUsers: true,
+        User: true,
+      },
+      order: {
+        updated_at: 'desc',
       },
     });
   }

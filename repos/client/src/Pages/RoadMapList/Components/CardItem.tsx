@@ -5,6 +5,7 @@ import {
   CardBody,
   CardFooter,
   Divider,
+  Flex,
   Heading,
   Image,
   Link,
@@ -61,56 +62,56 @@ export const CardItem = ({ category, sort }: Props) => {
 
   return (
     <List display="flex">
-      {loading && <div>Loading....</div>}
+      {loading && <Text>Loading....</Text>}
       {!loading &&
         roadmaps.map((roadmap) => (
           <List display="flex" key={roadmap.id} paddingLeft="5">
-            <Card w="200px" alignContent="center">
+            <Card
+              w="200px"
+              alignContent="center"
+              _hover={{
+                background: 'gray.100',
+                color: 'black',
+                transition: 'opacity 0.35s ease-in-out',
+                opacity: '1',
+              }}
+            >
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
                 {!roadmap.thumbnail && (
-                  <Tooltip label={roadmap.contents}>
-                    <CardBody
-                      position="relative"
-                      _hover={{
-                        background: 'teal.500',
-                        color: 'white',
-                        transition: 'opacity 0.35s ease-in-out',
-                        opacity: '1',
-                      }}
-                    >
-                      <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
-                      <Stack mt="6" spacing="3">
-                        <Heading size="md">{roadmap.title}</Heading>
-                      </Stack>
-                    </CardBody>
-                  </Tooltip>
+                  <CardBody position="relative">
+                    <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
+                    <Stack mt="6" spacing="3">
+                      <Heading size="md">{roadmap.title}</Heading>
+                    </Stack>
+                  </CardBody>
                 )}
                 {roadmap.thumbnail && (
-                  <Tooltip label={roadmap.contents}>
-                    <CardBody
-                      position="relative"
-                      _hover={{
-                        background: 'teal.300',
-                        color: 'white',
-                        transition: 'opacity 0.35s ease-in-out',
-                        opacity: '1',
-                      }}
-                    >
-                      <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
-                      <Stack mt="6" spacing="3">
-                        <Heading size="md">{roadmap.title}</Heading>
-                      </Stack>
-                    </CardBody>
-                  </Tooltip>
+                  <CardBody position="relative">
+                    <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
+                    <Stack mt="6" spacing="3">
+                      <Heading size="md">{roadmap.title}</Heading>
+                    </Stack>
+                  </CardBody>
                 )}
               </Link>
-              <Divider />
-              <CardFooter>
-                <AiFillHeart className="icon" size="15" color="red" />
-                <Text pl="1" fontSize="small">
-                  {roadmap.LikeUsers.length}
-                </Text>
-              </CardFooter>
+              <Divider borderColor="#ccc" />
+              <Flex flexDir="column" w="100%" maxW="1000px" alignItems="flex-end">
+                <Flex>
+                  <CardFooter w="100%" maxW="1000px">
+                    <Flex alignItems="center">
+                      <AiFillHeart className="icon" size="8" color="red" />
+                      <Text ml="1" fontSize="xs">
+                        {roadmap.LikeUsers.length}
+                      </Text>
+                    </Flex>
+                    <Flex alignItems="center">
+                      <Text fontSize="3" ml="2">
+                        by. {roadmap.User.nickname}
+                      </Text>
+                    </Flex>
+                  </CardFooter>
+                </Flex>
+              </Flex>
             </Card>
           </List>
         ))}
