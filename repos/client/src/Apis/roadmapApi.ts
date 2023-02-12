@@ -22,3 +22,13 @@ export const unbookmarkRoadmapAsync = async (id: string) => {
   const { data } = await axios.post<boolean>(`/api/users/unstore-roadmap/`, { roadmap_id: id });
   return data;
 };
+
+export const likeRoadmapAsync = async (id: string) => {
+  const { data } = await axios.post<boolean>(`/api/roadmaps/${id}/like`);
+  return data;
+};
+
+export const unlikeRoadmapAsync = async (id: string) => {
+  const { data } = await axios.post<boolean>(`/api/roadmaps/${id}/unlike`);
+  return data;
+};

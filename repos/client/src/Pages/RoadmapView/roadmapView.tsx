@@ -6,14 +6,16 @@ import { RoadmapReply } from './components/RoadmapReply';
 import { HeaderToolbar } from './components/HeaderToolbar';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
-import { getIsStore, getRoadmapView } from '../../store/roadmapViewSlice';
+import { clearBookmark, clearLike, getIsBookmark, getIsLike, getRoadmapView } from '../../store/roadmapViewSlice';
 import { Loading } from '../../Components/Page/Loading';
 import { getRoadmapCategoryName } from '../../Constants/roadmap';
+import { useUser } from '../../Hooks/dataFetch/useUser';
 
 const RoadmapView = () => {
   const { roadmapId } = useParams();
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
+  const { isLogined } = useUser();
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   useViewer(viewerElRef, roadmapSet?.roadmap?.contents);
@@ -21,24 +23,33 @@ const RoadmapView = () => {
   const initRoadmap = useCallback(async () => {
     if (roadmapId) {
       await dispatch(getRoadmapView({ id: roadmapId }));
-
-      dispatch(getIsStore({ id: roadmapId }));
     }
     setLoading(false);
   }, [dispatch, roadmapId]);
 
-  // 데이터 조회
+  // 로드맵 데이터 조회
   useEffect(() => {
     initRoadmap();
   }, [initRoadmap]);
+
+  // 데이터 조회
+  useEffect(() => {
+    if (isLogined && roadmapId) {
+      dispatch(getIsBookmark({ id: roadmapId }));
+      dispatch(getIsLike({ id: roadmapId }));
+    } else {
+      dispatch(clearBookmark());
+      dispatch(clearLike());
+    }
+  }, [isLogined, roadmapId, dispatch]);
 
   return (
     <>
       {/* 로딩 */}
       <Loading isOpen={loading} />
 
-      <Flex width="100%" justifyContent="center">
-        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10}>
+      <Flex width="100%" alignItems="center" flexDir="column">
+        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10} p={3}>
           {/* 카테고리 */}
           <Flex pb={3}>
             <Link>
@@ -58,8 +69,8 @@ const RoadmapView = () => {
 
           {/* 썸네일 */}
           {roadmapSet?.roadmap?.thumbnail && (
-            <Flex justifyContent="center">
-              <Image src={roadmapSet?.roadmap.thumbnail} w="100%" maxW="800px" />
+            <Flex mb={10} justifyContent="center">
+              <Image src={roadmapSet?.roadmap.thumbnail} w="100%" maxW="500px" />
             </Flex>
           )}
 
@@ -67,21 +78,23 @@ const RoadmapView = () => {
           <Flex mb={5}>
             <Box ref={viewerElRef}></Box>
           </Flex>
+        </Flex>
 
-          {/* 로드맵 */}
-          <Flex mb={10}>
-            {roadmapSet?.nodes && roadmapSet?.edges && (
-              <FlowView
-                nodes={roadmapSet.nodes}
-                edges={roadmapSet.edges}
-                openModal={() => {
-                  //
-                }}
-              />
-            )}
-          </Flex>
+        {/* 로드맵 */}
+        <Flex mb={10} w="100%" bg="#f4f5f6">
+          {roadmapSet?.nodes && roadmapSet?.edges && (
+            <FlowView
+              nodes={roadmapSet.nodes}
+              edges={roadmapSet.edges}
+              openModal={() => {
+                //
+              }}
+            />
+          )}
+        </Flex>
 
-          {/* 댓글 */}
+        {/* 댓글 */}
+        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10} p={3}>
           <RoadmapReply
             replies={[
               {

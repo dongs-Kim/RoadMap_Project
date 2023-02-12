@@ -72,10 +72,12 @@ export const FlowView = ({ nodes, edges, openModal }: FlowProps) => {
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
           elementsSelectable={false}
+          minZoom={1}
           maxZoom={1}
           fitView
           preventScrolling={false}
           proOptions={{ hideAttribution: true }}
+          // style={{ background: '#f4f5f6' }}
         />
       </div>
     </>

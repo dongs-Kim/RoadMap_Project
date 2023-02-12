@@ -29,9 +29,14 @@ import { downloadImage } from '../../../Utils/roadmap';
 import { RoadmapSetDto } from '../../../Interface/roadmap';
 import { useNavigate } from 'react-router-dom';
 import { CloneConfirmDialog } from './CloneConfirmDialog';
-import { toggleBookmark } from '../../../store/roadmapViewSlice';
+import { toggleBookmark, toggleLike } from '../../../store/roadmapViewSlice';
 import { toastSuccess } from '../../../Utils/toast';
-import { bookmarkRoadmapAsync, unbookmarkRoadmapAsync } from '../../../Apis/roadmapApi';
+import {
+  bookmarkRoadmapAsync,
+  likeRoadmapAsync,
+  unbookmarkRoadmapAsync,
+  unlikeRoadmapAsync,
+} from '../../../Apis/roadmapApi';
 import { useUser } from '../../../Hooks/dataFetch/useUser';
 import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
 
@@ -43,6 +48,7 @@ export const HeaderToolbar = () => {
   const dispatch = useAppDispatch();
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const isBookmark = useAppSelector((state) => state.roadmapView.isStore);
+  const isLike = useAppSelector((state) => state.roadmapView.isLike);
   const { isOpen: isOpenCopy, onOpen: onOpenCopy, onClose: onCloseCopy } = useDisclosure();
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
   const { isLogined } = useUser();
@@ -97,8 +103,10 @@ export const HeaderToolbar = () => {
       if (!roadmapSet?.roadmap.id) {
         return;
       }
-
-      //@TODO 로그인 체크
+      if (!isLogined) {
+        onOpenLogin();
+        return;
+      }
 
       if (isBookmark) {
         unbookmarkRoadmapAsync(roadmapSet.roadmap.id);
@@ -110,7 +118,27 @@ export const HeaderToolbar = () => {
         toastSuccess('북마크에 추가했습니다');
       }
     }, 200),
-    [dispatch, isBookmark],
+    [dispatch, roadmapSet, isLogined, isBookmark, onOpenLogin],
+  );
+
+  const onClickLike = useCallback(
+    _.debounce(() => {
+      if (!roadmapSet?.roadmap.id) {
+        return;
+      }
+      if (!isLogined) {
+        onOpenLogin();
+        return;
+      }
+
+      if (isLike) {
+        unlikeRoadmapAsync(roadmapSet.roadmap.id);
+      } else {
+        likeRoadmapAsync(roadmapSet.roadmap.id);
+      }
+      dispatch(toggleLike());
+    }, 200),
+    [dispatch, roadmapSet, isLogined, isLike, onOpenLogin],
   );
 
   const onClickShareCopyURL = useCallback(
@@ -207,13 +235,8 @@ export const HeaderToolbar = () => {
 
         {/* 좋아요 */}
         <Tooltip label="좋아요">
-          <Button
-            leftIcon={<AiFillHeart />}
-            // colorScheme={isLike ? 'gray' : 'red'}
-            colorScheme={'red'}
-            ml={3}
-          >
-            <Text>10</Text>
+          <Button leftIcon={<AiFillHeart />} colorScheme={isLike ? 'red' : 'gray'} ml={3} onClick={onClickLike}>
+            <Text>{roadmapSet?.roadmap.like ?? 0}</Text>
           </Button>
         </Tooltip>
       </Flex>

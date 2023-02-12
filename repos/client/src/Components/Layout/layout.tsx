@@ -143,7 +143,7 @@ const Layout = () => {
       </Flex>
 
       {/* 메인 */}
-      <Flex as="main" p={3} pb={20} minH="calc(100vh - 190px)">
+      <Flex as="main" pb={20} minH="calc(100vh - 190px)">
         <Outlet></Outlet>
       </Flex>
 

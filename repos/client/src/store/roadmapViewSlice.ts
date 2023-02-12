@@ -1,13 +1,11 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Connection, Edge, Node, addEdge as flowAddEdge } from 'reactflow';
-import shortUUID from 'short-uuid';
-import _ from 'lodash';
-import { EdgeData, RoadmapItem, RoadmapSetDto } from '../Interface/roadmap';
+import { RoadmapSetDto } from '../Interface/roadmap';
 
 interface RoadmapViewState {
   roadmapSet: RoadmapSetDto | null;
   isStore?: boolean;
+  isLike?: boolean;
 }
 
 const initialState: RoadmapViewState = {
@@ -26,11 +24,23 @@ export const getRoadmapView = createAsyncThunk<RoadmapSetDto, { id: string }>(
   },
 );
 
-export const getIsStore = createAsyncThunk<boolean, { id: string }>(
+export const getIsBookmark = createAsyncThunk<boolean, { id: string }>(
   'roadmapView/getIsStore',
   async ({ id }, thunkApi) => {
     try {
       const { data } = await axios.get<boolean>(`/api/users/isStore/${id}`);
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err);
+    }
+  },
+);
+
+export const getIsLike = createAsyncThunk<boolean, { id: string }>(
+  'roadmapView/getIsLike',
+  async ({ id }, thunkApi) => {
+    try {
+      const { data } = await axios.get<boolean>(`/api/roadmaps/${id}/isLike`);
       return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err);
@@ -44,6 +54,18 @@ const roadmapViewSlice = createSlice({
   reducers: {
     toggleBookmark: (state) => {
       state.isStore = !state.isStore;
+    },
+    clearBookmark: (state) => {
+      state.isStore = false;
+    },
+    toggleLike: (state) => {
+      state.isLike = !state.isLike;
+      if (state.roadmapSet?.roadmap) {
+        state.roadmapSet.roadmap.like = (state.roadmapSet.roadmap.like ?? 0) + (state.isLike ? 1 : -1);
+      }
+    },
+    clearLike: (state) => {
+      state.isLike = false;
     },
   },
   extraReducers: (builder) => {
@@ -67,12 +89,15 @@ const roadmapViewSlice = createSlice({
       });
     });
 
-    builder.addCase(getIsStore.fulfilled, (state, action) => {
+    builder.addCase(getIsBookmark.fulfilled, (state, action) => {
       state.isStore = action.payload;
+    });
+    builder.addCase(getIsLike.fulfilled, (state, action) => {
+      state.isLike = action.payload;
     });
   },
 });
 
-export const { toggleBookmark } = roadmapViewSlice.actions;
+export const { toggleBookmark, clearBookmark, toggleLike, clearLike } = roadmapViewSlice.actions;
 
 export default roadmapViewSlice.reducer;

@@ -27,7 +27,11 @@ const Login = () => {
 
   useEffect(() => {
     if (userData) {
-      navigate(location.state?.forward ?? '/');
+      if (location.state?.forward) {
+        navigate(location.state.forward, { replace: true });
+      } else {
+        navigate('/');
+      }
     }
   }, [userData, navigate, location]);
 
