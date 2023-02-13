@@ -47,11 +47,11 @@ export const CardItem = ({ category }: Props) => {
   }, [loadRoadmaps]);
 
   return (
-    <List display="flex">
+    <List display="flex" width= "100%">
       {loading && <Text>Loading....</Text>}
       {!loading &&
         roadmaps.map((roadmap) => (
-          <List display="flex" key={roadmap.id} paddingLeft="5">
+          <List display="flex" key={roadmap.id} paddingLeft="5" overflow= "auto">
             <Card
               w="200px"
               alignContent="center"
@@ -64,7 +64,7 @@ export const CardItem = ({ category }: Props) => {
             >
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
                 {!roadmap.thumbnail && (
-                  <CardBody position="relative">
+                  <CardBody >
                     <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
                     <Stack mt="6" spacing="3">
                       <Heading size="md">{roadmap.title}</Heading>
@@ -72,7 +72,7 @@ export const CardItem = ({ category }: Props) => {
                   </CardBody>
                 )}
                 {roadmap.thumbnail && (
-                  <CardBody position="relative">
+                  <CardBody >
                     <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
                     <Stack mt="6" spacing="3">
                       <Heading size="md">{roadmap.title}</Heading>

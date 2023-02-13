@@ -16,6 +16,7 @@ import {
   Image,
   Divider,
   useDisclosure,
+  Avatar,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useCallback } from 'react';
@@ -110,12 +111,7 @@ const Layout = () => {
             <span>
               <Menu>
                 <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-                  {!userData.image && <CgProfile className="icon" size="25" />}
-                  {userData.image && (
-                    <Box boxSize="35" justifyContent="center" alignContent="center">
-                      <Image src={userData.image} borderRadius="70%" alt="" sizes="1" />
-                    </Box>
-                  )}
+                  <Avatar size="sm" name={userData?.nickname} src={userData.image} />
                 </MenuButton>
                 <MenuList color="teal.600" fontFamily="monospace">
                   <MenuItem pb={3} onClick={onClickMypage}>

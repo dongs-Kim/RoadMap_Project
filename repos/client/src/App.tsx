@@ -16,11 +16,12 @@ function App() {
     <Routes>
       <Route path="/Login" element={<Login />} />
       <Route path="/SignUp" element={<SignUp />} />
-      <Route path="/ConfirmTerms" element={<ConfirmTerms />} />
+      <Route path="/ConfirmTerms" element={<ConfirmTerms />} />      
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/Roadmap/list/:category" element={<RoadMapList />} />
-        <Route path="/Favorite/list/:id" element={<FavoriteList />} />
+        <Route path="/Roadmap/User/:id" element={<ConfirmTerms />} />
+        <Route path="/Favorite/list/:id" element={<FavoriteList />} />        
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Mypage" element={<Mypage />} />
         <Route path="/Roadmap/view/:roadmapId" element={<RoadmapView />} />
