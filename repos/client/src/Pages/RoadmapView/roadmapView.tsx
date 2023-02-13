@@ -49,7 +49,7 @@ const RoadmapView = () => {
       <Loading isOpen={loading} />
 
       <Flex width="100%" alignItems="center" flexDir="column">
-        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10} p={3}>
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} minH="500px" pt={10} p={3}>
           {/* 카테고리 */}
           <Flex pb={3}>
             <Link>
@@ -81,7 +81,7 @@ const RoadmapView = () => {
         </Flex>
 
         {/* 로드맵 */}
-        <Flex mb={10} w="100%" bg="#f4f5f6">
+        <Flex mb={10} w="100%" bg="#f4f5f6" borderTop="1px solid #ddd" borderBottom="1px solid #ddd">
           {roadmapSet?.nodes && roadmapSet?.edges && (
             <FlowView
               nodes={roadmapSet.nodes}
@@ -94,7 +94,7 @@ const RoadmapView = () => {
         </Flex>
 
         {/* 댓글 */}
-        <Flex flexDir="column" width={{ base: '100%', md: '1000px' }} minH="500px" pt={10} p={3}>
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} minH="500px" pt={10} p={3}>
           <RoadmapReply
             replies={[
               {

@@ -92,7 +92,6 @@ export const RoadmapReply = ({ replies, user, onSave, onDelete, onUpdate }: Road
 
   return (
     <Flex flexDir="column">
-      <Divider mb={3} />
       <Flex mb={3}>
         <Text fontWeight="bold">댓글 {replies.length}</Text>
       </Flex>
