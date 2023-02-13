@@ -82,15 +82,7 @@ const RoadmapView = () => {
 
         {/* 로드맵 */}
         <Flex mb={10} w="100%" bg="#f4f5f6" borderTop="1px solid #ddd" borderBottom="1px solid #ddd">
-          {roadmapSet?.nodes && roadmapSet?.edges && (
-            <FlowView
-              nodes={roadmapSet.nodes}
-              edges={roadmapSet.edges}
-              openModal={() => {
-                //
-              }}
-            />
-          )}
+          {roadmapSet?.nodes && roadmapSet?.edges && <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} />}
         </Flex>
 
         {/* 댓글 */}

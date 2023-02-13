@@ -1,5 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, { MiniMap, Controls, Background, useNodesState, useEdgesState, Node, useReactFlow } from 'reactflow';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { AddIcon, MinusIcon } from '@chakra-ui/icons';
+import { Flex, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { BiFullscreen } from 'react-icons/bi';
+import ReactFlow, { useNodesState, useEdgesState, Node, useReactFlow } from 'reactflow';
+import _ from 'lodash';
 import { DownNode } from '../../../Components/RoadmapItem/DownNode';
 import { LeftNode } from '../../../Components/RoadmapItem/LeftNode';
 import { RightNode } from '../../../Components/RoadmapItem/RightNode';
@@ -7,6 +12,7 @@ import { RoadmapEdge } from '../../../Components/RoadmapItem/RoadmapEdge';
 import { StartNode } from '../../../Components/RoadmapItem/StartNode';
 import { StickerNode } from '../../../Components/RoadmapItem/StickerNode';
 import { EN_ROADMAP_EDGE_TYPE, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../../Interface/roadmap';
+import { RoadmapItemViewModal } from './RoadmapItemViewModal';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
@@ -25,20 +31,15 @@ const nodeStateHook = useNodesState<RoadmapItem>;
 interface FlowProps {
   nodes: ReturnType<typeof nodeStateHook>[0];
   edges: ReturnType<typeof useEdgesState>[0];
-  openModal(data: RoadmapItem, nodeType?: string): void;
 }
 
-export const FlowView = ({ nodes, edges, openModal }: FlowProps) => {
+export const FlowView = ({ nodes, edges }: FlowProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { fitView, getZoom } = useReactFlow();
+  const { fitView, zoomIn, zoomOut } = useReactFlow();
+  const { isOpen: isOpenItem, onOpen: onOpenItem, onClose: onCloseItem } = useDisclosure();
+  const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | undefined>();
 
-  const onNodeClick = useCallback(
-    async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
-      openModal({ ...targetNode.data }, targetNode.type);
-    },
-    [openModal],
-  );
-
+  // 로드맵 크기 조절
   useEffect(() => {
     const nodeContainerEl = document.getElementsByClassName('react-flow__nodes')[0];
     if (!nodeContainerEl || nodeContainerEl.childElementCount == 0 || !containerRef.current) {
@@ -80,23 +81,81 @@ export const FlowView = ({ nodes, edges, openModal }: FlowProps) => {
     fitView();
   }, [nodes, edges, fitView]);
 
+  const onNodeClick = useCallback(async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
+    setRoadmapItem({ ...targetNode.data });
+    onOpenItem();
+  }, []);
+
+  const onClickZoomIn = useCallback(
+    _.throttle(() => {
+      zoomIn();
+    }, 200),
+    [zoomIn],
+  );
+
+  const onClickZoomOut = useCallback(
+    _.throttle(() => {
+      zoomOut();
+    }, 200),
+    [zoomOut],
+  );
+
+  const onClickFitView = useCallback(
+    _.throttle(() => {
+      fitView();
+    }, 200),
+    [fitView],
+  );
+
   return (
     <>
       <div ref={containerRef} style={{ width: '100%', height: 500 }}>
         <ReactFlow
+          className="flow-view"
           nodes={nodes}
           edges={edges}
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           elementsSelectable={false}
-          maxZoom={1}
           minZoom={0}
           preventScrolling={false}
           proOptions={{ hideAttribution: true }}
           defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-        />
+        >
+          <Flex position="absolute" top={5} right={5} zIndex={5} gap={2}>
+            <Tooltip label="zoom in">
+              <IconButton
+                aria-label="zoom in"
+                icon={<AddIcon />}
+                size="sm"
+                colorScheme="blackAlpha"
+                onClick={onClickZoomIn}
+              />
+            </Tooltip>
+            <Tooltip label="zoom out">
+              <IconButton
+                aria-label="zoom out"
+                icon={<MinusIcon />}
+                size="sm"
+                colorScheme="blackAlpha"
+                onClick={onClickZoomOut}
+              />
+            </Tooltip>
+            <Tooltip label="화면 맞추기">
+              <IconButton
+                aria-label="화면 맞추기"
+                icon={<BiFullscreen />}
+                size="sm"
+                colorScheme="blackAlpha"
+                onClick={onClickFitView}
+              />
+            </Tooltip>
+          </Flex>
+        </ReactFlow>
       </div>
+
+      <RoadmapItemViewModal isOpen={isOpenItem} onClose={onCloseItem} roadmapItem={roadmapItem} />
     </>
   );
 };

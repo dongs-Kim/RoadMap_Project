@@ -15,7 +15,7 @@ export const NodeBase = ({ data, selected }: NodeProps<RoadmapItem>) => {
         bg={data.bgcolor}
         p="12px"
         h="100%"
-        borderWidth={data.border ? '1.5px' : ''}
+        borderWidth={data.border ? '2px' : ''}
         borderStyle="solid"
         borderColor="black"
         borderRadius="5px"

@@ -10,7 +10,7 @@ import { RoadmapItem, RoadmapSetDto } from '../../Interface/roadmap';
 import { IReply, IUser } from '../../Interface/db';
 import { toastError, toastSuccess } from '../../Utils/toast';
 import { FlowView } from './components/FlowView';
-import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
+// import { RoadmapItemViewModal } from '../../Components/Modal/RoadmapItemViewModal';
 import { downloadImage } from '../../Utils/roadmap';
 import { RoadmapReply } from './components/RoadmapReply';
 import { useViewer } from '../../Hooks/useViewer';
@@ -266,14 +266,14 @@ const RoadmapView = () => {
 
       <div>
         <label>로드맵</label>
-        <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} openModal={openModal} />
+        <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} />
       </div>
 
       <RoadmapReply replies={replies} user={user} onSave={onSaveReply} onDelete={loadReplies} onUpdate={loadReplies} />
 
-      {isOpen && roadmapItem && (
+      {/* {isOpen && roadmapItem && (
         <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} nodeType={modalNodeType} />
-      )}
+      )} */}
     </div>
   );
 };

@@ -54,7 +54,7 @@ export const HeaderToolbar = () => {
   const { isLogined } = useUser();
 
   const onClickDownloadImage = useCallback(
-    _.debounce(async () => {
+    _.throttle(async () => {
       const flowEl = document.querySelector<HTMLElement>('.react-flow');
       if (!flowEl) {
         return;
@@ -81,7 +81,7 @@ export const HeaderToolbar = () => {
   }, []);
 
   const onCopyRoadmap = useCallback(
-    _.debounce(async () => {
+    _.throttle(async () => {
       if (!roadmapSet) {
         return;
       }
@@ -99,7 +99,7 @@ export const HeaderToolbar = () => {
   );
 
   const onClickBookmark = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       if (!roadmapSet?.roadmap.id) {
         return;
       }
@@ -122,7 +122,7 @@ export const HeaderToolbar = () => {
   );
 
   const onClickLike = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       if (!roadmapSet?.roadmap.id) {
         return;
       }
@@ -142,7 +142,7 @@ export const HeaderToolbar = () => {
   );
 
   const onClickShareCopyURL = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       navigator.clipboard.writeText(window.location.href);
       toastSuccess('URL이 복사되었습니다');
     }, 200),
@@ -150,14 +150,14 @@ export const HeaderToolbar = () => {
   );
 
   const onClickShareFacebook = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       window.open(`http://www.facebook.com/sharer/sharer.php?u=${encodeURI(window.location.href)}`);
     }, 200),
     [],
   );
 
   const onClickShareTwitter = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       if (roadmapSet) {
         window.open(
           `https://twitter.com/intent/tweet?text=${roadmapSet.roadmap.title}&url=${encodeURI(window.location.href)}`,
