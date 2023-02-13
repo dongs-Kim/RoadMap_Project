@@ -1,17 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link as RouterLink, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Button, Center, Divider, Flex, Heading, Link, List, ListItem } from '@chakra-ui/react';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Heading } from '@chakra-ui/react';
 import { CardItem } from './Components/CardItem';
+import { RoadmapSetDto, User } from '../../Interface/roadmap';
 
-const UserRoadMapList = () => {
-  const { category } = useParams();
-  const [sort, setSort] = useState('');
+interface Props {
+  roadmapInfo: RoadmapSetDto;
+}
 
+const UserRoadMapList = ({ roadmapInfo }: Props) => {
+  const { user } = roadmapInfo;
 
   return (
-    <div style={{ width: "900px", margin: "0 auto" }}>
-      <Heading color="teal.400" pb="5" pt = "3" />      
-      <CardItem category={category} sort={sort}></CardItem>
+    <div style={{ width: '900px', margin: '0 auto' }}>
+      <Heading color="teal.400" pb="5" pt="3">
+        {user?.nickname}
+        {user?.comment}
+      </Heading>
+      <CardItem id={user?.id}></CardItem>
     </div>
   );
 };

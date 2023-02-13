@@ -53,6 +53,12 @@ export class RoadmapsController {
     return this.roadmapsService.findCategory(category);
   }
 
+  @ApiOperation({ summary: '유저별 로드맵 조회' })
+  @Get('list/User/:id')
+  findByUser(@Param('Userid') Userid: string) {
+    return this.roadmapsService.findByUser(Userid);
+  }
+
   @ApiOperation({ summary: '특정 로드맵 조회' })
   @Get(':id')
   findOne(

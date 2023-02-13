@@ -26,7 +26,7 @@ import { useCallback } from 'react';
 import _ from 'lodash';
 import { toPng } from 'html-to-image';
 import { downloadImage } from '../../../Utils/roadmap';
-import { RoadmapSetDto } from '../../../Interface/roadmap';
+import { RoadmapSetDto, User } from '../../../Interface/roadmap';
 import { useNavigate } from 'react-router-dom';
 import { CloneConfirmDialog } from './CloneConfirmDialog';
 import { toggleBookmark, toggleLike } from '../../../store/roadmapViewSlice';
@@ -39,6 +39,7 @@ import {
 } from '../../../Apis/roadmapApi';
 import { useUser } from '../../../Hooks/dataFetch/useUser';
 import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
+import UserRoadMapList from '../../UserRoadmapList/userRoadmapList';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -167,6 +168,13 @@ export const HeaderToolbar = () => {
     [],
   );
 
+  const onClickUserRoadmap = useCallback(
+    (roadmap: RoadmapSetDto) => {
+      return <UserRoadMapList roadmapInfo={roadmap}></UserRoadMapList>;
+    },
+    [roadmapSet],
+  );
+
   return (
     <Flex pb={5} mb={5} justifyContent="space-between">
       {/* 작성자 */}
@@ -174,9 +182,11 @@ export const HeaderToolbar = () => {
         <Link mr={1}>
           <Avatar size="sm" name={roadmapSet?.user?.nickname} src={roadmapSet?.user?.image} />
         </Link>
-        <Link>
-          <Text>{roadmapSet?.user?.nickname}</Text>
-        </Link>
+        {roadmapSet && (
+          <Link onClick={() => onClickUserRoadmap(roadmapSet)}>
+            <Text>{roadmapSet?.user?.nickname}</Text>
+          </Link>
+        )}
         <span>·</span>
         <Text>{dayjs(roadmapSet?.roadmap?.created_at).fromNow()}</Text>
       </Flex>

@@ -111,7 +111,7 @@ const Layout = () => {
             <span>
               <Menu>
                 <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-                  <Avatar size="sm" name={userData?.nickname} src={userData.image} />
+                  <Avatar size="sm" name={userData?.nickname} src={userData?.image} />
                 </MenuButton>
                 <MenuList color="teal.600" fontFamily="monospace">
                   <MenuItem pb={3} onClick={onClickMypage}>

@@ -126,6 +126,20 @@ export class RoadmapsService {
     });
   }
 
+  findByUser(Userid: string) {
+    return this.roadmapsRepository.find({
+      where: {
+        User: {
+          id: Userid,
+        },
+        public: true,
+      },
+      order: {
+        updated_at: 'desc',
+      },
+    });
+  }
+
   async remove(id: string, user: User) {
     const roadmap = await this.roadmapsRepository.findOne({
       where: { id },

@@ -1,9 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Button, Flex, Heading, Link, List, ListItem, Text, extendTheme } from '@chakra-ui/react';
-import React, { useCallback } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 import { CardItem } from './Components/CardItem';
-import { RoadmapDto } from '../../Interface/roadmap';
 import { menuCategories } from '../../Components/Menu/menu';
 
 const Home = () => {
