@@ -11,6 +11,7 @@ import {
   Image,
   Link,
   List,
+  ListItem,
   Stack,
   Text,
   Tooltip,
@@ -46,59 +47,91 @@ export const CardItem = ({ category }: Props) => {
   }, [loadRoadmaps]);
 
   return (
-    <List display="flex" width="100%">
+    <List display="flex" flexWrap="wrap">
       {loading && <Text>Loading....</Text>}
       {!loading &&
         roadmaps.map((roadmap) => (
-          <List display="flex" key={roadmap.id} paddingLeft="5" overflow="auto">
+          <ListItem display="flex" key={roadmap.id} margin="10px">
             <Card
               w="200px"
+              boxShadow="none"
               alignContent="center"
+              backgroundColor="none"
+              border="1px solid #ccc"
+              borderRadius="lg"
+              padding="10px"
+              transition="box-shadow 0.1s ease-in 0s, transform 0.1s ease-in 0s"
               _hover={{
                 background: 'gray.100',
                 color: 'black',
-                transition: 'opacity 0.35s ease-in-out',
                 opacity: '1',
+                transform: 'translateY(-8px)',
+                boxShadow: 'rgb(0 0 0 / 15%) 0px 2px 2px 0px',
               }}
             >
-              <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`}>
+              <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`} _hover={{ textDecoration: 'none' }}>
                 {!roadmap.thumbnail && (
-                  <CardBody>
-                    <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" />
+                  <CardBody borderBottom="1px solid #ccc" padding="0">
+                    <Image src="/img/NoImage.png" alt="" borderRadius="lg" h="140" margin="0 auto" />
                     <Stack mt="6" spacing="3">
-                      <Heading size="md">{roadmap.title}</Heading>
+                      <h3
+                        style={{
+                          display: '-webkit-box',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          verticalAlign: 'top',
+                          wordBreak: 'break-all',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 2,
+                          fontSize: '1.25rem',
+                          fontWeight: '700',
+                          height: '56px',
+                        }}
+                      >
+                        {roadmap.title}
+                      </h3>
                     </Stack>
                   </CardBody>
                 )}
                 {roadmap.thumbnail && (
-                  <CardBody>
-                    <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" />
+                  <CardBody borderBottom="1px solid #ccc" padding="0">
+                    <Image src={roadmap.thumbnail} alt="" borderRadius="lg" h="140" margin="0 auto" />
                     <Stack mt="6" spacing="3">
-                      <Heading size="md">{roadmap.title}</Heading>
+                      <h3
+                        style={{
+                          display: '-webkit-box',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          verticalAlign: 'top',
+                          wordBreak: 'break-all',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 2,
+                          fontSize: '1.25rem',
+                          fontWeight: '700',
+                          height: '56px',
+                        }}
+                      >
+                        {roadmap.title}
+                      </h3>
                     </Stack>
                   </CardBody>
                 )}
               </Link>
-              <Divider borderColor="#ccc" />
-              <Flex flexDir="column" w="100%" maxW="1000px" alignItems="flex-end">
-                <Flex>
-                  <CardFooter w="100%" maxW="1000px">
-                    <Flex alignItems="center">
-                      <AiFillHeart className="icon" size="8" color="red" />
-                      <Text ml="1" fontSize="xs">
-                        {roadmap.LikeUsers.length}
-                      </Text>
-                    </Flex>
-                    <Flex alignItems="center">
-                      <Text fontSize="3" ml="2">
-                        by. {roadmap.User.nickname}
-                      </Text>
-                    </Flex>
-                  </CardFooter>
+              <CardFooter justifyContent="space-between" padding="10px">
+                <Flex alignItems="center">
+                  <AiFillHeart className="icon" size="8" color="red" />
+                  <Text ml="1" fontSize="xs">
+                    {roadmap.LikeUsers.length}
+                  </Text>
                 </Flex>
-              </Flex>
+                <Flex alignItems="center">
+                  <Text fontSize="3" ml="2">
+                    by. {roadmap.User.nickname}
+                  </Text>
+                </Flex>
+              </CardFooter>
             </Card>
-          </List>
+          </ListItem>
         ))}
     </List>
   );
