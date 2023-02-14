@@ -24,30 +24,37 @@ import { toastError, toastSuccess } from '../../../Utils/toast';
 import { BsDownload } from 'react-icons/bs';
 import { BiDotsVerticalRounded, BiImageAlt } from 'react-icons/bi';
 import { AiFillDelete, AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
+import { useUser } from '../../../Hooks/dataFetch/useUser';
 
 interface RoadmapReplyProps {
   replies: IReply[];
-  user?: IUser | null;
   onSave?(reply: string): void;
   onDelete?(): void;
   onUpdate?(): void;
 }
 
-export const RoadmapReply = ({ replies, user, onSave, onDelete, onUpdate }: RoadmapReplyProps) => {
+export const RoadmapReply = ({ replies, onSave, onDelete, onUpdate }: RoadmapReplyProps) => {
   const [contents, setContents] = useState('');
   const [toDeleteId, setToDeleteId] = useState<string | null>(null);
   const [toUpdateReply, setToUpdateReply] = useState<IReply | null>(null);
+  const { userData: user, isLogined } = useUser();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenModal, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
+  const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
 
   const onChangeReply = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setContents(e.target.value);
   }, []);
 
   const onClickSaveReply = useCallback(() => {
+    if (!isLogined) {
+      onOpenLogin();
+      return;
+    }
     onSave?.(contents);
     setContents('');
-  }, [onSave, contents]);
+  }, [onSave, contents, isLogined, onOpenLogin]);
 
   const isMyReply = useCallback(
     (user_id: string) => {
@@ -98,13 +105,14 @@ export const RoadmapReply = ({ replies, user, onSave, onDelete, onUpdate }: Road
 
       <Flex flexDir="column" p={3} mb={3}>
         <Flex>
-          <Avatar size="sm" mr={3} name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+          {user && <Avatar size="sm" mr={3} name={user?.nickname} src={user?.image} />}
           <Textarea
             as={TextareaAutosize}
             placeholder="댓글을 작성하세요"
             mb={3}
             value={contents}
             onChange={onChangeReply}
+            disabled={!user}
           />
         </Flex>
 
@@ -161,6 +169,7 @@ export const RoadmapReply = ({ replies, user, onSave, onDelete, onUpdate }: Road
       {isOpenModal && toUpdateReply && (
         <ReplyInputModal data={toUpdateReply} onClose={onCloseModal} onUpdate={onUpdateReply} />
       )}
+      <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </Flex>
   );
 };

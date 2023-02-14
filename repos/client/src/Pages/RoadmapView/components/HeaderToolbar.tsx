@@ -176,7 +176,7 @@ export const HeaderToolbar = () => {
   );
 
   return (
-    <Flex pb={5} mb={5} justifyContent="space-between">
+    <Flex justifyContent="space-between">
       {/* 작성자 */}
       <Flex alignItems="center" gap={1} fontSize="15px">
         <Link mr={1}>

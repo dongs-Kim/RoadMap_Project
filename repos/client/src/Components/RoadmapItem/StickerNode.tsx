@@ -1,27 +1,46 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { NodeProps } from 'reactflow';
 import { ImLink } from 'react-icons/im';
-import { RoadmapItem } from '../../Interface/roadmap';
+import { NodeMode, RoadmapItem } from '../../Interface/roadmap';
 import { NodeResizer } from '@reactflow/node-resizer';
 
-export const StickerNode = (props: NodeProps<RoadmapItem>) => {
-  if (props.data.url) {
-    let url = props.data.url;
-    if (!url.match(/https?:\/\//i)) {
-      url = `//${props.data.url}`;
+export const StickerNode = (mode: NodeMode) => {
+  const stickerNode = (props: NodeProps<RoadmapItem>) => {
+    if (props.data.url) {
+      let url = props.data.url;
+      if (!url.match(/https?:\/\//i)) {
+        url = `//${props.data.url}`;
+      }
+
+      const component = (
+        <StickerBox nodeProps={props} mode={mode}>
+          <ImLink style={{ display: 'inline-block', marginRight: '5px' }} />
+        </StickerBox>
+      );
+
+      if (mode === 'view') {
+        return (
+          <a href={url} target="_blank" rel="noreferrer">
+            {component}
+          </a>
+        );
+      }
+      return component;
     }
-    return (
-      // <a href={url} target="_blank" rel="noreferrer">
-      <StickerBox nodeProps={props}>
-        <ImLink style={{ display: 'inline-block', marginRight: '5px' }} />
-      </StickerBox>
-      // </a>
-    );
-  }
-  return <StickerBox nodeProps={props} />;
+    return <StickerBox nodeProps={props} mode={mode} />;
+  };
+  return stickerNode;
 };
 
-const StickerBox = ({ nodeProps, children }: { nodeProps: NodeProps<RoadmapItem>; children?: React.ReactNode }) => {
+const StickerBox = ({
+  nodeProps,
+  children,
+  mode,
+}: {
+  nodeProps: NodeProps<RoadmapItem>;
+  children?: React.ReactNode;
+  mode: NodeMode;
+}) => {
   const { data, selected } = nodeProps;
   return (
     <>
@@ -39,7 +58,7 @@ const StickerBox = ({ nodeProps, children }: { nodeProps: NodeProps<RoadmapItem>
         alignItems="center"
       >
         {children}
-        {data.description ? data.description : <Box color="gray.400">내용을 입력하세요</Box>}
+        {!data.description && mode === 'write' ? <Box color="gray.400">내용을 입력하세요</Box> : data.description}
       </Flex>
     </>
   );

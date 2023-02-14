@@ -1,7 +1,18 @@
 import { useRef } from 'react';
-import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import {
+  Badge,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+} from '@chakra-ui/react';
 import { RoadmapItem } from '../../../Interface/roadmap';
 import { useViewer } from '../../../Hooks/useViewer';
+import { getRoadmapItemRequiredName, getRoadmapItemStatusName } from '../../../Constants/roadmapItem';
 
 interface RoadmapItemModalProps {
   isOpen: boolean;
@@ -13,22 +24,52 @@ export const RoadmapItemViewModal = ({ isOpen, onClose, roadmapItem }: RoadmapIt
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   useViewer(viewerElRef, roadmapItem?.description);
 
+  const getStatusColor = () => {
+    switch (roadmapItem?.status) {
+      case 'todo':
+        return 'gray';
+      case 'ing':
+        return 'orange';
+      case 'completed':
+        return 'green';
+      default:
+        return 'gray';
+    }
+  };
+
+  const getRequiredColor = () => {
+    switch (roadmapItem?.required) {
+      case 'optional':
+        return 'gray';
+      case 'required':
+        return 'purple';
+      default:
+        return 'gray';
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} size="xl" onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{roadmapItem?.name}</ModalHeader>
+        <ModalHeader>
+          <Flex alignItems="center" gap={2}>
+            {/* 항목명 */}
+            <Text mr={2}>{roadmapItem?.name}</Text>
+
+            {/* 진행상태 */}
+            <Badge colorScheme={getStatusColor()}>{getRoadmapItemStatusName(roadmapItem?.status)}</Badge>
+
+            {/* 필수여부 */}
+            <Badge variant="outline" colorScheme={getRequiredColor()}>
+              {getRoadmapItemRequiredName(roadmapItem?.required)}
+            </Badge>
+          </Flex>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* 진행상태 */}
-          {/* 헤더에 오른쪽에 태그로 붙여서 보여주는게 좋을듯 */}
-          <div>{roadmapItem?.status}</div>
-
-          {/* 필수여부 */}
-          <div>{roadmapItem?.required}</div>
-
-          {/* 에디터 */}
-          <div ref={viewerElRef} style={{ minHeight: '400px' }}></div>
+          {/* 설명 뷰어 */}
+          <div ref={viewerElRef}></div>
         </ModalBody>
       </ModalContent>
     </Modal>

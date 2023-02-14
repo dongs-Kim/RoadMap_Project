@@ -4,10 +4,10 @@ import { BsCheckLg, BsCheckCircleFill } from 'react-icons/bs';
 import { FaPlay } from 'react-icons/fa';
 import { FiClock } from 'react-icons/fi';
 import { RoadmapItemRequired, RoadmapItemStatus } from '../../Constants/roadmapItem';
-import { RoadmapItem } from '../../Interface/roadmap';
+import { NodeMode, RoadmapItem } from '../../Interface/roadmap';
 import { NodeResizer } from '@reactflow/node-resizer';
 
-export const NodeBase = ({ data, selected }: NodeProps<RoadmapItem>) => {
+export const NodeBase = ({ data, selected, mode }: NodeProps<RoadmapItem> & { mode: NodeMode }) => {
   return (
     <>
       <NodeResizer color="#fff" isVisible={selected} minWidth={100} minHeight={42} />
@@ -23,8 +23,9 @@ export const NodeBase = ({ data, selected }: NodeProps<RoadmapItem>) => {
         letterSpacing="1px"
         justifyContent="center"
         alignItems="center"
+        className={data.description ? 'has-description' : 'no-description'}
       >
-        {data.name ? data.name : <Box color="gray.400">항목명</Box>}
+        {!data.name && mode === 'write' ? <Box color="gray.400">항목명</Box> : data.name}
         <RequiredIcon required={data.required} />
         <StatusIcon status={data.status} />
       </Flex>

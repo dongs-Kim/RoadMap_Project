@@ -6,7 +6,14 @@ import { RoadmapReply } from './components/RoadmapReply';
 import { HeaderToolbar } from './components/HeaderToolbar';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
-import { clearBookmark, clearLike, getIsBookmark, getIsLike, getRoadmapView } from '../../store/roadmapViewSlice';
+import {
+  clearBookmark,
+  clearLike,
+  clearState,
+  getIsBookmark,
+  getIsLike,
+  getRoadmapView,
+} from '../../store/roadmapViewSlice';
 import { Loading } from '../../Components/Page/Loading';
 import { getRoadmapCategoryName } from '../../Constants/roadmap';
 import { useUser } from '../../Hooks/dataFetch/useUser';
@@ -15,7 +22,7 @@ const RoadmapView = () => {
   const { roadmapId } = useParams();
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
-  const { isLogined } = useUser();
+  const { userData, isLogined } = useUser();
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   useViewer(viewerElRef, roadmapSet?.roadmap?.contents);
@@ -24,7 +31,9 @@ const RoadmapView = () => {
     if (roadmapId) {
       await dispatch(getRoadmapView({ id: roadmapId }));
     }
-    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }, [dispatch, roadmapId]);
 
   // 로드맵 데이터 조회
@@ -43,13 +52,19 @@ const RoadmapView = () => {
     }
   }, [isLogined, roadmapId, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearState());
+    };
+  }, [dispatch]);
+
   return (
     <>
       {/* 로딩 */}
       <Loading isOpen={loading} />
 
       <Flex width="100%" alignItems="center" flexDir="column">
-        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} minH="500px" pt={10} p={3}>
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
           {/* 카테고리 */}
           <Flex pb={3}>
             <Link>
@@ -69,7 +84,7 @@ const RoadmapView = () => {
 
           {/* 썸네일 */}
           {roadmapSet?.roadmap?.thumbnail && (
-            <Flex mb={10} justifyContent="center">
+            <Flex mt={10} mb={10} justifyContent="center">
               <Image src={roadmapSet?.roadmap.thumbnail} w="100%" maxW="500px" />
             </Flex>
           )}

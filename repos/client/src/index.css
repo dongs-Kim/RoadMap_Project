@@ -82,3 +82,23 @@
 .toastui-editor-contents {
   font-size: 15px;
 }
+
+.view-drawer .chakra-modal__content-container {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.flow-view .react-flow__node-startNode,
+.flow-view .react-flow__node-stickerNode,
+.flow-view .react-flow__node-downNode .no-description,
+.flow-view .react-flow__node-leftNode .no-description,
+.flow-view .react-flow__node-rightNode .no-description {
+  cursor: default;
+}
+
+.flow-view .react-flow__node-downNode .has-description:hover,
+.flow-view .react-flow__node-leftNode .has-description:hover,
+.flow-view .react-flow__node-rightNode .has-description:hover,
+.flow-view .react-flow__node-stickerNode a:hover {
+  filter: brightness(0.9);
+}

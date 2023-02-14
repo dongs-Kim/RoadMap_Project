@@ -74,3 +74,5 @@ export interface EdgeData {
   color: string;
   lineType: EdgeLineType;
 }
+
+export type NodeMode = 'write' | 'view';

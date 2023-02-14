@@ -12,14 +12,14 @@ import { RoadmapEdge } from '../../../Components/RoadmapItem/RoadmapEdge';
 import { StartNode } from '../../../Components/RoadmapItem/StartNode';
 import { StickerNode } from '../../../Components/RoadmapItem/StickerNode';
 import { EN_ROADMAP_EDGE_TYPE, EN_ROADMAP_NODE_TYPE, RoadmapItem } from '../../../Interface/roadmap';
-import { RoadmapItemViewModal } from './RoadmapItemViewModal';
+import { RoadmapItemDrawer } from './RoadmapItemDrawer';
 
 const nodeTypes = {
-  [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
-  [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode,
-  [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
-  [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
-  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode,
+  [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode('view'),
+  [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode('view'),
+  [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode('view'),
+  [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode('view'),
+  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode('view'),
 };
 
 const edgeTypes = {
@@ -42,7 +42,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
   // 로드맵 크기 조절
   useEffect(() => {
     const nodeContainerEl = document.getElementsByClassName('react-flow__nodes')[0];
-    if (!nodeContainerEl || nodeContainerEl.childElementCount == 0 || !containerRef.current) {
+    if (!nodeContainerEl || nodeContainerEl.childElementCount == 0 || !containerRef.current || _.isEmpty(nodes)) {
       return;
     }
 
@@ -82,6 +82,16 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
   }, [nodes, edges, fitView]);
 
   const onNodeClick = useCallback(async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {
+    if (
+      ![EN_ROADMAP_NODE_TYPE.DownNode, EN_ROADMAP_NODE_TYPE.LeftNode, EN_ROADMAP_NODE_TYPE.RigthNode].includes(
+        targetNode.type as EN_ROADMAP_NODE_TYPE,
+      )
+    ) {
+      return;
+    }
+    if (!targetNode.data.description) {
+      return;
+    }
     setRoadmapItem({ ...targetNode.data });
     onOpenItem();
   }, []);
@@ -123,7 +133,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
           proOptions={{ hideAttribution: true }}
           defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         >
-          <Flex position="absolute" top={5} right={5} zIndex={5} gap={2}>
+          <Flex position="absolute" top={5} left={5} zIndex={5} gap={2}>
             <Tooltip label="zoom in">
               <IconButton
                 aria-label="zoom in"
@@ -155,7 +165,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
         </ReactFlow>
       </div>
 
-      <RoadmapItemViewModal isOpen={isOpenItem} onClose={onCloseItem} roadmapItem={roadmapItem} />
+      <RoadmapItemDrawer isOpen={isOpenItem} onClose={onCloseItem} roadmapItem={roadmapItem} />
     </>
   );
 };

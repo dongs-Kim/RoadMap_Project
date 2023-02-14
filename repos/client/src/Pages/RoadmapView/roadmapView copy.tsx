@@ -37,7 +37,7 @@ const RoadmapView = () => {
       try {
         const { data } = await axios.get<RoadmapSetDto>(`/api/roadmaps/${roadmapId}`, { params: { mode: 'view' } });
         setRoadmapSet(data);
-        viewer?.setMarkdown(data.roadmap.contents);
+        // viewer?.setMarkdown(data.roadmap.contents);
       } catch {
         toastError('로드맵을 불러오지 못했습니다');
         navigate(-1);
@@ -269,7 +269,7 @@ const RoadmapView = () => {
         <FlowView nodes={roadmapSet.nodes} edges={roadmapSet.edges} />
       </div>
 
-      <RoadmapReply replies={replies} user={user} onSave={onSaveReply} onDelete={loadReplies} onUpdate={loadReplies} />
+      {/* <RoadmapReply replies={replies} user={user} onSave={onSaveReply} onDelete={loadReplies} onUpdate={loadReplies} /> */}
 
       {/* {isOpen && roadmapItem && (
         <RoadmapItemViewModal onClose={onCloseModal} data={roadmapItem} nodeType={modalNodeType} />

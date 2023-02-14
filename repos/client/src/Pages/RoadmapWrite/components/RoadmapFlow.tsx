@@ -32,11 +32,11 @@ import {
 import { addEdge, addNode, setEdges, setNodes, updateEdge, updateNode } from '../../../store/roadmapWriteSlice';
 
 const nodeTypes = {
-  [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode,
-  [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode,
-  [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode,
-  [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode,
-  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode,
+  [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode('write'),
+  [EN_ROADMAP_NODE_TYPE.DownNode]: DownNode('write'),
+  [EN_ROADMAP_NODE_TYPE.LeftNode]: LeftNode('write'),
+  [EN_ROADMAP_NODE_TYPE.RigthNode]: RightNode('write'),
+  [EN_ROADMAP_NODE_TYPE.StickerNode]: StickerNode('write'),
 };
 
 const edgeTypes = {

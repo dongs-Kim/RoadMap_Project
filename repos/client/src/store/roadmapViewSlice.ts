@@ -52,6 +52,11 @@ const roadmapViewSlice = createSlice({
   name: 'roadmapView',
   initialState,
   reducers: {
+    clearState: (state) => {
+      state.roadmapSet = null;
+      delete state.isLike;
+      delete state.isStore;
+    },
     toggleBookmark: (state) => {
       state.isStore = !state.isStore;
     },
@@ -98,6 +103,6 @@ const roadmapViewSlice = createSlice({
   },
 });
 
-export const { toggleBookmark, clearBookmark, toggleLike, clearLike } = roadmapViewSlice.actions;
+export const { toggleBookmark, clearBookmark, toggleLike, clearLike, clearState } = roadmapViewSlice.actions;
 
 export default roadmapViewSlice.reducer;
