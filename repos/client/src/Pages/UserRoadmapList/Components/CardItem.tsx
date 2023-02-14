@@ -22,34 +22,17 @@ import { RoadmapDto, RoadmapLikeDto } from '../../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
 
 interface Props {
-  id: string | undefined;
+  roadMapInfo : RoadmapLikeDto[]
+  loading : boolean
 }
 
-export const CardItem = ({ id }: Props) => {
-  const [userRoadmaps, setUserRoadmaps] = useState<RoadmapDto[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const loadUserRoadmaps = useCallback(async () => {
-    try {
-      const { data } = await axios.get<RoadmapDto[]>(`/api/roadmaps/list/User/${id}`);
-      setUserRoadmaps(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    setLoading(true);
-    loadUserRoadmaps();
-  }, [loadUserRoadmaps]);
+export const CardItem = ({ roadMapInfo, loading }: Props) => {
 
   return (
     <List display="flex" flexWrap="wrap">
       {loading && <Text>Loading....</Text>}
       {!loading &&
-        userRoadmaps.map((roadmap) => (
+        roadMapInfo.map((roadmap) => (
           <ListItem display="flex" key={roadmap.id} margin="10px">
             <Card
               w="200px"
@@ -116,7 +99,7 @@ export const CardItem = ({ id }: Props) => {
                   </CardBody>
                 )}
               </Link>
-              {/* <CardFooter justifyContent="space-between" padding="10px">
+              <CardFooter justifyContent="space-between" padding="10px">
                 <Flex alignItems="center">
                   <AiFillHeart className="icon" size="8" color="red" />
                   <Text ml="1" fontSize="xs">
@@ -128,7 +111,7 @@ export const CardItem = ({ id }: Props) => {
                     by. {roadmap.User.nickname}
                   </Text>
                 </Flex>
-              </CardFooter> */}
+              </CardFooter>
             </Card>
           </ListItem>
         ))}

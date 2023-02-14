@@ -169,8 +169,8 @@ export const HeaderToolbar = () => {
   );
 
   const onClickUserRoadmap = useCallback(
-    (roadmap: RoadmapSetDto) => {
-      return <UserRoadMapList roadmapInfo={roadmap}></UserRoadMapList>;
+    (id: string | undefined) => {
+      navigate(`/Roadmap/User/${id}`)
     },
     [roadmapSet],
   );
@@ -183,7 +183,7 @@ export const HeaderToolbar = () => {
           <Avatar size="sm" name={roadmapSet?.user?.nickname} src={roadmapSet?.user?.image} />
         </Link>
         {roadmapSet && (
-          <Link onClick={() => onClickUserRoadmap(roadmapSet)}>
+          <Link onClick={() => onClickUserRoadmap(roadmapSet?.user?.id)}>
             <Text>{roadmapSet?.user?.nickname}</Text>
           </Link>
         )}

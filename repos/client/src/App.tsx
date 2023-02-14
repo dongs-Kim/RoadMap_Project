@@ -21,7 +21,7 @@ function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/Roadmap/list/:category" element={<RoadMapList />} />
-        {/* <Route path="/Roadmap/User/:id" element={<UserRoadMapList />} /> */}
+        <Route path="/Roadmap/User/:id" element={<UserRoadMapList/>} />
         <Route path="/Favorite/list/:id" element={<FavoriteList />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Mypage" element={<Mypage />} />

@@ -19,7 +19,7 @@ const RoadMapList = () => {
 
   return (
     <div style={{ width: '900px', margin: '0 auto' }}>
-      <Heading color="teal.400" pb="5" pt="3">
+      <Heading color="#333" pb="5" pt="3">
         {title}
       </Heading>
       <List display="flex" paddingLeft="5" paddingBottom="4">

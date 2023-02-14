@@ -6,16 +6,16 @@ import { menuCategories } from '../../Components/Menu/menu';
 const Home = () => {
   return (
     <Flex flexDir="column">
-      <Flex flexDir="column" paddingBottom="20">
+      <Flex flexDir="column" paddingBottom="15">
         {menuCategories.map((category) => (
           <Heading key={category.type} pb="20">
-            <Text fontSize="l" color="teal.400">
+            <Text fontSize="2xl" color="#333">
               {category.name}
-              <RouterLink to={`Roadmap/List/${category.type}`}>
-                <Button color="teal.300" bg="white">
+              <Button color="gray.600" bg="white" fontSize= "md">
+                <RouterLink to={`Roadmap/List/${category.type}`}>                
                   더보기
-                </Button>
-              </RouterLink>
+                </RouterLink>
+              </Button>
             </Text>
             <CardItem category={category.type}></CardItem>
           </Heading>

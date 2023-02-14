@@ -134,6 +134,10 @@ export class RoadmapsService {
         },
         public: true,
       },
+      relations: {
+        LikeUsers: true,
+        User: true,
+      },
       order: {
         updated_at: 'desc',
       },

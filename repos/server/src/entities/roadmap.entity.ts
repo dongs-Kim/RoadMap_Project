@@ -31,6 +31,10 @@ export class Roadmap {
   @Column()
   title: string;
 
+  // @IsNotEmpty()
+  // @Column()
+  // userId: string;
+
   @Column('text', { nullable: true })
   contents?: string;
 

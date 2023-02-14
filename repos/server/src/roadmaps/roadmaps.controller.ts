@@ -55,8 +55,8 @@ export class RoadmapsController {
 
   @ApiOperation({ summary: '유저별 로드맵 조회' })
   @Get('list/User/:id')
-  findByUser(@Param('Userid') Userid: string) {
-    return this.roadmapsService.findByUser(Userid);
+  findByUser(@Param('id') id: string) {
+    return this.roadmapsService.findByUser(id);
   }
 
   @ApiOperation({ summary: '특정 로드맵 조회' })

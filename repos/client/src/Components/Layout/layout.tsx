@@ -86,20 +86,20 @@ const Layout = () => {
       >
         <Box>
           <RouterLink to="/">
-            <Text color="teal.400" fontSize="xl" fontFamily="'Mochiy Pop One', sans-serif">
+            <Text color="#333" fontSize="xl" fontFamily="'Mochiy Pop One', sans-serif">
               Dev Roadmap
             </Text>
           </RouterLink>
         </Box>
         <Box>
-          <Button size="sm" colorScheme="teal" variant="outline" onClick={onClickNewRoadMap}>
+          <Button size="sm" colorScheme="#333" variant="outline" onClick={onClickNewRoadMap}>
             새 로드맵 작성
           </Button>
           <Menu>
-            <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton size="sm" colorScheme="#333" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
               Category
             </MenuButton>
-            <MenuList color="teal.600" fontFamily="monospace">
+            <MenuList color="#333" fontFamily="monospace">
               {menuCategories.map((category) => (
                 <MenuItem pb={4} key={category.type} onClick={() => onClickCategory(category.type)}>
                   {category.name}
@@ -110,10 +110,10 @@ const Layout = () => {
           {userData && (
             <span>
               <Menu>
-                <MenuButton size="sm" colorScheme="teal" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
+                <MenuButton size="sm" colorScheme="#333" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
                   <Avatar size="sm" name={userData?.nickname} src={userData?.image} />
                 </MenuButton>
-                <MenuList color="teal.600" fontFamily="monospace">
+                <MenuList color="#333" fontFamily="monospace">
                   <MenuItem pb={3} onClick={onClickMypage}>
                     내 로드맵
                   </MenuItem>
@@ -131,7 +131,7 @@ const Layout = () => {
             </span>
           )}
           {!userData && (
-            <Button size="sm" colorScheme="teal" variant="ghost" onClick={onClickLogIn}>
+            <Button size="sm" colorScheme="#333" variant="ghost" onClick={onClickLogIn}>
               로그인
             </Button>
           )}

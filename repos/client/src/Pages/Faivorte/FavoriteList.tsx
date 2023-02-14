@@ -10,7 +10,7 @@ const FavoriteList = () => {
   const { id } = useParams();
     return (
     <div style={{ width: "900px", margin: "0 auto" }}>
-      <Heading color="teal.400" pb="5" pt = "3" >
+      <Heading color="#333" pb="5" pt = "3" >
         북마크
       </Heading>
       <CardItem id = {id}></CardItem>

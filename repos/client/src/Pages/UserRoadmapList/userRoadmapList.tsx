@@ -1,22 +1,55 @@
 import { Link as RouterLink, useParams } from 'react-router-dom';
-import { Heading } from '@chakra-ui/react';
+import { Avatar, Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
 import { CardItem } from './Components/CardItem';
-import { RoadmapSetDto, User } from '../../Interface/roadmap';
+import { RoadmapDto, RoadmapLikeDto, RoadmapSetDto, User } from '../../Interface/roadmap';
+import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
 
-interface Props {
-  roadmapInfo: RoadmapSetDto;
-}
 
-const UserRoadMapList = ({ roadmapInfo }: Props) => {
-  const { user } = roadmapInfo;
+
+const UserRoadMapList = () => {
+  const { id } = useParams();
+  const [userRoadmaps, setUserRoadmaps] = useState<RoadmapLikeDto[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadUserRoadmaps = useCallback(async () => {
+    try {
+      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/User/${id}`);
+      setUserRoadmaps(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    setLoading(true);
+    loadUserRoadmaps();
+  }, [loadUserRoadmaps]);
+
 
   return (
     <div style={{ width: '900px', margin: '0 auto' }}>
-      <Heading color="teal.400" pb="5" pt="3">
-        {user?.nickname}
-        {user?.comment}
+      <Heading color="gray.700" pb="5" pt="3" fontSize= "md">
+        {userRoadmaps[0]?.User && (
+          <div>
+          <Flex alignItems ="center" gap={5} pb = "4" height= "180px">
+                <Avatar size="xl" name={userRoadmaps[0].User?.nickname} src={userRoadmaps[0]?.User?.image} />        
+            <Flex flexDir="column" gap = {3}>
+                <Text fontWeight= "bold" fontSize= "xl">
+                  {userRoadmaps[0].User.nickname}
+                </Text> 
+                <Text fontSize= "md">
+                  {userRoadmaps[0].User.comment}
+                </Text>
+            </Flex>
+          </Flex>
+          <Divider border= "1px solid #ccc"></Divider>          
+        </div>
+          )}
       </Heading>
-      <CardItem id={user?.id}></CardItem>
+      <CardItem roadMapInfo ={userRoadmaps} loading = {loading}></CardItem>
     </div>
   );
 };

@@ -143,7 +143,7 @@ export const CardItem = () => {
                 </Link>
                 <CardFooter padding="10px">
                   <ButtonGroup spacing="2">
-                    <Button colorScheme="teal" size="xs" onClick={() => onClickModify(roadmap.id)}>
+                    <Button colorScheme= "blue" size="xs" onClick={() => onClickModify(roadmap.id)}>
                       수정
                     </Button>
                     <Button size="xs" onClick={() => onClickDelete(roadmap.id)}>
