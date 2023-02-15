@@ -30,7 +30,7 @@ export class UsersService {
     user.image = createUserDto.image;
 
     await this.usersRepository.save(user);
-    return true;
+    return user;
   }
 
   findAll(): Promise<User[]> {

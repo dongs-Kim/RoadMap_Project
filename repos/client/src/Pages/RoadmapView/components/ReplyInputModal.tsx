@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent } from 'react';
+import { useState, useCallback, ChangeEvent, useEffect } from 'react';
 import {
   Button,
   FormControl,
@@ -11,8 +11,8 @@ import {
   ModalOverlay,
   Textarea,
 } from '@chakra-ui/react';
-import axios from 'axios';
-import { toastError, toastSuccess } from '../../../Utils/toast';
+import TextareaAutosize from 'react-textarea-autosize';
+import { toastError } from '../../../Utils/toast';
 import { IReply } from '../../../Interface/db';
 
 interface ReplyInputModalProps {
@@ -24,6 +24,12 @@ interface ReplyInputModalProps {
 
 export const ReplyInputModal = ({ isOpen, onClose, onUpdate, data }: ReplyInputModalProps) => {
   const [contents, setContents] = useState<string>(data?.contents ?? '');
+
+  useEffect(() => {
+    if (data?.contents) {
+      setContents(data?.contents);
+    }
+  }, [isOpen, data?.contents]);
 
   const onChangeDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setContents(e.target.value);
@@ -42,23 +48,23 @@ export const ReplyInputModal = ({ isOpen, onClose, onUpdate, data }: ReplyInputM
   }, [onUpdate, contents]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onModalClose}>
+    <Modal isOpen={isOpen} onClose={onModalClose} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>댓글 수정</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
-            <Textarea value={contents} onChange={onChangeDescription} />
+            <Textarea as={TextareaAutosize} value={contents} onChange={onChangeDescription} />
           </FormControl>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onSave}>
+          <Button colorScheme="teal" mr={3} onClick={onSave}>
             저장
           </Button>
           <Button variant="ghost" onClick={onModalClose}>
-            취소z
+            취소
           </Button>
         </ModalFooter>
       </ModalContent>

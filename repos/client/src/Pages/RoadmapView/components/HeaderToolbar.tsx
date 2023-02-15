@@ -19,6 +19,7 @@ import { BiImageAlt } from 'react-icons/bi';
 import { BsBookmark, BsDownload, BsFacebook, BsFillBookmarkFill, BsShare, BsTwitter } from 'react-icons/bs';
 import { FiCopy } from 'react-icons/fi';
 import { IoCopyOutline } from 'react-icons/io5';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
 import { useCallback } from 'react';
 import _ from 'lodash';
@@ -162,24 +163,17 @@ export const HeaderToolbar = () => {
     [],
   );
 
-  const onClickUserRoadmap = useCallback(
-    (id: string | undefined) => {
-      navigate(`/Roadmap/User/${id}`);
-    },
-    [roadmapSet],
-  );
-
   return (
     <Flex justifyContent="space-between">
       {/* 작성자 */}
       <Flex alignItems="center" gap={1} fontSize="15px">
-        <Link mr={1}>
-          <Avatar size="sm" name={roadmapSet?.user?.nickname} src={roadmapSet?.user?.image} />
-        </Link>
-        {roadmapSet && (
-          <Link onClick={() => onClickUserRoadmap(roadmapSet?.user?.id)}>
-            <Text>{roadmapSet?.user?.nickname}</Text>
-          </Link>
+        {roadmapSet?.user && (
+          <RouterLink to={`/Roadmap/User/${roadmapSet.user.id}`}>
+            <Flex alignItems="center">
+              <Avatar mr={2} size="sm" name={roadmapSet.user.nickname} src={roadmapSet.user.image} loading="eager" />
+              <Text>{roadmapSet?.user?.nickname}</Text>
+            </Flex>
+          </RouterLink>
         )}
         <span>·</span>
         <Text>{dayjs(roadmapSet?.roadmap?.created_at).fromNow()}</Text>

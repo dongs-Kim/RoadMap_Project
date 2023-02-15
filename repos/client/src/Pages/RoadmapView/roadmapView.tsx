@@ -109,7 +109,7 @@ const RoadmapView = () => {
         </Flex>
 
         {/* 댓글 */}
-        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} minH="500px" pt={10} p={3}>
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
           <RoadmapReply roadmap_id={roadmapId} setLoading={setLoading} />
         </Flex>
       </Flex>

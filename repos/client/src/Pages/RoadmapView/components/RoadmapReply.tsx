@@ -17,17 +17,18 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import TextareaAutosize from 'react-textarea-autosize';
-import { IReply } from '../../../Interface/db';
-import { toastError, toastSuccess } from '../../../Utils/toast';
 import { BiDotsVerticalRounded } from 'react-icons/bi';
 import { AiFillDelete, AiOutlineEdit } from 'react-icons/ai';
+import { Link as RouterLink } from 'react-router-dom';
 import _ from 'lodash';
+import dayjs from 'dayjs';
+import { IReply } from '../../../Interface/db';
+import { toastError } from '../../../Utils/toast';
 import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
 import { useUser } from '../../../Hooks/dataFetch/useUser';
 import { deleteReplyAsync, saveReplyAsync, updateReplyAsync } from '../../../Apis/roadmapApi';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
 import { getReplies } from '../../../store/roadmapViewSlice';
-import dayjs from 'dayjs';
 import { ReplyInputModal } from './ReplyInputModal';
 import { ReplyDeleteDialog } from './ReplyDeleteDialog';
 
@@ -67,7 +68,6 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
 
       try {
         await saveReplyAsync(roadmap_id, contents);
-        toastSuccess('댓글을 저장했습니다');
         setContents('');
         loadReplies();
       } catch {
@@ -94,7 +94,7 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
 
   const onClickUpdate = useCallback(
     _.debounce((reply: IReply) => {
-      setToUpdateReply(reply);
+      setToUpdateReply({ ...reply });
       onOpenModal();
     }, 200),
     [onOpenModal],
@@ -106,7 +106,6 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
     }
     try {
       await deleteReplyAsync(toDeleteId);
-      toastSuccess('댓글을 삭제했습니다');
     } catch {
       toastError('댓글을 삭제하지 못했습니다');
     }
@@ -134,7 +133,6 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
       }
       try {
         await updateReplyAsync(toUpdateReply.id, contents);
-        toastSuccess('댓글을 저장했습니다');
       } catch {
         toastError('댓글을 저장하지 못했습니다');
       }
@@ -142,7 +140,7 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
       setToUpdateReply(null);
       loadReplies();
     },
-    [onCloseModal],
+    [onCloseModal, toUpdateReply, roadmap_id, loadReplies],
   );
 
   return (
@@ -178,8 +176,12 @@ export const RoadmapReply = ({ roadmap_id, setLoading }: RoadmapReplyProps) => {
             <Flex flexDir="column">
               <Flex justifyContent="space-between">
                 <Flex alignItems="center" gap={1} fontSize="15px">
-                  <Avatar size="sm" mr={2} name={reply.user_nickname} src={reply.user_image} />
-                  <Text>{reply.user_nickname}</Text>
+                  <RouterLink to={`/Roadmap/User/${reply.user_id}`}>
+                    <Flex alignItems="center">
+                      <Avatar size="sm" mr={2} name={reply.user_nickname} src={reply.user_image} />
+                      <Text>{reply.user_nickname}</Text>
+                    </Flex>
+                  </RouterLink>
                   <span>·</span>
                   <Text>{dayjs(reply.created_at).fromNow()}</Text>
                 </Flex>

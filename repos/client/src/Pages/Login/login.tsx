@@ -16,6 +16,7 @@ import {
   FormHelperText,
 } from '@chakra-ui/react';
 import { useUser } from '../../Hooks/dataFetch/useUser';
+import { toastError } from '../../Utils/toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -61,7 +62,8 @@ const Login = () => {
           mutate();
         })
         .catch((error) => {
-          setLogInError(error.response?.data?.statusCode === 403);
+          setLogInError(error.response?.data?.statusCode !== 200);
+          toastError('이메일 또는 비밀번호를 잘못 입력했습니다');
         });
     },
     [email, password, mutate, navigate],

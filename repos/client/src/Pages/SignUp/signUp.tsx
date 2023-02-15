@@ -141,12 +141,13 @@ const SignUp = () => {
           )
           .then((response) => {
             setSignUpSuccess(true);
+            navigate('/');
           });
       } catch (error) {
         console.error(error);
       }
     },
-    [email, nickname, password_origin],
+    [email, nickname, password_origin, navigate],
   );
 
   if (userData) {

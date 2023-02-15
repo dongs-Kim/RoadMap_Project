@@ -53,8 +53,16 @@ export class UsersController {
   @ApiOperation({ summary: '사용자 생성' })
   @UseGuards(NotLoggedInGuard)
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto, @Req() req) {
+    const user = await this.usersService.create(createUserDto);
+
+    await new Promise<void>((resolve) => {
+      req.login(user, (err) => {
+        resolve();
+      });
+    });
+
+    return true;
   }
 
   @ApiOperation({ summary: '내 정보 조회' })
@@ -136,7 +144,7 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @User() user: UserEntity,
   ) {
-    const url = `${UPLOAD_PROFILE_PATH}/${file.filename}`;
+    const url = `/${UPLOAD_PROFILE_PATH}/${file.filename}`;
     await this.usersService.uploadProfileImage(user, url);
     return url;
   }
