@@ -8,4 +8,5 @@ export class GetRoadmapReplyDto extends PickType(Reply, [
 ]) {
   user_id: string;
   user_nickname: string;
+  user_image?: string;
 }

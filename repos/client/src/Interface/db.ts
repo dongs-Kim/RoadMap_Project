@@ -33,4 +33,5 @@ export interface IReply {
   created_at: string;
   user_id: string;
   user_nickname: string;
+  user_image?: string;
 }

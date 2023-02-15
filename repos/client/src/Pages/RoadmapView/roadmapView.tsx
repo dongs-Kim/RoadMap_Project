@@ -9,9 +9,11 @@ import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import {
   clearBookmark,
   clearLike,
+  clearReplies,
   clearState,
   getIsBookmark,
   getIsLike,
+  getReplies,
   getRoadmapView,
 } from '../../store/roadmapViewSlice';
 import { Loading } from '../../Components/Page/Loading';
@@ -43,6 +45,12 @@ const RoadmapView = () => {
 
   // 데이터 조회
   useEffect(() => {
+    if (roadmapId) {
+      dispatch(getReplies({ id: roadmapId }));
+    } else {
+      dispatch(clearReplies());
+    }
+
     if (isLogined && roadmapId) {
       dispatch(getIsBookmark({ id: roadmapId }));
       dispatch(getIsLike({ id: roadmapId }));
@@ -102,24 +110,7 @@ const RoadmapView = () => {
 
         {/* 댓글 */}
         <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} minH="500px" pt={10} p={3}>
-          <RoadmapReply
-            replies={[
-              {
-                id: '1',
-                contents: '감사합니다 :)\n도움이 되었습니다!',
-                user_id: 'aaa',
-                user_nickname: '호호',
-                created_at: '',
-              },
-              {
-                id: '2',
-                contents: '감사합니다 :)',
-                user_id: 'aaa',
-                user_nickname: '호호',
-                created_at: '',
-              },
-            ]}
-          />
+          <RoadmapReply roadmap_id={roadmapId} setLoading={setLoading} />
         </Flex>
       </Flex>
     </>

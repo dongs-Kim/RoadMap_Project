@@ -12,17 +12,18 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { toastError, toastSuccess } from '../../Utils/toast';
-import { IReply } from '../../Interface/db';
+import { toastError, toastSuccess } from '../../../Utils/toast';
+import { IReply } from '../../../Interface/db';
 
 interface ReplyInputModalProps {
+  isOpen: boolean;
   onClose(): void;
-  onUpdate(): void;
-  data: IReply;
+  onUpdate(contents: string): void;
+  data: IReply | null;
 }
 
-export const ReplyInputModal = ({ onClose, onUpdate, data }: ReplyInputModalProps) => {
-  const [contents, setContents] = useState<string>(data.contents);
+export const ReplyInputModal = ({ isOpen, onClose, onUpdate, data }: ReplyInputModalProps) => {
+  const [contents, setContents] = useState<string>(data?.contents ?? '');
 
   const onChangeDescription = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setContents(e.target.value);
@@ -37,17 +38,11 @@ export const ReplyInputModal = ({ onClose, onUpdate, data }: ReplyInputModalProp
       toastError('댓글을 작성해 주세요');
       return;
     }
-    try {
-      await axios.patch(`/api/replies/${data.id}`, { contents });
-      toastSuccess('댓글을 저장했습니다');
-    } catch {
-      toastError('댓글을 저장하지 못했습니다');
-    }
-    onUpdate();
-  }, [onUpdate, data, contents]);
+    onUpdate(contents);
+  }, [onUpdate, contents]);
 
   return (
-    <Modal isOpen={true} onClose={onModalClose}>
+    <Modal isOpen={isOpen} onClose={onModalClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>댓글 수정</ModalHeader>

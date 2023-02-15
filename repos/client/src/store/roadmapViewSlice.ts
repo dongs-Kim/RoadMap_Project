@@ -1,15 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { IReply } from '../Interface/db';
 import { RoadmapSetDto } from '../Interface/roadmap';
 
 interface RoadmapViewState {
   roadmapSet: RoadmapSetDto | null;
+  replies: IReply[];
   isStore?: boolean;
   isLike?: boolean;
 }
 
 const initialState: RoadmapViewState = {
   roadmapSet: null,
+  replies: [],
 };
 
 export const getRoadmapView = createAsyncThunk<RoadmapSetDto, { id: string }>(
@@ -48,6 +51,18 @@ export const getIsLike = createAsyncThunk<boolean, { id: string }>(
   },
 );
 
+export const getReplies = createAsyncThunk<IReply[], { id: string }>(
+  'roadmapView/getReplies',
+  async ({ id }, thunkApi) => {
+    try {
+      const { data } = await axios.get<IReply[]>(`/api/replies/${id}`);
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err);
+    }
+  },
+);
+
 const roadmapViewSlice = createSlice({
   name: 'roadmapView',
   initialState,
@@ -71,6 +86,9 @@ const roadmapViewSlice = createSlice({
     },
     clearLike: (state) => {
       state.isLike = false;
+    },
+    clearReplies: (state) => {
+      state.replies = [];
     },
   },
   extraReducers: (builder) => {
@@ -100,9 +118,14 @@ const roadmapViewSlice = createSlice({
     builder.addCase(getIsLike.fulfilled, (state, action) => {
       state.isLike = action.payload;
     });
+
+    builder.addCase(getReplies.fulfilled, (state, action) => {
+      state.replies = action.payload;
+    });
   },
 });
 
-export const { toggleBookmark, clearBookmark, toggleLike, clearLike, clearState } = roadmapViewSlice.actions;
+export const { toggleBookmark, clearBookmark, toggleLike, clearLike, clearState, clearReplies } =
+  roadmapViewSlice.actions;
 
 export default roadmapViewSlice.reducer;

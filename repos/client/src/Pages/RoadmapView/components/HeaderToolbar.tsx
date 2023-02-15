@@ -14,8 +14,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
 import { AiFillHeart } from 'react-icons/ai';
 import { BiImageAlt } from 'react-icons/bi';
 import { BsBookmark, BsDownload, BsFacebook, BsFillBookmarkFill, BsShare, BsTwitter } from 'react-icons/bs';
@@ -26,7 +24,7 @@ import { useCallback } from 'react';
 import _ from 'lodash';
 import { toPng } from 'html-to-image';
 import { downloadImage } from '../../../Utils/roadmap';
-import { RoadmapSetDto, User } from '../../../Interface/roadmap';
+import { RoadmapSetDto } from '../../../Interface/roadmap';
 import { useNavigate } from 'react-router-dom';
 import { CloneConfirmDialog } from './CloneConfirmDialog';
 import { toggleBookmark, toggleLike } from '../../../store/roadmapViewSlice';
@@ -39,10 +37,6 @@ import {
 } from '../../../Apis/roadmapApi';
 import { useUser } from '../../../Hooks/dataFetch/useUser';
 import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
-import UserRoadMapList from '../../UserRoadmapList/userRoadmapList';
-
-dayjs.extend(relativeTime);
-dayjs.locale('ko');
 
 export const HeaderToolbar = () => {
   const navigate = useNavigate();
@@ -170,7 +164,7 @@ export const HeaderToolbar = () => {
 
   const onClickUserRoadmap = useCallback(
     (id: string | undefined) => {
-      navigate(`/Roadmap/User/${id}`)
+      navigate(`/Roadmap/User/${id}`);
     },
     [roadmapSet],
   );

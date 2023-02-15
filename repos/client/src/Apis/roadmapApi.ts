@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { IReply } from '../Interface/db';
 import { RoadmapSetDto } from '../Interface/roadmap';
 
 export const saveThumbnailAsync = async (id: string, file: File) => {
@@ -30,5 +31,20 @@ export const likeRoadmapAsync = async (id: string) => {
 
 export const unlikeRoadmapAsync = async (id: string) => {
   const { data } = await axios.post<boolean>(`/api/roadmaps/${id}/unlike`);
+  return data;
+};
+
+export const saveReplyAsync = async (id: string, contents: string) => {
+  const { data } = await axios.post<IReply[]>(`/api/replies`, { roadmap_id: id, contents });
+  return data;
+};
+
+export const deleteReplyAsync = async (id: string) => {
+  const { data } = await axios.delete<boolean>(`/api/replies/${id}`);
+  return data;
+};
+
+export const updateReplyAsync = async (id: string, contents: string) => {
+  const { data } = await axios.patch<boolean>(`/api/replies/${id}`, { contents });
   return data;
 };

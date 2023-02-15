@@ -55,6 +55,7 @@ export class RepliesService {
       created_at: reply.created_at,
       user_id: reply.User.id,
       user_nickname: reply.User.nickname,
+      user_image: reply.User.image,
     }));
   }
 

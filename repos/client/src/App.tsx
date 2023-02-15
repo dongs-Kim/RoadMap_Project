@@ -11,6 +11,12 @@ import Profile from './Pages/Profile/Profile';
 import FavoriteList from './Pages/Faivorte/FavoriteList';
 import { ConfirmTerms } from './Pages/SignUp/confirmTerms';
 import UserRoadMapList from './Pages/UserRoadmapList/userRoadmapList';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
 
 function App() {
   return (
@@ -21,7 +27,7 @@ function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="/Roadmap/list/:category" element={<RoadMapList />} />
-        <Route path="/Roadmap/User/:id" element={<UserRoadMapList/>} />
+        <Route path="/Roadmap/User/:id" element={<UserRoadMapList />} />
         <Route path="/Favorite/list/:id" element={<FavoriteList />} />
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Mypage" element={<Mypage />} />
