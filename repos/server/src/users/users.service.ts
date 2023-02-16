@@ -151,7 +151,7 @@ export class UsersService {
     if (!user.image) {
       return;
     }
-    await fs.remove(path.join('public', user.image));
+    await fs.remove(path.join(__dirname, '../../public', user.image));
     await this.usersRepository.update(user.id, { image: null });
   }
 }

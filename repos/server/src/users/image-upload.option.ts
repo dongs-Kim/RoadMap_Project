@@ -3,12 +3,16 @@ import fs from 'fs-extra';
 import path from 'path';
 import { BadRequestException } from '@nestjs/common';
 
-export const UPLOAD_PROFILE_PATH = 'uploads/profile';
+export const UPLOAD_PROFILE_PATH = 'static/profile';
 
 export const profileImageOption = {
   storage: multer.diskStorage({
     destination(req, file, cb) {
-      const profilePath = path.join('public', UPLOAD_PROFILE_PATH);
+      const profilePath = path.join(
+        __dirname,
+        '../../public',
+        UPLOAD_PROFILE_PATH,
+      );
       fs.ensureDirSync(profilePath);
       cb(null, profilePath);
     },

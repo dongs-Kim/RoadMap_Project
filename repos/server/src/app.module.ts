@@ -36,7 +36,7 @@ import { join } from 'path';
       logging: isProduction() ? false : true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join(__dirname, '../public'),
     }),
     UsersModule,
     RoadmapsModule,

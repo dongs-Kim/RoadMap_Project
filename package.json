@@ -1,0 +1,25 @@
+{
+  "name": "roadmap_project",
+  "version": "1.0.0",
+  "description": "로드맵 프로젝트",
+  "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build",
+    "start": "cross-env NODE_ENV=production node repos/server/dist/src/main"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongs-Kim/RoadMap_Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dongs-Kim/RoadMap_Project/issues"
+  },
+  "homepage": "https://github.com/dongs-Kim/RoadMap_Project#readme",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "fs-extra": "^11.1.0"
+  }
+}

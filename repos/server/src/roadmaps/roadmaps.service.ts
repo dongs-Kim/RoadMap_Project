@@ -319,7 +319,9 @@ export class RoadmapsService {
   }
 
   removeThumbnail(id: string) {
-    const files = glob.sync(`public/${UPLOAD_THUMBNAIL_PATH}/${id}*`);
+    const files = glob.sync(`../../public/${UPLOAD_THUMBNAIL_PATH}/${id}*`, {
+      cwd: __dirname,
+    });
     files.forEach((file) => {
       fs.removeSync(file);
     });
