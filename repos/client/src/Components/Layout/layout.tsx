@@ -45,7 +45,7 @@ const Layout = () => {
   }, [navigate]);
 
   const onClickSignUp = useCallback(() => {
-    navigate('/signup');
+    navigate('/confirmTerms');
   }, [navigate]);
 
   const onClickLogOut = useCallback(() => {
@@ -66,6 +66,7 @@ const Layout = () => {
       onOpenLogin();
     }
   }, [navigate, isLogined, onOpenLogin]);
+  
   const onClickFavoriteList = useCallback(() => {
     navigate(`/Favorite/List/${userData.id}`);
   }, [navigate]);

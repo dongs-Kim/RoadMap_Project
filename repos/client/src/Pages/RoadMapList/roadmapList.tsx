@@ -19,15 +19,14 @@ const RoadMapList = () => {
 
   return (
     <div style={{ width: '900px', margin: '0 auto' }}>
-      <Heading color="#333" pb="5" pt="3">
+      <Heading color="#333" pb="2" fontSize="2xl">
         {title}
       </Heading>
-      <List display="flex" paddingLeft="5" paddingBottom="4">
+      <List display="flex" paddingLeft="1" paddingBottom="4">
         <ListItem display="inline">
           <Flex alignItems="center">
             <BiTime />
-            <Link pl="2" onClick={onClickAllSearch}>
-              {' '}
+            <Link pl="1" onClick={onClickAllSearch}>              
               최신 순
             </Link>
           </Flex>
@@ -35,12 +34,13 @@ const RoadMapList = () => {
         <ListItem display="inline" paddingLeft="5">
           <Flex alignItems="center">
             <FcLike />
-            <Link pl="2" onClick={onClickLikeSearch}>
+            <Link pl="1" onClick={onClickLikeSearch}>
               좋아요 순
             </Link>
           </Flex>
         </ListItem>
       </List>
+      <Divider border= "1px solid #ccc" marginBottom= "1"></Divider>
       <CardItem category={category} sort={sort}></CardItem>
     </div>
   );

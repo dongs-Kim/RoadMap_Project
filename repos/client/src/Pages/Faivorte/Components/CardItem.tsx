@@ -34,7 +34,8 @@ export const CardItem = ({ id} : Props) => {
   return (
     <List display="flex" flexWrap="wrap">
       {loading && <Text>Loading....</Text>}
-      {!loading &&
+      {!loading && favoriteRoadmaps.length == 0 && (<Text fontSize = "small">등록된 로드맵이 없습니다.</Text>)}
+      {!loading && favoriteRoadmaps &&
         favoriteRoadmaps.map((roadmap) => (
           <ListItem display="flex" key={roadmap.id} margin="10px">
             <Card
