@@ -30,6 +30,7 @@ import {
   ROADMAP_ITEM_REQUIRED,
   ROADMAP_ITEM_STATUS,
 } from '../../../Constants/roadmapItem';
+import { ItemAutocomplete } from './ItemAutocomplete';
 
 const autocompleteItems = ROADMAP_ITEM_NAME_LIST.map(({ name }, i) => ({ id: i, name }));
 
@@ -149,20 +150,6 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     dispatch({ type: 'setBorder', border: e.target.checked });
   }, []);
 
-  const handleOnSearch = useCallback(
-    (name: string) => {
-      dispatch({ type: 'setName', name });
-    },
-    [dispatch],
-  );
-
-  const handleOnSelect = useCallback(
-    (item: { name: string }) => {
-      dispatch({ type: 'setName', name: item.name });
-    },
-    [dispatch],
-  );
-
   const onClickApply = useCallback(() => {
     if (editorRef.current) {
       onClose({
@@ -178,6 +165,10 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     dispatch({ type: 'clearRoadmapItem' });
   }, [onClose]);
 
+  const onChangeName = useCallback((name: string) => {
+    dispatch({ type: 'setName', name });
+  }, []);
+
   return (
     <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
       <ModalOverlay />
@@ -187,16 +178,7 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
         <ModalBody>
           {/* 항목명 */}
           <FormControl zIndex={1000} mb={5}>
-            <ReactSearchAutocomplete
-              placeholder="항목명을 입력하세요"
-              items={autocompleteItems}
-              inputSearchString={state.name}
-              onSearch={handleOnSearch}
-              onSelect={handleOnSelect}
-              maxResults={5}
-              showNoResults={false}
-              inputDebounce={10}
-            />
+            <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.name} onChange={onChangeName} />
           </FormControl>
 
           <Flex mb={5} alignItems="center" justifyContent="space-between">
