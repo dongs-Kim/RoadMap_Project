@@ -13,6 +13,7 @@ import { Node, useReactFlow } from 'reactflow';
 import _ from 'lodash';
 import { BsBoundingBoxCircles } from 'react-icons/bs';
 import { MoveConfirmDialog } from './MoveConfirmDialog';
+import { UsageModal } from './UsageModal';
 
 export const Toolbar = () => {
   const { nodes, edges, ...roadmap } = useAppSelector((state) => state.roadmapWrite);
@@ -21,6 +22,7 @@ export const Toolbar = () => {
   const navigate = useNavigate();
   const { project } = useReactFlow();
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen: isOpenUsage, onClose: onCloseUsage, onOpen: onOpenUsage } = useDisclosure();
 
   const getNumber = useCallback((value?: number | string): number | null => {
     if (!value) {
@@ -67,6 +69,18 @@ export const Toolbar = () => {
     navigate(-1);
   }, [navigate]);
 
+  const validateSave = useCallback((saveDto: RoadmapSetDto) => {
+    if (!saveDto.roadmap.title) {
+      toastError('제목을 입력해 주세요');
+      return false;
+    }
+    if (!saveDto.roadmap.category) {
+      toastError('카테고리를 선택해 주세요');
+      return false;
+    }
+    return true;
+  }, []);
+
   const onClickSave = useCallback(async () => {
     if (!editor) {
       return;
@@ -86,9 +100,15 @@ export const Toolbar = () => {
       },
       nodes: saveNodes,
       edges,
-      isUpdate: mode === 'modify',
+      mode: mode,
     };
 
+    // 유효성 검사
+    if (!validateSave(saveDto)) {
+      return;
+    }
+
+    // 저장
     try {
       await saveRoadmapAsync(saveDto);
       toastSuccess('로드맵을 저장했습니다');
@@ -96,7 +116,7 @@ export const Toolbar = () => {
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [nodes, edges, roadmap, editor, mode, navigate, getNumber]);
+  }, [nodes, edges, roadmap, editor, mode, navigate, getNumber, validateSave]);
 
   return (
     <Flex p="12px" justifyContent="space-between" alignItems="center" borderBottom="1px #ccc solid">
@@ -115,7 +135,7 @@ export const Toolbar = () => {
             <Text ml={2}>이모지</Text>
           </Button>
         </a>
-        <Button size="sm" variant="ghost" colorScheme="teal">
+        <Button size="sm" variant="ghost" colorScheme="teal" onClick={onOpenUsage}>
           <QuestionOutlineIcon />
           <Text ml={2}>사용법</Text>
         </Button>
@@ -130,6 +150,7 @@ export const Toolbar = () => {
       </Box>
 
       <MoveConfirmDialog isOpen={isOpen} onClose={onClose} onMove={onMove} />
+      <UsageModal isOpen={isOpenUsage} onClose={onCloseUsage} />
     </Flex>
   );
 };

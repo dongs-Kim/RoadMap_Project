@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import fs from 'fs-extra';
+import path from 'path';
 import glob from 'glob';
 import shortUUID from 'short-uuid';
 import {
@@ -18,7 +19,12 @@ import { RoadmapItem } from 'src/entities/roadmap_item.entity';
 import { User } from 'src/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { SaveRoadmapDto } from './dto/save-roadmap.dto';
-import { UPLOAD_THUMBNAIL_PATH } from './thumbnail-upload.option';
+import {
+  getThumbnailFilename,
+  UPLOAD_THUMBNAIL_FULL_PATH,
+  UPLOAD_THUMBNAIL_PATH,
+} from './thumbnail-upload.option';
+import { PUBLIC_PATH } from 'src/config/configuration';
 
 @Injectable()
 export class RoadmapsService {
@@ -218,14 +224,14 @@ export class RoadmapsService {
     return likeUser.LikeRoadmaps.some((roadmap) => roadmap.id === id);
   }
 
-  async save(user: User, { roadmap, nodes, edges, isUpdate }: SaveRoadmapDto) {
+  async save(user: User, { roadmap, nodes, edges, mode }: SaveRoadmapDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const roadmapsRepository = queryRunner.manager.getRepository(Roadmap);
 
     // 수정인 경우
-    if (isUpdate) {
+    if (mode === 'modify') {
       // 존재하는지 확인
       const existRoadmap = await roadmapsRepository.findOne({
         where: { id: roadmap.id },
@@ -241,6 +247,37 @@ export class RoadmapsService {
       if (existRoadmap.User.id !== user.id) {
         throw new ForbiddenException();
       }
+    }
+    if (mode === 'copy') {
+      // 이미지 복사
+      if (roadmap.thumbnail) {
+        const originFile = roadmap.thumbnail.split('?')[0];
+        const ext = path.extname(originFile);
+        const thumbnail = getThumbnailFilename(roadmap.id, ext);
+
+        fs.copySync(
+          path.join(PUBLIC_PATH, originFile),
+          path.join(UPLOAD_THUMBNAIL_FULL_PATH, thumbnail),
+        );
+
+        roadmap.thumbnail = `/${UPLOAD_THUMBNAIL_PATH}/${thumbnail}`;
+      }
+
+      // id 새로 채번
+      const idMap = new Map<string, string>();
+      nodes = nodes.map(({ id, ...rest }) => {
+        idMap.set(id, shortUUID.generate());
+        return { ...rest, id: idMap.get(id) };
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      edges = edges.map(({ id, source, target, ...rest }) => {
+        return {
+          ...rest,
+          id: shortUUID.generate(),
+          source: idMap.get(source),
+          target: idMap.get(target),
+        };
+      });
     }
 
     try {
@@ -319,9 +356,7 @@ export class RoadmapsService {
   }
 
   removeThumbnail(id: string) {
-    const files = glob.sync(`../../public/${UPLOAD_THUMBNAIL_PATH}/${id}*`, {
-      cwd: __dirname,
-    });
+    const files = glob.sync(`${UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`);
     files.forEach((file) => {
       fs.removeSync(file);
     });

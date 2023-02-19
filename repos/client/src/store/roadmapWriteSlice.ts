@@ -16,7 +16,7 @@ interface RoadmapWriteState {
   thumbnail?: string;
 }
 
-const initialNodes: Node<RoadmapItem>[] = [
+const getInitialNodes = (): Node<RoadmapItem>[] => [
   {
     id: shortUUID.generate(),
     type: 'startNode',
@@ -26,15 +26,15 @@ const initialNodes: Node<RoadmapItem>[] = [
   },
 ];
 
-const initialState: RoadmapWriteState = {
+const getInitialState = (): RoadmapWriteState => ({
   id: shortUUID.generate(),
   title: '',
   public: true,
   category: '',
   contents: '',
-  nodes: initialNodes,
+  nodes: getInitialNodes(),
   edges: [],
-};
+});
 
 export const getRoadmap = createAsyncThunk<RoadmapSetDto, { id: string }>(
   'roadmapWrite/getRoadmap',
@@ -50,7 +50,7 @@ export const getRoadmap = createAsyncThunk<RoadmapSetDto, { id: string }>(
 
 const roadmapWriteSlice = createSlice({
   name: 'roadmapWrite',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     setRoadmap: (state, action: PayloadAction<RoadmapSetDto>) => {
       const { roadmap, nodes, edges } = action.payload;
@@ -64,7 +64,7 @@ const roadmapWriteSlice = createSlice({
       state.edges = edges;
     },
     clearRoadmap: (state) => {
-      _.extend(state, initialState);
+      _.extend(state, getInitialState());
       state.thumbnail = undefined;
     },
     setTitle: (state, action: PayloadAction<string>) => {

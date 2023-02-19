@@ -46,12 +46,14 @@ export enum EN_EDGE_LINE_TYPE {
 }
 export type EdgeLineType = keyof typeof EN_EDGE_LINE_TYPE;
 
+export type RoadmapWriteMode = 'new' | 'copy' | 'modify';
+
 export interface RoadmapSetDto {
   roadmap: RoadmapDto;
   nodes: Node<RoadmapItem>[];
   edges: Edge<EdgeData>[];
   user?: User;
-  isUpdate?: boolean;
+  mode?: RoadmapWriteMode;
 }
 
 export interface RoadmapDto {

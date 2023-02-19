@@ -22,7 +22,7 @@ export class SaveRoadmapDto {
   edges: RoadmapEdgeDto[];
 
   @IsDefined()
-  isUpdate: boolean;
+  mode: 'new' | 'copy' | 'modify';
 
   user?: User;
 }
