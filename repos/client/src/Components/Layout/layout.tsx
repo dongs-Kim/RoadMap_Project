@@ -164,7 +164,7 @@ const Layout = () => {
       <Divider />
 
       {/* 메인 */}
-      <Flex as="main" pb={20} pt={10} minH="calc(100vh - 200px)">
+      <Flex as="main" pb={20} pt={10} minH="calc(100vh - 200px)" bg="#F8F9FA">
         <Outlet></Outlet>
       </Flex>
 
