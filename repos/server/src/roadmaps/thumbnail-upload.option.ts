@@ -3,16 +3,15 @@ import fs from 'fs-extra';
 import path from 'path';
 import { BadRequestException } from '@nestjs/common';
 
-export const UPLOAD_THUMBNAIL_PATH = 'static/thumbnail';
+export const UPLOAD_THUMBNAIL_PATH = 'static-dev/thumbnail';
 
 export const thumbnailOption = {
   storage: multer.diskStorage({
     destination(req, file, cb) {
-      const thumbnailPath = path.join(
-        __dirname,
-        '../../public',
-        UPLOAD_THUMBNAIL_PATH,
-      );
+      const thumbnailPath =
+        process.env.NODE_ENV === 'production'
+          ? path.join(__dirname, '../../public', UPLOAD_THUMBNAIL_PATH)
+          : path.join(__dirname, '../public', UPLOAD_THUMBNAIL_PATH);
       fs.ensureDirSync(thumbnailPath);
       cb(null, thumbnailPath);
     },

@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { ChatIcon, QuestionOutlineIcon, SearchIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import shortUUID from 'short-uuid';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
@@ -12,6 +12,7 @@ import { toastError, toastSuccess } from '../../../Utils/toast';
 import { Node, useReactFlow } from 'reactflow';
 import _ from 'lodash';
 import { BsBoundingBoxCircles } from 'react-icons/bs';
+import { MoveConfirmDialog } from './MoveConfirmDialog';
 
 export const Toolbar = () => {
   const { nodes, edges, ...roadmap } = useAppSelector((state) => state.roadmapWrite);
@@ -19,6 +20,7 @@ export const Toolbar = () => {
   const { editor, mode } = useContext(EditorContext);
   const navigate = useNavigate();
   const { project } = useReactFlow();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   const getNumber = useCallback((value?: number | string): number | null => {
     if (!value) {
@@ -61,7 +63,7 @@ export const Toolbar = () => {
     dispatch(addNode(newNode));
   }, [dispatch, project, nodes]);
 
-  const onClickOut = useCallback(() => {
+  const onMove = useCallback(() => {
     navigate(-1);
   }, [navigate]);
 
@@ -119,13 +121,15 @@ export const Toolbar = () => {
         </Button>
       </Box>
       <Box>
-        <Button colorScheme="teal" variant="ghost" mr={2} onClick={onClickOut}>
+        <Button colorScheme="teal" variant="ghost" mr={2} onClick={onOpen}>
           나가기
         </Button>
         <Button colorScheme="teal" mr={5} onClick={onClickSave}>
           저장
         </Button>
       </Box>
+
+      <MoveConfirmDialog isOpen={isOpen} onClose={onClose} onMove={onMove} />
     </Flex>
   );
 };

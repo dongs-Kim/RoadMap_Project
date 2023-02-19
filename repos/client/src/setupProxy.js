@@ -9,7 +9,7 @@ module.exports = function (app) {
     }),
   );
   app.use(
-    '/uploads',
+    '/static-dev',
     createProxyMiddleware({
       target: 'http://localhost:3030',
       changeOrigin: true,

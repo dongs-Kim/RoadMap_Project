@@ -1,14 +1,19 @@
 import { useCallback, ChangeEvent } from 'react';
-import { Box, Flex, FormControl, FormLabel, Input, Select, Switch, Text } from '@chakra-ui/react';
+import { Box, Flex, FormControl, FormLabel, Input, Select, Switch, Text, useDisclosure } from '@chakra-ui/react';
 import { Thumbnail } from './Thumbnail';
 import { ContentsEditor } from './ContentsEditor';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
 import { setCategory, setPublic, setTitle } from '../../../store/roadmapWriteSlice';
 import { ROADMAP_CATEGORY } from '../../../Constants/roadmap';
+import { RiTreasureMapLine } from 'react-icons/ri';
+import { MoveConfirmDialog } from './MoveConfirmDialog';
+import { useNavigate } from 'react-router-dom';
 
 export const LeftPanel = () => {
   const { title, category, public: isPublic } = useAppSelector((state) => state.roadmapWrite);
   const dispatch = useAppDispatch();
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const navigate = useNavigate();
 
   const onChangeTitle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,13 +36,20 @@ export const LeftPanel = () => {
     [dispatch],
   );
 
+  const onMove = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
   return (
     <Flex w="450px" borderRight="1px #ccc solid" bg="gray.100" flexDir="column">
       {/* 로고 */}
       <Flex bg="white" p="17px" pl={7} borderBottom="1px #ccc solid">
-        <Text color="#333" fontSize="xl" fontFamily="'Mochiy Pop One', sans-serif">
-          Dev Roadmap
-        </Text>
+        <Flex alignItems="center" gap={2} onClick={onOpen} cursor="pointer">
+          <RiTreasureMapLine size="28px" />
+          <Text color="#333" fontSize="xl" fontFamily="'Mochiy Pop One', sans-serif">
+            Dev Roadmap
+          </Text>
+        </Flex>
       </Flex>
 
       <Flex p={5} flex={1} flexDir="column">
@@ -88,6 +100,8 @@ export const LeftPanel = () => {
         {/* 에디터 */}
         <ContentsEditor />
       </Flex>
+
+      <MoveConfirmDialog isOpen={isOpen} onClose={onClose} onMove={onMove} />
     </Flex>
   );
 };
