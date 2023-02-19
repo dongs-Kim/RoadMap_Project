@@ -3,7 +3,10 @@ import fs from 'fs-extra';
 import path from 'path';
 import { BadRequestException } from '@nestjs/common';
 
-export const UPLOAD_PROFILE_PATH = 'static-dev/profile';
+export const UPLOAD_PROFILE_PATH =
+  process.env.NODE_ENV === 'production'
+    ? 'static/profile'
+    : 'static-dev/profile';
 
 export const profileImageOption = {
   storage: multer.diskStorage({

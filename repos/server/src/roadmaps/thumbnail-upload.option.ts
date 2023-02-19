@@ -3,7 +3,10 @@ import fs from 'fs-extra';
 import path from 'path';
 import { BadRequestException } from '@nestjs/common';
 
-export const UPLOAD_THUMBNAIL_PATH = 'static-dev/thumbnail';
+export const UPLOAD_THUMBNAIL_PATH =
+  process.env.NODE_ENV === 'production'
+    ? 'static/thumbnail'
+    : 'static-dev/thumbnail';
 
 export const thumbnailOption = {
   storage: multer.diskStorage({
