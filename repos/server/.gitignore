@@ -36,3 +36,5 @@ lerna-debug.log*
 
 # uploads
 /public
+/dist_prod/public/static/profile
+/dist_prod/public/static/thumbnail
