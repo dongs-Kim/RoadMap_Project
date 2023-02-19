@@ -12,6 +12,7 @@ export declare class UsersService {
     findAll(): Promise<User[]>;
     findOne(id: string): Promise<User>;
     findEmail(email: string): Promise<User>;
+    findUserRoadmap(id: string): Promise<User>;
     getFavoriteRoadmaps(id: string): Promise<Roadmap[]>;
     update(id: string, updateUserDto: UpdateUserDto): Promise<boolean>;
     remove(id: string): Promise<boolean>;

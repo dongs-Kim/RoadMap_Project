@@ -16,7 +16,7 @@ export declare class RoadmapsService {
     like(id: string, user: User): Promise<void>;
     unlike(roadmap_id: string, user: User): Promise<void>;
     isLike(id: string, user: User): Promise<boolean>;
-    save(user: User, { roadmap, nodes, edges, isUpdate }: SaveRoadmapDto): Promise<boolean>;
+    save(user: User, { roadmap, nodes, edges, mode }: SaveRoadmapDto): Promise<boolean>;
     uploadThumbnail(id: string, url: string): Promise<void>;
     removeThumbnail(id: string): void;
 }

@@ -21,6 +21,7 @@ export declare class UsersController {
     unstoreRoadmap(user: UserEntity, storeRoadmapDto: StoreRoadmapDto): Promise<boolean>;
     isStore(user: UserEntity, roadmap_id: string): Promise<boolean>;
     findFavorite(id: string): Promise<import("../entities/roadmap.entity").Roadmap[]>;
+    findRoadmapByUser(id: string): Promise<UserEntity>;
     uploadProfileImage(file: Express.Multer.File, user: UserEntity): Promise<string>;
     deleteProfileImage(user: UserEntity): Promise<boolean>;
 }

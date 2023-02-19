@@ -77,9 +77,11 @@ let UsersController = class UsersController {
     findFavorite(id) {
         return this.usersService.getFavoriteRoadmaps(id);
     }
+    findRoadmapByUser(id) {
+        return this.usersService.findUserRoadmap(id);
+    }
     async uploadProfileImage(file, user) {
         const url = `/${image_upload_option_1.UPLOAD_PROFILE_PATH}/${file.filename}`;
-        await this.usersService.uploadProfileImage(user, url);
         return url;
     }
     async deleteProfileImage(user) {
@@ -205,6 +207,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findFavorite", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: '사용자별 로드맵' }),
+    (0, common_1.Get)('roadMapListbyUser/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "findRoadmapByUser", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: '프로필 이미지 업로드' }),
     (0, common_1.UseGuards)(logged_in_guard_1.LoggedInGuard),

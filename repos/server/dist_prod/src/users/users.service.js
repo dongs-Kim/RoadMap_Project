@@ -50,6 +50,10 @@ let UsersService = class UsersService {
     findEmail(email) {
         return this.usersRepository.findOneBy({ email });
     }
+    async findUserRoadmap(id) {
+        const roadmapUser = this.usersRepository.findOneBy({ id });
+        return roadmapUser;
+    }
     async getFavoriteRoadmaps(id) {
         const user = await this.usersRepository.findOne({
             where: { id },

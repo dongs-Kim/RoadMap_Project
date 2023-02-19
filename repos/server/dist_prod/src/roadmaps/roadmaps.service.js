@@ -11,6 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -19,6 +30,7 @@ exports.RoadmapsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const fs_extra_1 = __importDefault(require("fs-extra"));
+const path_1 = __importDefault(require("path"));
 const glob_1 = __importDefault(require("glob"));
 const short_uuid_1 = __importDefault(require("short-uuid"));
 const roadmap_entity_1 = require("../entities/roadmap.entity");
@@ -28,6 +40,7 @@ const user_entity_1 = require("../entities/user.entity");
 const typeorm_2 = require("typeorm");
 const save_roadmap_dto_1 = require("./dto/save-roadmap.dto");
 const thumbnail_upload_option_1 = require("./thumbnail-upload.option");
+const configuration_1 = require("../config/configuration");
 let RoadmapsService = class RoadmapsService {
     constructor(roadmapsRepository, usersRepository, dataSource) {
         this.roadmapsRepository = roadmapsRepository;
@@ -200,12 +213,12 @@ let RoadmapsService = class RoadmapsService {
         }
         return likeUser.LikeRoadmaps.some((roadmap) => roadmap.id === id);
     }
-    async save(user, { roadmap, nodes, edges, isUpdate }) {
+    async save(user, { roadmap, nodes, edges, mode }) {
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         const roadmapsRepository = queryRunner.manager.getRepository(roadmap_entity_1.Roadmap);
-        if (isUpdate) {
+        if (mode === 'modify') {
             const existRoadmap = await roadmapsRepository.findOne({
                 where: { id: roadmap.id },
                 relations: {
@@ -218,6 +231,25 @@ let RoadmapsService = class RoadmapsService {
             if (existRoadmap.User.id !== user.id) {
                 throw new common_1.ForbiddenException();
             }
+        }
+        if (mode === 'copy') {
+            if (roadmap.thumbnail) {
+                const originFile = roadmap.thumbnail.split('?')[0];
+                const ext = path_1.default.extname(originFile);
+                const thumbnail = (0, thumbnail_upload_option_1.getThumbnailFilename)(roadmap.id, ext);
+                fs_extra_1.default.copySync(path_1.default.join(configuration_1.PUBLIC_PATH, originFile), path_1.default.join(thumbnail_upload_option_1.UPLOAD_THUMBNAIL_FULL_PATH, thumbnail));
+                roadmap.thumbnail = `/${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_PATH}/${thumbnail}`;
+            }
+            const idMap = new Map();
+            nodes = nodes.map((_a) => {
+                var { id } = _a, rest = __rest(_a, ["id"]);
+                idMap.set(id, short_uuid_1.default.generate());
+                return Object.assign(Object.assign({}, rest), { id: idMap.get(id) });
+            });
+            edges = edges.map((_a) => {
+                var { id, source, target } = _a, rest = __rest(_a, ["id", "source", "target"]);
+                return Object.assign(Object.assign({}, rest), { id: short_uuid_1.default.generate(), source: idMap.get(source), target: idMap.get(target) });
+            });
         }
         try {
             const newRoadmapItems = nodes.map((node) => {
@@ -287,9 +319,7 @@ let RoadmapsService = class RoadmapsService {
         await this.roadmapsRepository.update(id, { thumbnail: url });
     }
     removeThumbnail(id) {
-        const files = glob_1.default.sync(`../../public/${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_PATH}/${id}*`, {
-            cwd: __dirname,
-        });
+        const files = glob_1.default.sync(`${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`);
         files.forEach((file) => {
             fs_extra_1.default.removeSync(file);
         });

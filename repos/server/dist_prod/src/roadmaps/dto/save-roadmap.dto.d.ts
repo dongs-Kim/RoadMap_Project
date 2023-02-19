@@ -5,7 +5,7 @@ export declare class SaveRoadmapDto {
     roadmap: CreateRoadmapDto;
     nodes: RoadmapNodeDto[];
     edges: RoadmapEdgeDto[];
-    isUpdate: boolean;
+    mode: 'new' | 'copy' | 'modify';
     user?: User;
 }
 export declare class RoadmapNodeDto {

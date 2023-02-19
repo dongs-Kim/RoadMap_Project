@@ -28,8 +28,8 @@ __decorate([
 ], SaveRoadmapDto.prototype, "edges", void 0);
 __decorate([
     (0, class_validator_1.IsDefined)(),
-    __metadata("design:type", Boolean)
-], SaveRoadmapDto.prototype, "isUpdate", void 0);
+    __metadata("design:type", String)
+], SaveRoadmapDto.prototype, "mode", void 0);
 exports.SaveRoadmapDto = SaveRoadmapDto;
 class RoadmapNodeDto {
 }
