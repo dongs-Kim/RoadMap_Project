@@ -9,8 +9,10 @@ import { useLocation, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import { clearRoadmap, getRoadmap, setRoadmap } from '../../store/roadmapWriteSlice';
 import { Loading } from '../../Components/Page/Loading';
+import { useTitle } from '../../Hooks/useTitle';
 
 const RoadmapWrite = () => {
+  useTitle('로드맵 작성 - Dev Roadmap');
   const { roadmapId } = useParams();
   const location = useLocation();
   const [editor, setEditor] = useState<Editor | null>(null);

@@ -15,8 +15,10 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { useUser } from '../../Hooks/dataFetch/useUser';
+import { useTitle } from '../../Hooks/useTitle';
 
 const SignUp = () => {
+  useTitle('회원가입 - Dev Roadmap');
   const navigate = useNavigate();
   const { userData, error, mutate } = useUser();
   //상태

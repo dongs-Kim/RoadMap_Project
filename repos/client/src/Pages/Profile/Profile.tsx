@@ -8,8 +8,10 @@ import ImageUploading, { ImageType } from 'react-images-uploading';
 import { ExportInterface } from 'react-images-uploading/dist/typings';
 import ReactImageUploading from 'react-images-uploading';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
+import { useTitle } from '../../Hooks/useTitle';
 
 const Profile = () => {
+  useTitle('프로필 - Dev Roadmap');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const profileData = useAppSelector((state) => state.user);
@@ -100,12 +102,12 @@ const Profile = () => {
   return (
     // <div style={{ width: '500px', margin: '0 auto' }}>
     //   <Flex flexDir= "column">
-    //     <Flex flexDir= "column">          
+    //     <Flex flexDir= "column">
     //         <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image" >
     //           {({ onImageUpload, dragProps }: ExportInterface) => (
-    //             <div> 
+    //             <div>
     //               {image && (
-    //                 <Avatar src={image} name= {nickname} borderRadius="70%" size = "2xl" />                      
+    //                 <Avatar src={image} name= {nickname} borderRadius="70%" size = "2xl" />
     //               )}
     //               <Button width = "120px" onClick={onImageUpload} {...dragProps}>
     //                 이미지 업로드
@@ -113,20 +115,20 @@ const Profile = () => {
     //               {image && (<Button colorScheme="teal" width = "120px" onClick={handleDeleteFile}> 이미지 삭제</Button>)}
     //             </div>
     //           )}
-    //         </ImageUploading>          
+    //         </ImageUploading>
     //     </Flex>
     //     <Text>
-    //       Email        
+    //       Email
     //     </Text>
     //     <Input type="text" id="email" name="email" value={email} disabled></Input>
     //     <Text>
     //       닉네임
     //     </Text>
     //     <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname}></Input>
-    //     {!isName && <Text color="red.400">{nickNameMessage}</Text>}  
+    //     {!isName && <Text color="red.400">{nickNameMessage}</Text>}
     //     <Text>
-    //         자기소개     
-    //       <Textarea id="introduction" name="introduction" value={comment || ''} onChange={onChangeComment} resize ="none" height= "120"></Textarea>        
+    //         자기소개
+    //       <Textarea id="introduction" name="introduction" value={comment || ''} onChange={onChangeComment} resize ="none" height= "120"></Textarea>
     //     </Text>
     //     <Button disabled={true} onClick={onClickSave}>
     //       저장
@@ -134,9 +136,9 @@ const Profile = () => {
     //   </Flex>
     // </div>
 
-    <div style={{ width: '600px', margin: '0 auto' }}>      
-        <Flex flexDir= "row" gap = "10" alignItems= "center" height= "350px">
-        <ReactImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image" >
+    <div style={{ width: '600px', margin: '0 auto' }}>
+      <Flex flexDir="row" gap="10" alignItems="center" height="350px">
+        <ReactImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image">
           {({ onImageUpload }: ExportInterface) => (
             <Flex>
               {!image && (
@@ -148,41 +150,55 @@ const Profile = () => {
                   flexDir="column"
                   cursor="pointer"
                   gap={3}
-                  onClick={onImageUpload}                  
+                  onClick={onImageUpload}
                 >
-                <AddIcon />
-                <Text fontSize="sm">이미지 업로드</Text>
+                  <AddIcon />
+                  <Text fontSize="sm">이미지 업로드</Text>
                 </Square>
-
               )}
               {image && (
                 <Square bg="gray.200" size="200px" position="relative" color="white" border="1px #ccc solid">
                   <Image src={image} alt="Thumbnail" maxH="100%" />
-                  <Box position="absolute" top={0} right={0} bg="black" p={1} cursor="pointer" onClick={handleDeleteFile}>
+                  <Box
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    bg="black"
+                    p={1}
+                    cursor="pointer"
+                    onClick={handleDeleteFile}
+                  >
                     <MinusIcon boxSize={3} display="block" />
                   </Box>
                 </Square>
-              )}            
+              )}
             </Flex>
           )}
-          </ReactImageUploading>
-          <Flex flexDir= "column" fontWeight= "bold">
-              <Text mb = "1">이메일</Text>
-              <Input mb = "5"  type="text" id="email" name="email" value={email} disabled></Input>
-              <Text mb = "1">닉네임</Text>
-              <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname}></Input>
-              {!isName && <Text color="red.400">{nickNameMessage}</Text>}                       
-          </Flex>
+        </ReactImageUploading>
+        <Flex flexDir="column" fontWeight="bold">
+          <Text mb="1">이메일</Text>
+          <Input mb="5" type="text" id="email" name="email" value={email} disabled></Input>
+          <Text mb="1">닉네임</Text>
+          <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname}></Input>
+          {!isName && <Text color="red.400">{nickNameMessage}</Text>}
         </Flex>
-        <Flex flexDir= "column" gap = {5} fontWeight = "bold">
-          <Text>
-            자기소개     
-            <Textarea id="introduction" name="introduction" value={comment || ''} onChange={onChangeComment} resize ="none" height= "120"></Textarea>        
-          </Text>
-          <Button disabled={true} onClick={onClickSave} _hover = {{ bg: '#ccc' }}>
-            저장
-          </Button>
-        </Flex>
+      </Flex>
+      <Flex flexDir="column" gap={5} fontWeight="bold">
+        <Text>
+          자기소개
+          <Textarea
+            id="introduction"
+            name="introduction"
+            value={comment || ''}
+            onChange={onChangeComment}
+            resize="none"
+            height="120"
+          ></Textarea>
+        </Text>
+        <Button disabled={true} onClick={onClickSave} _hover={{ bg: '#ccc' }}>
+          저장
+        </Button>
+      </Flex>
     </div>
   );
 };

@@ -4,9 +4,11 @@ import { Button, Center, Divider, Flex, Heading, Link, List, ListItem } from '@c
 import { CardItem } from './Components/CardItem';
 import { BiTime } from 'react-icons/bi';
 import { FcLike } from 'react-icons/fc';
+import { useTitle } from '../../Hooks/useTitle';
 const RoadMapList = () => {
   const { category } = useParams();
   const title = category == 'back_end' ? '백엔드' : '프론트엔드';
+  useTitle(`${title ?? ''} - Dev Roadmap`);
   const [sort, setSort] = useState('');
 
   const onClickAllSearch = useCallback(() => {
@@ -26,7 +28,7 @@ const RoadMapList = () => {
         <ListItem display="inline">
           <Flex alignItems="center">
             <BiTime />
-            <Link pl="1" onClick={onClickAllSearch}>              
+            <Link pl="1" onClick={onClickAllSearch}>
               최신 순
             </Link>
           </Flex>
@@ -40,7 +42,7 @@ const RoadMapList = () => {
           </Flex>
         </ListItem>
       </List>
-      <Divider border= "1px solid #ccc" marginBottom= "1"></Divider>
+      <Divider border="1px solid #ccc" marginBottom="1"></Divider>
       <CardItem category={category} sort={sort}></CardItem>
     </div>
   );

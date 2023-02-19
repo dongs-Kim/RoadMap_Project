@@ -19,6 +19,7 @@ import {
 import { Loading } from '../../Components/Page/Loading';
 import { getRoadmapCategoryName } from '../../Constants/roadmap';
 import { useUser } from '../../Hooks/dataFetch/useUser';
+import { useTitle } from '../../Hooks/useTitle';
 
 const RoadmapView = () => {
   const { roadmapId } = useParams();
@@ -28,6 +29,7 @@ const RoadmapView = () => {
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   useViewer(viewerElRef, roadmapSet?.roadmap?.contents);
+  useTitle(`${roadmapSet?.roadmap.title ?? ''} - Dev Roadmap`);
 
   const initRoadmap = useCallback(async () => {
     if (roadmapId) {

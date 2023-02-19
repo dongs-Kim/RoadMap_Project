@@ -17,8 +17,10 @@ import {
 } from '@chakra-ui/react';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { toastError } from '../../Utils/toast';
+import { useTitle } from '../../Hooks/useTitle';
 
 const Login = () => {
+  useTitle('로그인 - Dev Roadmap');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [logInError, setLogInError] = useState(false);
