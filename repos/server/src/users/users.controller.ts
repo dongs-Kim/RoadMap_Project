@@ -136,6 +136,12 @@ export class UsersController {
     return this.usersService.getFavoriteRoadmaps(id);
   }
 
+  @ApiOperation({ summary: '사용자별 로드맵' })
+  @Get('roadMapListbyUser/:id')
+  findRoadmapByUser(@Param('id') id: string) {
+    return this.usersService.findUserRoadmap(id);
+  }
+
   @ApiOperation({ summary: '프로필 이미지 업로드' })
   @UseGuards(LoggedInGuard)
   @UseInterceptors(FileInterceptor('image', profileImageOption))
@@ -145,7 +151,6 @@ export class UsersController {
     @User() user: UserEntity,
   ) {
     const url = `/${UPLOAD_PROFILE_PATH}/${file.filename}`;
-    await this.usersService.uploadProfileImage(user, url);
     return url;
   }
 

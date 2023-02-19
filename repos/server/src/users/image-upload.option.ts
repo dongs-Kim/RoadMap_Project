@@ -25,7 +25,7 @@ export const profileImageOption = {
         error = new BadRequestException();
       }
       const ext = path.extname(file.originalname);
-      cb(error, `${user_id}.profile${ext}`);
+      cb(error, `${user_id}_${Date.now()}.profile${ext}`);
     },
   }),
   fileFilter(req, file, cb) {

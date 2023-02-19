@@ -9,6 +9,7 @@ import { ExportInterface } from 'react-images-uploading/dist/typings';
 import ReactImageUploading from 'react-images-uploading';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useTitle } from '../../Hooks/useTitle';
+import { Loading } from '../../Components/Page/Loading';
 
 const Profile = () => {
   useTitle('프로필 - Dev Roadmap');
@@ -95,48 +96,9 @@ const Profile = () => {
     console.log(profileData);
   }, [profileData]);
 
-  if (loading) {
-    return <div>loading...</div>;
-  }
-
   return (
-    // <div style={{ width: '500px', margin: '0 auto' }}>
-    //   <Flex flexDir= "column">
-    //     <Flex flexDir= "column">
-    //         <ImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image" >
-    //           {({ onImageUpload, dragProps }: ExportInterface) => (
-    //             <div>
-    //               {image && (
-    //                 <Avatar src={image} name= {nickname} borderRadius="70%" size = "2xl" />
-    //               )}
-    //               <Button width = "120px" onClick={onImageUpload} {...dragProps}>
-    //                 이미지 업로드
-    //               </Button>
-    //               {image && (<Button colorScheme="teal" width = "120px" onClick={handleDeleteFile}> 이미지 삭제</Button>)}
-    //             </div>
-    //           )}
-    //         </ImageUploading>
-    //     </Flex>
-    //     <Text>
-    //       Email
-    //     </Text>
-    //     <Input type="text" id="email" name="email" value={email} disabled></Input>
-    //     <Text>
-    //       닉네임
-    //     </Text>
-    //     <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname}></Input>
-    //     {!isName && <Text color="red.400">{nickNameMessage}</Text>}
-    //     <Text>
-    //         자기소개
-    //       <Textarea id="introduction" name="introduction" value={comment || ''} onChange={onChangeComment} resize ="none" height= "120"></Textarea>
-    //     </Text>
-    //     <Button disabled={true} onClick={onClickSave}>
-    //       저장
-    //     </Button>
-    //   </Flex>
-    // </div>
-
     <div style={{ width: '600px', margin: '0 auto' }}>
+      <Loading isOpen={loading}></Loading>
       <Flex flexDir="row" gap="10" alignItems="center" height="350px">
         <ReactImageUploading value={[]} onChange={handleUploadFile} dataURLKey="image">
           {({ onImageUpload }: ExportInterface) => (

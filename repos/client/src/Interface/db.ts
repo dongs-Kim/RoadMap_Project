@@ -1,3 +1,5 @@
+import { RoadmapDto, User } from './roadmap';
+
 export interface IUser {
   id: string;
   email: string;
@@ -34,4 +36,8 @@ export interface IReply {
   user_id: string;
   user_nickname: string;
   user_image?: string;
+}
+
+export interface userRoadMap extends User {
+  Roadmaps: RoadmapDto[];
 }

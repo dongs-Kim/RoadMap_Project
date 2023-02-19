@@ -2,20 +2,24 @@ import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Avatar, Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
 import { CardItem } from './Components/CardItem';
 import { RoadmapDto, RoadmapLikeDto, RoadmapSetDto, User } from '../../Interface/roadmap';
+import { userRoadMap } from '../../Interface/db';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTitle } from '../../Hooks/useTitle';
 
 const UserRoadMapList = () => {
   const { id } = useParams();
-  const [userRoadmaps, setUserRoadmaps] = useState<RoadmapLikeDto[]>([]);
+  const [user, setUser] = useState<User>();
+  const [Roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
   const [loading, setLoading] = useState(false);
   useTitle(`${userRoadmaps[0]?.User.nickname ?? ''} 로드맵 - Dev Roadmap`);
 
   const loadUserRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/User/${id}`);
-      setUserRoadmaps(data);
+      const { data: userData } = await axios.get<User>(`/api/users/roadMapListbyUser/${id}`);
+      const { data: roadmapData } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/User/${id}`);
+      setUser(userData);
+      setRoadmaps(roadmapData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -30,23 +34,26 @@ const UserRoadMapList = () => {
 
   return (
     <div style={{ width: '900px', margin: '0 auto' }}>
-      <Heading color="gray.700" pb="5" pt="3" fontSize="md">
-        {userRoadmaps[0]?.User && (
+      <Heading color="gray.700" pb="5" fontSize="md">
+        {user && (
           <div>
-            <Flex alignItems="center" gap={5} pb="4" height="180px">
-              <Avatar size="xl" name={userRoadmaps[0].User?.nickname} src={userRoadmaps[0]?.User?.image} />
+            <Flex alignItems="center" gap={5} pb="4" height="140px">
+              <Avatar size="xl" name={user.nickname} src={user.image} />
               <Flex flexDir="column" gap={3}>
                 <Text fontWeight="bold" fontSize="xl">
-                  {userRoadmaps[0].User.nickname}
+                  {user.nickname}
                 </Text>
-                <Text fontSize="md">{userRoadmaps[0].User.comment}</Text>
+                <Text fontSize="md">{user.comment}</Text>
               </Flex>
             </Flex>
             <Divider border="1px solid #ccc"></Divider>
           </div>
         )}
+            <Divider border="1px solid #ccc"></Divider>
+          </div>
+        )}
       </Heading>
-      <CardItem roadMapInfo={userRoadmaps} loading={loading}></CardItem>
+      <CardItem roadMapInfo={Roadmaps} loading={loading}></CardItem>
     </div>
   );
 };

@@ -15,7 +15,7 @@ export const UPLOAD_THUMBNAIL_FULL_PATH = path.join(
 );
 
 export function getThumbnailFilename(roadmap_id: string, ext: string) {
-  return `${roadmap_id}.thumbnail${ext}`;
+  return `${roadmap_id}_${Date.now()}.thumbnail${ext}`;
 }
 
 export const thumbnailOption = {

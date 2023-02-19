@@ -45,6 +45,11 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email });
   }
 
+  async findUserRoadmap(id: string) {
+    const roadmapUser = this.usersRepository.findOneBy({ id });
+    return roadmapUser;
+  }
+
   async getFavoriteRoadmaps(id: string) {
     const user = await this.usersRepository.findOne({
       where: { id },
