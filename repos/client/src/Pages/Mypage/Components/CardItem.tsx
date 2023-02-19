@@ -73,14 +73,14 @@ export const CardItem = () => {
 
   return (
     <div>
-      {myRoadmaps.length == 0 && (
+      <Loading isOpen={loading} />
+      {!loading && myRoadmaps.length == 0 && (
         <Flex justifyContent="center" marginTop="40px" flexDir="column" alignItems="center" gap="3">
           <BsPatchExclamation size="30px"></BsPatchExclamation>
           등록된 로드맵이 없습니다
         </Flex>
       )}
       <List display="flex" flexWrap="wrap">
-        <Loading isOpen={loading} />
         {myRoadmaps.map((roadmap) => (
           <ListItem display="flex" key={roadmap.id} margin="10px">
             <Card

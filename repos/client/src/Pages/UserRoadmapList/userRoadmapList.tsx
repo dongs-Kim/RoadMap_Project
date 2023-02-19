@@ -12,7 +12,7 @@ const UserRoadMapList = () => {
   const [user, setUser] = useState<User>();
   const [Roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
   const [loading, setLoading] = useState(false);
-  useTitle(`${userRoadmaps[0]?.User.nickname ?? ''} 로드맵 - Dev Roadmap`);
+  useTitle(`${user?.nickname} 로드맵 - Dev Roadmap`);
 
   const loadUserRoadmaps = useCallback(async () => {
     try {
@@ -46,9 +46,6 @@ const UserRoadMapList = () => {
                 <Text fontSize="md">{user.comment}</Text>
               </Flex>
             </Flex>
-            <Divider border="1px solid #ccc"></Divider>
-          </div>
-        )}
             <Divider border="1px solid #ccc"></Divider>
           </div>
         )}
