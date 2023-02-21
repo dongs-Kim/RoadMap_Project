@@ -113,6 +113,9 @@ export class RoadmapsService {
           id: user.id,
         },
       },
+      order: {
+        updated_at: 'desc',
+      },
     });
   }
 

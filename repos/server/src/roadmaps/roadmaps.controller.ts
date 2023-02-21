@@ -106,7 +106,6 @@ export class RoadmapsController {
     @Param('id') id: string,
   ) {
     const url = `/${UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
-    await this.roadmapsService.uploadThumbnail(id, url);
     return url;
   }
 }

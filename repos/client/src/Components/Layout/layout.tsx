@@ -83,6 +83,10 @@ const Layout = () => {
     [navigate],
   );
 
+  useEffect(() => {
+    revalidateUser();
+  }, [revalidateUser]);
+
   return (
     <div>
       {/* 헤더 */}
