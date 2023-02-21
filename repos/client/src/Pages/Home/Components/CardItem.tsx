@@ -1,4 +1,5 @@
 import {
+  Avatar,
   background,
   Box,
   Button,
@@ -74,6 +75,7 @@ export const CardItem = ({ category }: Props) => {
             >
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`} _hover={{ textDecoration: 'none' }}>
                 <CardBody padding="0">
+                  {/* 썸네일 */}
                   {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="167px" objectFit="cover" />}
                   {!roadmap.thumbnail && (
                     <Flex
@@ -98,33 +100,49 @@ export const CardItem = ({ category }: Props) => {
                       </Text>
                     </Flex>
                   )}
+
                   <Flex flexDir="column" p={4}>
+                    {/* 제목 */}
                     <Heading fontSize="md" textOverflow="ellipsis" mb={1} whiteSpace="nowrap" overflow="hidden">
                       {roadmap.title}
                     </Heading>
-                    <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
+
+                    {/* 내용 */}
+                    <Text
+                      h={roadmap.thumbnail ? '4rem' : 'calc(4rem + 167px)'}
+                      mb="1.5rem"
+                      fontSize="sm"
+                      overflow="hidden"
+                    >
                       {roadmap.contents ?? ''}
                     </Text>
+
+                    {/* 작성시간, 댓글 */}
                     <Flex fontSize="xs" gap={1} color="gray.500">
                       <Text>{dayjs(roadmap.created_at).fromNow()}</Text>
                       <span>·</span>
-                      <Text>댓글 {roadmap.reply}</Text>
+                      <Text>댓글 2</Text>
                     </Flex>
                   </Flex>
                 </CardBody>
               </Link>
               <Divider />
+
+              {/* 푸터 */}
               <CardFooter justifyContent="space-between" padding="10px">
                 <Flex alignItems="center">
-                  <AiFillHeart className="icon" size="8" color="red" />
+                  <AiFillHeart className="icon" size="12" color="crimson" />
                   <Text ml="1" fontSize="xs">
                     {roadmap.like}
                   </Text>
                 </Flex>
                 <Flex alignItems="center">
-                  <Text fontSize="3" ml="2">
-                    by. {roadmap.User.nickname}
-                  </Text>
+                  <RouterLink to={`/Roadmap/User/${roadmap.User.id}`}>
+                    <Flex fontSize="xs" ml="2" gap={2} alignItems="center">
+                      <Avatar size="xs" name={roadmap.User.nickname} src={roadmap.User.image} />
+                      <Text fontWeight="bold">{roadmap.User.nickname}</Text>
+                    </Flex>
+                  </RouterLink>
                 </Flex>
               </CardFooter>
             </Card>
