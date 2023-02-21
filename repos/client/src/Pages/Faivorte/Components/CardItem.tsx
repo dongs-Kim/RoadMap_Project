@@ -113,7 +113,7 @@ export const CardItem = ({ id }: Props) => {
                 <CardFooter justifyContent="space-between" padding="10px">
                   <Flex alignItems="center">
                     <Text fontSize="3" ml="2">
-                      by. {roadmap.User.nickname}
+                      by. {roadmap.User?.nickname}
                     </Text>
                   </Flex>
                 </CardFooter>

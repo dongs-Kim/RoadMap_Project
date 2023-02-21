@@ -116,19 +116,32 @@ export class RoadmapsService {
     });
   }
 
-  findCategory(category: string) {
-    return this.roadmapsRepository.find({
+  async findCategory(category: string) {
+    const result = await this.roadmapsRepository.find({
       where: {
         category: category,
         public: true,
       },
       relations: {
         LikeUsers: true,
+        Replies: true,
         User: true,
       },
       order: {
         updated_at: 'desc',
       },
+    });
+
+    return result.map((roadmap) => {
+      const { LikeUsers, Replies, User, ...restRoadmap } = roadmap;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...restUser } = User;
+      return {
+        ...restRoadmap,
+        User: restUser,
+        like: LikeUsers.length,
+        reply: Replies.length,
+      };
     });
   }
 

@@ -19,7 +19,7 @@ import {
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
-import { RoadmapLikeDto } from '../../../Interface/roadmap';
+import { RoadmapCategoryDto } from '../../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
 import { Loading } from '../../../Components/Page/Loading';
 import dayjs from 'dayjs';
@@ -29,12 +29,12 @@ interface Props {
 }
 
 export const CardItem = ({ category }: Props) => {
-  const [roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
+  const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
+      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/${category}`);
       setRoadmaps(data);
     } catch (err) {
       console.error(err);
@@ -73,44 +73,52 @@ export const CardItem = ({ category }: Props) => {
               }}
             >
               <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`} _hover={{ textDecoration: 'none' }}>
-                {!roadmap.thumbnail && (
-                  <CardBody padding="0">
-                    <Image src="/img/NoImage.png" alt="" w="100%" h="167px" objectFit="cover" />
-                    <Flex flexDir="column" p={4}>
-                      <Heading fontSize="md" textOverflow="ellipsis" mb={1} whiteSpace="nowrap" overflow="hidden">
+                <CardBody padding="0">
+                  {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="167px" objectFit="cover" />}
+                  {!roadmap.thumbnail && (
+                    <Flex
+                      w="100%"
+                      h="167px"
+                      alignItems="center"
+                      justifyContent="center"
+                      background="blackAlpha.500"
+                      p={5}
+                    >
+                      <Text
+                        color="#fff"
+                        fontSize="2xl"
+                        fontWeight="bold"
+                        letterSpacing={1}
+                        whiteSpace="nowrap"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        textShadow="2px 4px 8px rgba(0,0,0,0.3)"
+                      >
                         {roadmap.title}
-                      </Heading>
-                      <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
-                        {roadmap.contents ?? ''}
                       </Text>
                     </Flex>
-                  </CardBody>
-                )}
-                {roadmap.thumbnail && (
-                  <CardBody padding="0">
-                    <Image src={roadmap.thumbnail} alt="" w="100%" h="167px" objectFit="cover" />
-                    <Flex flexDir="column" p={4}>
-                      <Heading fontSize="md" textOverflow="ellipsis" mb={1} whiteSpace="nowrap" overflow="hidden">
-                        {roadmap.title}
-                      </Heading>
-                      <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
-                        {roadmap.contents ?? ''}
-                      </Text>
-                      <Flex fontSize="xs" gap={1} color="gray.500">
-                        <Text>{dayjs(roadmap.created_at).fromNow()}</Text>
-                        <span>·</span>
-                        <Text>댓글 2</Text>
-                      </Flex>
+                  )}
+                  <Flex flexDir="column" p={4}>
+                    <Heading fontSize="md" textOverflow="ellipsis" mb={1} whiteSpace="nowrap" overflow="hidden">
+                      {roadmap.title}
+                    </Heading>
+                    <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
+                      {roadmap.contents ?? ''}
+                    </Text>
+                    <Flex fontSize="xs" gap={1} color="gray.500">
+                      <Text>{dayjs(roadmap.created_at).fromNow()}</Text>
+                      <span>·</span>
+                      <Text>댓글 {roadmap.reply}</Text>
                     </Flex>
-                  </CardBody>
-                )}
+                  </Flex>
+                </CardBody>
               </Link>
               <Divider />
               <CardFooter justifyContent="space-between" padding="10px">
                 <Flex alignItems="center">
                   <AiFillHeart className="icon" size="8" color="red" />
                   <Text ml="1" fontSize="xs">
-                    {roadmap.LikeUsers.length}
+                    {roadmap.like}
                   </Text>
                 </Flex>
                 <Flex alignItems="center">

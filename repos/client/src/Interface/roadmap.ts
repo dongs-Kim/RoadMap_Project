@@ -72,6 +72,12 @@ export interface RoadmapLikeDto extends RoadmapDto {
   User: User;
 }
 
+export interface RoadmapCategoryDto extends RoadmapDto {
+  User: User;
+  like: number;
+  reply: number;
+}
+
 export interface EdgeData {
   color: string;
   lineType: EdgeLineType;

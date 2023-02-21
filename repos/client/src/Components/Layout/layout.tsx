@@ -87,7 +87,7 @@ const Layout = () => {
     <div>
       {/* 헤더 */}
       <Flex as="header" p={5} pl={10} pr={10} top={0} bg="#fff" zIndex={1} justifyContent="center">
-        <Flex justifyContent="space-between" w="100%" maxW="1200px">
+        <Flex justifyContent="space-between" w="100%" maxW="1800px">
           <Flex alignItems="center">
             <RouterLink to="/">
               <Flex alignItems="center" gap={2}>

@@ -18,7 +18,7 @@ import {
 import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
-import { RoadmapDto, RoadmapLikeDto } from '../../../Interface/roadmap';
+import { RoadmapCategoryDto } from '../../../Interface/roadmap';
 import { Loading } from '../../../Components/Page/Loading';
 import { AiFillHeart } from 'react-icons/ai';
 
@@ -28,18 +28,18 @@ interface Props {
 }
 
 export const CardItem = ({ category, sort }: Props) => {
-  const [roadmaps, setRoadmaps] = useState<RoadmapLikeDto[]>([]);
+  const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapLikeDto[]>(`/api/roadmaps/list/${category}`);
+      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/${category}`);
       if (data && sort == 'like') {
         data.sort((a, b) => {
-          if (a.LikeUsers.length > b.LikeUsers.length) {
+          if (a.like > b.like) {
             return -1;
           }
-          if (a.LikeUsers.length < b.LikeUsers.length) {
+          if (a.like < b.like) {
             return 1;
           }
           return 0;
@@ -136,7 +136,7 @@ export const CardItem = ({ category, sort }: Props) => {
               <Flex alignItems="center">
                 <AiFillHeart className="icon" size="8" color="red" />
                 <Text ml="1" fontSize="xs">
-                  {roadmap.LikeUsers.length}
+                  {roadmap.like}
                 </Text>
               </Flex>
               <Flex alignItems="center">
