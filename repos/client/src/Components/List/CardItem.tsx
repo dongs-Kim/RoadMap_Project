@@ -1,8 +1,5 @@
 import {
   Avatar,
-  background,
-  Box,
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -13,36 +10,46 @@ import {
   Link,
   List,
   ListItem,
-  Stack,
   Text,
-  Tooltip,
 } from '@chakra-ui/react';
-import axios from 'axios';
 import { Link as RouterLink } from 'react-router-dom';
-import { useCallback, useEffect, useState } from 'react';
-import { RoadmapCategoryDto } from '../../../Interface/roadmap';
+import { RoadmapCategoryDto } from '../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
-import { Loading } from '../../../Components/Page/Loading';
+import { Loading } from '../../Components/Page/Loading';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface Props {
-  category: string | undefined;
+  category?: string;
+  sort?: string;
 }
 
-export const CardItem = ({ category }: Props) => {
+export const CardItem = ({ category, sort }: Props) => {
   const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadRoadmaps = useCallback(async () => {
     try {
       const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/${category}`);
+      if (data && sort == 'like') {
+        data.sort((a, b) => {
+          if (a.like > b.like) {
+            return -1;
+          }
+          if (a.like < b.like) {
+            return 1;
+          }
+          return 0;
+        });
+      }
       setRoadmaps(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [category]);
+  }, [category, sort]);
 
   useEffect(() => {
     setLoading(true);
@@ -51,7 +58,7 @@ export const CardItem = ({ category }: Props) => {
 
   return (
     <List display="flex" flexWrap="wrap">
-      <Loading isOpen={loading} />
+      <Loading isOpen={!!loading} />
       {!loading &&
         roadmaps.map((roadmap) => (
           <ListItem display="flex" key={roadmap.id} margin="15px">
@@ -108,12 +115,7 @@ export const CardItem = ({ category }: Props) => {
                     </Heading>
 
                     {/* 내용 */}
-                    <Text
-                      h={roadmap.thumbnail ? '4rem' : 'calc(4rem + 167px)'}
-                      mb="1.5rem"
-                      fontSize="sm"
-                      overflow="hidden"
-                    >
+                    <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
                       {roadmap.contents ?? ''}
                     </Text>
 

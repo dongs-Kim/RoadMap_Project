@@ -139,9 +139,16 @@ const Profile = () => {
         </ReactImageUploading>
         <Flex flexDir="column" fontWeight="bold">
           <Text mb="1">이메일</Text>
-          <Input mb="5" type="text" id="email" name="email" value={email} disabled></Input>
+          <Input mb="5" type="text" id="email" name="email" bg="#fff" value={email} disabled></Input>
           <Text mb="1">닉네임</Text>
-          <Input type="text" id="nickname" name="nickname" value={nickname} onChange={onChangeNickname}></Input>
+          <Input
+            type="text"
+            id="nickname"
+            name="nickname"
+            bg="#fff"
+            value={nickname}
+            onChange={onChangeNickname}
+          ></Input>
           {!isName && <Text color="red.400">{nickNameMessage}</Text>}
         </Flex>
       </Flex>
@@ -155,9 +162,10 @@ const Profile = () => {
             onChange={onChangeComment}
             resize="none"
             height="120"
+            bg="#fff"
           ></Textarea>
         </Text>
-        <Button disabled={true} onClick={onClickSave} _hover={{ bg: '#ccc' }}>
+        <Button disabled={true} onClick={onClickSave} colorScheme="teal">
           저장
         </Button>
       </Flex>
