@@ -85,7 +85,7 @@ const Layout = () => {
 
   useEffect(() => {
     revalidateUser();
-  }, [revalidateUser]);
+  });
 
   return (
     <div>
@@ -133,7 +133,12 @@ const Layout = () => {
               <span>
                 <Menu>
                   <MenuButton size="sm" colorScheme="#333" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-                    <Avatar size="sm" name={userData?.nickname} src={userData?.image} />
+                    {userData.image &&
+                      (<Avatar size="sm" name={userData?.nickname} src={userData?.image} />)
+                    }
+                    {!userData.image &&
+                      (<Avatar size="sm" name={userData?.nickname} />)
+                    }
                   </MenuButton>
                   <MenuList color="#333" fontFamily="monospace">
                     <MenuItem pb={3} onClick={onClickMypage}>
