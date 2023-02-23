@@ -1,61 +1,54 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link as RouterLink, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Button, Center, Divider, Flex, Heading, Link, List, ListItem } from '@chakra-ui/react';
-
-import { BiTime } from 'react-icons/bi';
-import { FcLike } from 'react-icons/fc';
+import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useTitle } from '../../Hooks/useTitle';
 import { CardItem } from '../../Components/List/CardItem';
-import { AiFillHeart } from 'react-icons/ai';
+import { RoadmapCategoryDto } from '../../Interface/roadmap';
+import axios from 'axios';
+import { RoadmapSortList } from '../../Components/List/RoadmapSortList';
+
 const RoadMapList = () => {
   const { category } = useParams();
   const title = category == 'back_end' ? '백엔드' : '프론트엔드';
   useTitle(`${title ?? ''} - Dev Roadmap`);
   const [sort, setSort] = useState('recently');
+  const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const onClickAllSearch = useCallback(() => {
-    setSort('recently');
-  }, []);
+  const loadRoadmaps = useCallback(async () => {
+    try {
+      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/${category}`);
+      if (data && sort == 'like') {
+        data.sort((a, b) => {
+          if (a.like > b.like) {
+            return -1;
+          }
+          if (a.like < b.like) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      setRoadmaps(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [category, sort]);
 
-  const onClickLikeSearch = useCallback(() => {
-    setSort('like');
+  useEffect(() => {
+    setLoading(true);
+    loadRoadmaps();
+  }, [loadRoadmaps]);
+
+  const onClickSort = useCallback((id: string) => {
+    setSort(id);
   }, []);
 
   return (
-    <div style={{ width: '1410px', margin: '0 auto' }}>
-      <Heading color="#333" pb="2" fontSize="3xl" ml="15px">
-        {title}
-      </Heading>
-      <List display="flex" ml="15px" mt={5} mb={3} gap={3}>
-        <ListItem>
-          <Button
-            variant="ghost"
-            leftIcon={<BiTime />}
-            color={sort === 'recently' ? 'teal' : '#888'}
-            onClick={onClickAllSearch}
-            colorScheme={sort === 'recently' ? 'teal' : 'gray'}
-            size="md"
-          >
-            최신
-          </Button>
-          {sort === 'recently' && <Divider border="1px solid teal" />}
-        </ListItem>
-        <ListItem>
-          <Button
-            variant="ghost"
-            leftIcon={<AiFillHeart />}
-            color={sort === 'like' ? 'teal' : '#888'}
-            onClick={onClickLikeSearch}
-            colorScheme={sort === 'like' ? 'teal' : 'gray'}
-            size="md"
-          >
-            좋아요
-          </Button>
-          {sort === 'like' && <Divider border="1px solid teal" />}
-        </ListItem>
-      </List>
-      <CardItem category={category} sort={sort}></CardItem>
-    </div>
+    <RoadmapSortList title={title} sort={sort} onClickSort={onClickSort}>
+      <CardItem loading={loading} roadmaps={roadmaps}></CardItem>
+    </RoadmapSortList>
   );
 };
 

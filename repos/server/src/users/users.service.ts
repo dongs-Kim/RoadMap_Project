@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import fs from 'fs-extra';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -52,12 +52,40 @@ export class UsersService {
 
   async getFavoriteRoadmaps(id: string) {
     const user = await this.usersRepository.findOne({
+      select: {
+        StoredRoadmaps: { id: true },
+      },
       where: { id },
       relations: {
         StoredRoadmaps: true,
       },
     });
-    return user.StoredRoadmaps;
+
+    const result = await this.roadmapsRepository.find({
+      where: {
+        id: In(user.StoredRoadmaps.map((x) => x.id)),
+      },
+      relations: {
+        LikeUsers: true,
+        Replies: true,
+        User: true,
+      },
+      order: {
+        updated_at: 'desc',
+      },
+    });
+
+    return result.map((roadmap) => {
+      const { LikeUsers, Replies, User, ...restRoadmap } = roadmap;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...restUser } = User;
+      return {
+        ...restRoadmap,
+        User: restUser,
+        like: LikeUsers.length,
+        reply: Replies.length,
+      };
+    });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

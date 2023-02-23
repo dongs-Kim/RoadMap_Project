@@ -106,16 +106,33 @@ export class RoadmapsService {
     return roadmapDto;
   }
 
-  findMyAll(user: User) {
-    return this.roadmapsRepository.find({
+  async findMyAll(user: User) {
+    const result = await this.roadmapsRepository.find({
       where: {
         User: {
           id: user.id,
         },
       },
+      relations: {
+        LikeUsers: true,
+        Replies: true,
+        User: true,
+      },
       order: {
         updated_at: 'desc',
       },
+    });
+
+    return result.map((roadmap) => {
+      const { LikeUsers, Replies, User, ...restRoadmap } = roadmap;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...restUser } = User;
+      return {
+        ...restRoadmap,
+        User: restUser,
+        like: LikeUsers.length,
+        reply: Replies.length,
+      };
     });
   }
 

@@ -2,22 +2,54 @@ import { useEffect, useState, useCallback } from 'react';
 import { List, Button, Heading, Link, Image, Card, CardBody, Stack, Divider } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { RoadmapDto } from '../../Interface/roadmap';
+import { RoadmapCategoryDto, RoadmapDto } from '../../Interface/roadmap';
 import { toastError } from '../../Utils/toast';
-import { CardItem } from './Components/CardItem';
 import { useTitle } from '../../Hooks/useTitle';
+import { RoadmapSortList } from '../../Components/List/RoadmapSortList';
+import { CardItem } from '../../Components/List/CardItem';
 
 const FavoriteList = () => {
   useTitle('북마크 - Dev Roadmap');
   const { id } = useParams();
+  const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [sort, setSort] = useState('recently');
+
+  const loadMyRoadmaps = useCallback(async () => {
+    try {
+      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/users/favoriteList/${id}`);
+      if (data && sort == 'like') {
+        data.sort((a, b) => {
+          if (a.like > b.like) {
+            return -1;
+          }
+          if (a.like < b.like) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      setRoadmaps(data);
+    } catch {
+      toastError('로드맵을 불러오지 못했습니다');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, sort]);
+
+  useEffect(() => {
+    setLoading(true);
+    loadMyRoadmaps();
+  }, [loadMyRoadmaps]);
+
+  const onClickSort = useCallback((id: string) => {
+    setSort(id);
+  }, []);
+
   return (
-    <div style={{ width: '900px', margin: '0 auto' }}>
-      <Heading color="#333" pb="5" fontSize="2xl">
-        북마크
-      </Heading>
-      <Divider border="1px solid #ccc" marginBottom="1"></Divider>
-      <CardItem id={id}></CardItem>
-    </div>
+    <RoadmapSortList title="북마크" sort={sort} onClickSort={onClickSort}>
+      <CardItem loading={loading} roadmaps={roadmaps}></CardItem>
+    </RoadmapSortList>
   );
 };
 

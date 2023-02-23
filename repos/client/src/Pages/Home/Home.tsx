@@ -1,8 +1,8 @@
-import { Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Button, Flex, Heading } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { CardItem } from '../../Components/List/CardItem';
 import { menuCategories } from '../../Components/Menu/menu';
 import { useTitle } from '../../Hooks/useTitle';
+import { CategoryList } from './components/CategoryList';
 
 const Home = () => {
   useTitle('Dev Roadmap');
@@ -20,7 +20,7 @@ const Home = () => {
                 <RouterLink to={`Roadmap/List/${category.type}`}>더보기</RouterLink>
               </Button>
             </Flex>
-            <CardItem category={category.type}></CardItem>
+            <CategoryList category={category.type} />
           </Flex>
         ))}
       </Flex>
