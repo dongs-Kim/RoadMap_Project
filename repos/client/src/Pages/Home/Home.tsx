@@ -8,7 +8,7 @@ const Home = () => {
   useTitle('Dev Roadmap');
 
   return (
-    <Flex w="100%" justifyContent="center">
+    <Flex w="100%" justifyContent="center" pb={20} pt={10}>
       <Flex flexDir="column" gap={10} w="1410px" ml={5} mr={5}>
         {menuCategories.map((category) => (
           <Flex key={category.type} flexDir="column">

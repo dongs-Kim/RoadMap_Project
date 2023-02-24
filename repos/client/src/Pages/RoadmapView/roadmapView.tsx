@@ -73,7 +73,7 @@ const RoadmapView = () => {
       {/* 로딩 */}
       <Loading isOpen={loading} />
 
-      <Flex width="100%" alignItems="center" flexDir="column">
+      <Flex width="100%" alignItems="center" flexDir="column" bg="#fff" pb={20} pt={10}>
         <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
           {/* 카테고리 */}
           <Flex pb={3}>

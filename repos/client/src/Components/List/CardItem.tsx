@@ -40,7 +40,7 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
           roadmaps.map((roadmap) => (
             <ListItem display="flex" key={roadmap.id} margin="15px">
               <Card
-                w="20rem"
+                w="15rem"
                 bg="#fff"
                 borderColor="inherit"
                 boxShadow="rgb(0 0 0 / 4%) 0px 4px 16px 0px"
@@ -60,11 +60,11 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
                 <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`} _hover={{ textDecoration: 'none' }}>
                   <CardBody padding="0">
                     {/* 썸네일 */}
-                    {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="167px" objectFit="cover" />}
+                    {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="130px" objectFit="cover" />}
                     {!roadmap.thumbnail && (
                       <Flex
                         w="100%"
-                        h="167px"
+                        h="130px"
                         alignItems="center"
                         justifyContent="center"
                         background="blackAlpha.500"
@@ -72,7 +72,7 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
                       >
                         <Text
                           color="#fff"
-                          fontSize="2xl"
+                          fontSize="xl"
                           fontWeight="bold"
                           letterSpacing={1}
                           whiteSpace="nowrap"
@@ -85,14 +85,14 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
                       </Flex>
                     )}
 
-                    <Flex flexDir="column" p={4}>
+                    <Flex flexDir="column" p={3}>
                       {/* 제목 */}
-                      <Heading fontSize="md" textOverflow="ellipsis" mb={1} whiteSpace="nowrap" overflow="hidden">
+                      <Heading fontSize="md" textOverflow="ellipsis" mb={2} whiteSpace="nowrap" overflow="hidden">
                         {roadmap.title}
                       </Heading>
 
                       {/* 내용 */}
-                      <Text h="4rem" mb="1.5rem" fontSize="sm" overflow="hidden">
+                      <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden">
                         {roadmap.contents ?? ''}
                       </Text>
 
@@ -108,7 +108,7 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
                 <Divider />
 
                 {/* 푸터 */}
-                <CardFooter justifyContent="space-between" padding="10px">
+                <CardFooter justifyContent="space-between" p={2} pl={3} pr={3}>
                   <Flex alignItems="center">
                     <AiFillHeart className="icon" size="12" color="crimson" />
                     <Text ml="1" fontSize="xs">

@@ -165,8 +165,10 @@ const SignUp = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
-        <Heading color="teal.400">회원가입</Heading>
+      <Stack flexDir="column" mb={10} justifyContent="center" alignItems="center">
+        <Heading color="teal.400" mb={5}>
+          회원가입
+        </Heading>
         <Box minW={{ base: '90%', md: '468px' }}>
           <form onSubmit={onSubmit}>
             <Stack spacing={7} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="2xl" h="100%">
@@ -174,7 +176,7 @@ const SignUp = () => {
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" />
                   <Input type="email" id="email" value={email} onChange={onChangeEmail} placeholder="이메일 주소" />
-                  <Button id="duplicated" colorScheme="teal" onClick={onClickIdCheck} isDisabled={!isEmail}>
+                  <Button ml={2} id="duplicated" colorScheme="teal" onClick={onClickIdCheck} isDisabled={!isEmail}>
                     중복확인
                   </Button>
                 </InputGroup>

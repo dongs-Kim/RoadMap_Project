@@ -1,5 +1,5 @@
-import { Button, Divider, Heading, List, ListItem } from '@chakra-ui/react';
-import { PropsWithChildren } from 'react';
+import { Box, Button, Divider, Heading, List, ListItem } from '@chakra-ui/react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { AiFillHeart } from 'react-icons/ai';
 import { BiTime } from 'react-icons/bi';
 
@@ -9,14 +9,14 @@ const sortButtons = [
 ];
 
 interface RoadmapSortListProps extends PropsWithChildren {
-  title: string;
+  title: ReactNode;
   sort: string;
   onClickSort(id: string): void;
 }
 
 export const RoadmapSortList = ({ title, sort, children, onClickSort }: RoadmapSortListProps) => {
   return (
-    <div style={{ width: '1410px', margin: '0 auto' }}>
+    <Box pb={20} pt={10} w="1410px" m="0 auto">
       <Heading color="#333" pb="2" fontSize="3xl" ml="15px">
         {title}
       </Heading>
@@ -38,6 +38,6 @@ export const RoadmapSortList = ({ title, sort, children, onClickSort }: RoadmapS
         ))}
       </List>
       {children}
-    </div>
+    </Box>
   );
 };

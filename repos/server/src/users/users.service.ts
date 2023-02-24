@@ -46,8 +46,10 @@ export class UsersService {
   }
 
   async findUserRoadmap(id: string) {
-    const roadmapUser = this.usersRepository.findOneBy({ id });
-    return roadmapUser;
+    const roadmapUser = await this.usersRepository.findOneBy({ id });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...rest } = roadmapUser;
+    return rest;
   }
 
   async getFavoriteRoadmaps(id: string) {

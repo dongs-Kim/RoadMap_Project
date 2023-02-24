@@ -18,6 +18,7 @@ import {
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { toastError } from '../../Utils/toast';
 import { useTitle } from '../../Hooks/useTitle';
+import { RiTreasureMapLine } from 'react-icons/ri';
 
 const Login = () => {
   useTitle('로그인 - Dev Roadmap');
@@ -80,8 +81,15 @@ const Login = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Stack flexDir="column" mb="2" justifyContent="center" alignItems="center">
-        <Heading color="teal.400">Welcome</Heading>
+      <Stack flexDir="column" mb={10} justifyContent="center" alignItems="center">
+        <RouterLink to="/">
+          <Flex mb={8} gap={3} alignItems="center" color="#333">
+            <RiTreasureMapLine size="35px" />
+            <Heading fontSize="3xl" fontFamily="'Mochiy Pop One', sans-serif">
+              Dev Roadmap
+            </Heading>
+          </Flex>
+        </RouterLink>
         <Box minW={{ base: '90%', md: '468px' }}>
           <form onSubmit={onSubmit}>
             <Stack spacing={4} p="1rem" backgroundColor="whiteAlpha.900" boxShadow="md">

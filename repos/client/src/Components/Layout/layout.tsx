@@ -133,12 +133,8 @@ const Layout = () => {
               <span>
                 <Menu>
                   <MenuButton size="sm" colorScheme="#333" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
-                    {userData.image &&
-                      (<Avatar size="sm" name={userData?.nickname} src={userData?.image} />)
-                    }
-                    {!userData.image &&
-                      (<Avatar size="sm" name={userData?.nickname} />)
-                    }
+                    {userData.image && <Avatar size="sm" name={userData?.nickname} src={userData?.image} />}
+                    {!userData.image && <Avatar size="sm" name={userData?.nickname} />}
                   </MenuButton>
                   <MenuList color="#333" fontFamily="monospace">
                     <MenuItem pb={3} onClick={onClickMypage}>
@@ -173,7 +169,7 @@ const Layout = () => {
       <Divider />
 
       {/* 메인 */}
-      <Flex as="main" pb={20} pt={10} minH="calc(100vh - 200px)" bg="#F8F9FA">
+      <Flex as="main" minH="calc(100vh - 200px)" bg="#F8F9FA">
         <Outlet></Outlet>
       </Flex>
 
