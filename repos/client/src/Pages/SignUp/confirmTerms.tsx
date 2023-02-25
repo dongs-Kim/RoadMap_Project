@@ -15,7 +15,7 @@ export function ConfirmTerms() {
   return (
     <Flex
       flexDirection="column"
-      width="100wh"
+      width="100vw"
       height="100vh"
       backgroundColor="gray.300"
       justifyContent="center"
@@ -33,7 +33,7 @@ export function ConfirmTerms() {
               이용약관, 개인정보 수집에 모두 동의합니다.
             </Checkbox>
             <Stack mt={1}>
-              <Box border="1px" borderStyle="solid" borderColor="#ccc" width={'400px'} height={'200px'} overflow="auto">
+              <Box border="1px" borderStyle="solid" borderColor="#ccc" maxW="400px" height={'200px'} overflow="auto">
                 <Box
                   style={{
                     fontSize: '10px',
@@ -82,7 +82,7 @@ export function ConfirmTerms() {
                   (필수)
                 </Text>
               </Checkbox>
-              <Box border="1px" borderStyle="solid" borderColor="#ccc" width={'400px'} height={'200px'} overflow="auto">
+              <Box border="1px" borderStyle="solid" borderColor="#ccc" maxW="400px" height={'200px'} overflow="auto">
                 <Box
                   style={{
                     fontSize: '10px',

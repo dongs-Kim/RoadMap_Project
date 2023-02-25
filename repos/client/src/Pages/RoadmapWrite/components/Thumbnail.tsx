@@ -29,7 +29,7 @@ export const Thumbnail = () => {
   return (
     <ReactImageUploading value={[]} onChange={onChangeThumbnail} dataURLKey="thumbnail">
       {({ onImageUpload }: ExportInterface) => (
-        <Flex mb={5}>
+        <Flex>
           {!thumbnail && (
             <Square
               bg="gray.200"

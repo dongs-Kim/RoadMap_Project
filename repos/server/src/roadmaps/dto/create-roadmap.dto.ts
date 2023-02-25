@@ -19,5 +19,7 @@ export class CreateRoadmapDto {
 
   thumbnail?: string;
 
+  bgcolor?: string;
+
   created_at?: Date;
 }

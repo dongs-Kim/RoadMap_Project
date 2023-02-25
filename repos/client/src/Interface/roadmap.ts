@@ -64,6 +64,7 @@ export interface RoadmapDto {
   contents: string;
   like?: number;
   thumbnail?: string;
+  bgcolor?: string;
   created_at?: string;
 }
 

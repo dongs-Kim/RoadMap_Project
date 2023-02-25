@@ -11,7 +11,7 @@ const UserRoadMapList = () => {
   const { id } = useParams();
   const [user, setUser] = useState<User>();
   const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('recently');
   useTitle(`${user?.nickname} 로드맵 - Dev Roadmap`);
 
@@ -51,21 +51,19 @@ const UserRoadMapList = () => {
   return (
     <RoadmapSortList
       title={
-        <Heading color="gray.700" fontSize="md">
+        <>
           {user && (
-            <div>
-              <Flex alignItems="center" gap={5} height="140px">
-                <Avatar size="xl" name={user.nickname} src={user.image} />
-                <Flex flexDir="column" gap={3}>
-                  <Text fontWeight="bold" fontSize="xl">
-                    {user.nickname}
-                  </Text>
-                  <Text fontSize="md">{user.comment}</Text>
-                </Flex>
+            <Flex alignItems="center" gap={5} height="140px">
+              <Avatar size="xl" name={user.nickname} src={user.image} />
+              <Flex flexDir="column" gap={3}>
+                <Text fontWeight="bold" fontSize="xl">
+                  {user.nickname}
+                </Text>
+                <Text fontSize="md">{user.comment}</Text>
               </Flex>
-            </div>
+            </Flex>
           )}
-        </Heading>
+        </>
       }
       sort={sort}
       onClickSort={onClickSort}

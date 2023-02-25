@@ -49,7 +49,6 @@ const Profile = () => {
         const formData = new FormData();
         formData.append('image', file);
         axios.post('/api/users/profile-image', formData).then((response) => {
-          console.log(response.data);
           setImage(response.data);
         });
       }
@@ -67,24 +66,18 @@ const Profile = () => {
       comment,
       image,
     };
-    axios
-      .patch('api/users', saveDto, { withCredentials: true })
-      .then((response) => {
-        console.log(response);
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [email, nickname, comment, image]);
+    axios.patch('api/users', saveDto, { withCredentials: true }).then(() => {
+      navigate('/');
+    });
+  }, [email, nickname, comment, image, navigate]);
 
-  const patchUser = async () => {
+  const patchUser = useCallback(async () => {
     await dispatch(getUser());
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     patchUser();
-  }, [dispatch]);
+  }, [patchUser]);
 
   useEffect(() => {
     if (profileData) {
@@ -93,7 +86,6 @@ const Profile = () => {
       setImage(profileData.image);
       setComment(profileData.comment);
     }
-    console.log(profileData);
   }, [profileData]);
 
   return (

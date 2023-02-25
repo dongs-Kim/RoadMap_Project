@@ -1,19 +1,27 @@
-import { useCallback, ChangeEvent } from 'react';
+import { useCallback, ChangeEvent, useEffect } from 'react';
 import { Box, Flex, FormControl, FormLabel, Input, Select, Switch, Text, useDisclosure } from '@chakra-ui/react';
 import { Thumbnail } from './Thumbnail';
 import { ContentsEditor } from './ContentsEditor';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/hooks';
-import { setCategory, setPublic, setTitle } from '../../../store/roadmapWriteSlice';
+import { setBgcolor, setCategory, setPublic, setTitle } from '../../../store/roadmapWriteSlice';
 import { ROADMAP_CATEGORY } from '../../../Constants/roadmap';
 import { RiTreasureMapLine } from 'react-icons/ri';
 import { MoveConfirmDialog } from './MoveConfirmDialog';
 import { useNavigate } from 'react-router-dom';
+import { ColorPicker } from './ColorPicker';
+import { ColorResult } from 'react-color';
 
 export const LeftPanel = () => {
-  const { title, category, public: isPublic } = useAppSelector((state) => state.roadmapWrite);
+  const { title, category, public: isPublic, thumbnail, bgcolor } = useAppSelector((state) => state.roadmapWrite);
   const dispatch = useAppDispatch();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!bgcolor) {
+      dispatch(setBgcolor('#d9e3f0'));
+    }
+  }, [dispatch, bgcolor]);
 
   const onChangeTitle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +40,13 @@ export const LeftPanel = () => {
   const onChangePulic = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       dispatch(setPublic(e.target.checked));
+    },
+    [dispatch],
+  );
+
+  const onChangeBgColor = useCallback(
+    (color: ColorResult) => {
+      dispatch(setBgcolor(color.hex));
     },
     [dispatch],
   );
@@ -94,8 +109,15 @@ export const LeftPanel = () => {
           onChange={onChangeTitle}
         />
 
-        {/* 썸네일 */}
-        <Thumbnail />
+        <Flex gap={3} mb={5}>
+          {/* 썸네일 */}
+          <Thumbnail />
+
+          {/* 배경색 */}
+          {!thumbnail && bgcolor && (
+            <ColorPicker color={bgcolor} onChange={onChangeBgColor} isColumn tooltip={'썸네일 배경색'} />
+          )}
+        </Flex>
 
         {/* 에디터 */}
         <ContentsEditor />

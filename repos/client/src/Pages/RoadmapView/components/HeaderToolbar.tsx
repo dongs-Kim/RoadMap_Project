@@ -164,7 +164,7 @@ export const HeaderToolbar = () => {
   );
 
   return (
-    <Flex justifyContent="space-between">
+    <Flex justifyContent="space-between" mb={10}>
       {/* 작성자 */}
       <Flex alignItems="center" gap={1} fontSize="15px">
         {roadmapSet?.user && (

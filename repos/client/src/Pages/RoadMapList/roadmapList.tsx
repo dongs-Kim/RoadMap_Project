@@ -12,7 +12,7 @@ const RoadMapList = () => {
   useTitle(`${title ?? ''} - Dev Roadmap`);
   const [sort, setSort] = useState('recently');
   const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadRoadmaps = useCallback(async () => {
     try {

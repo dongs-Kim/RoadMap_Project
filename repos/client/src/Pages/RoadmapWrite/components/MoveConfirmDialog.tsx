@@ -30,7 +30,7 @@ export const MoveConfirmDialog = ({ isOpen, onMove, onClose }: MoveConfirmDialog
 
           <AlertDialogFooter>
             <Button colorScheme="red" mr={3} onClick={onMove}>
-              이동
+              나가기
             </Button>
             <Button ref={cancelRef} onClick={onClose}>
               취소

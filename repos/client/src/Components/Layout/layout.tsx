@@ -1,19 +1,13 @@
-import { AtSignIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, HamburgerIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Button,
   Flex,
-  Heading,
   Text,
   Link,
-  List,
-  ListItem,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  UnorderedList,
-  Image,
   Divider,
   useDisclosure,
   Avatar,
@@ -21,34 +15,35 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useCallback, useState, useEffect } from 'react';
-import { Link as RouterLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { useCallback, useEffect } from 'react';
+import { Link as RouterLink, useNavigate, Outlet } from 'react-router-dom';
 import { menuCategories } from '../Menu/menu';
-import { CgProfile } from 'react-icons/cg';
 import { HiOutlineMail } from 'react-icons/hi';
 import { CiMap } from 'react-icons/ci';
-import { TbSitemap } from 'react-icons/tb';
 import { RiTreasureMapLine } from 'react-icons/ri';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { LoginDialog } from '../Dialog/LoginDialog';
-import { useScrollPosition } from '../../Hooks/useScrollPosition';
 import { AiFillGithub } from 'react-icons/ai';
+import { MenuDrawer } from '../Drawer/MenuDrawer';
 
 const Layout = () => {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { userData, mutate: revalidateUser, isLogined } = useUser();
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
+  const { isOpen: isOpenDrawer, onOpen: onOpenDrawer, onClose: onCloseDrawer } = useDisclosure();
 
   const onClickLogIn = useCallback(() => {
+    onCloseDrawer();
     navigate('/login');
-  }, [navigate]);
+  }, [navigate, onCloseDrawer]);
 
   const onClickSignUp = useCallback(() => {
+    onCloseDrawer();
     navigate('/confirmTerms');
-  }, [navigate]);
+  }, [navigate, onCloseDrawer]);
 
   const onClickLogOut = useCallback(() => {
+    onCloseDrawer();
     axios
       .post('/api/users/logout', null, {
         withCredentials: true,
@@ -57,7 +52,7 @@ const Layout = () => {
         revalidateUser(false);
         navigate('/');
       });
-  }, [navigate, revalidateUser]);
+  }, [navigate, revalidateUser, onCloseDrawer]);
 
   const onClickNewRoadMap = useCallback(() => {
     if (isLogined) {
@@ -68,20 +63,28 @@ const Layout = () => {
   }, [navigate, isLogined, onOpenLogin]);
 
   const onClickFavoriteList = useCallback(() => {
+    onCloseDrawer();
     navigate(`/Favorite/List/${userData.id}`);
-  }, [navigate]);
+  }, [navigate, userData, onCloseDrawer]);
   const onClickMypage = useCallback(() => {
+    onCloseDrawer();
     navigate('/Mypage');
-  }, [navigate]);
+  }, [navigate, onCloseDrawer]);
   const onClickProfile = useCallback(() => {
+    onCloseDrawer();
     navigate('/Profile');
-  }, [navigate]);
+  }, [navigate, onCloseDrawer]);
   const onClickCategory = useCallback(
     (category: string) => {
+      onCloseDrawer();
       navigate(`Roadmap/list/${category}`);
     },
-    [navigate],
+    [navigate, onCloseDrawer],
   );
+
+  const onClickDrawerIcon = useCallback(() => {
+    onOpenDrawer();
+  }, [onOpenDrawer]);
 
   useEffect(() => {
     revalidateUser();
@@ -101,7 +104,7 @@ const Layout = () => {
                 </Text>
               </Flex>
             </RouterLink>
-            <Flex ml={8}>
+            <Flex ml={8} display={{ base: 'none', md: 'flex' }}>
               <Menu>
                 <MenuButton size="md" colorScheme="#333" variant="ghost" as={Button} rightIcon={<ChevronDownIcon />}>
                   카테고리
@@ -117,7 +120,16 @@ const Layout = () => {
             </Flex>
           </Flex>
 
-          <Flex alignItems="center" gap={3}>
+          <Flex display={{ base: 'flex', md: 'none' }}>
+            <IconButton
+              icon={<HamburgerIcon fontSize="xl" />}
+              aria-label="drawer"
+              variant="ghost"
+              onClick={onClickDrawerIcon}
+            />
+          </Flex>
+
+          <Flex alignItems="center" gap={3} display={{ base: 'none', md: 'flex' }}>
             <Button
               leftIcon={<CiMap size="20px" />}
               variant="ghost"
@@ -209,6 +221,18 @@ const Layout = () => {
       </Flex>
 
       <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <MenuDrawer
+        isOpen={isOpenDrawer}
+        onClose={onCloseDrawer}
+        userData={userData}
+        onClickCategory={onClickCategory}
+        onClickFavoriteList={onClickFavoriteList}
+        onClickLogIn={onClickLogIn}
+        onClickLogOut={onClickLogOut}
+        onClickMypage={onClickMypage}
+        onClickProfile={onClickProfile}
+        onClickSignUp={onClickSignUp}
+      />
     </div>
   );
 };

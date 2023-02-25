@@ -68,6 +68,7 @@ export class RoadmapsService {
       public: dbRoadmap.public,
       contents: dbRoadmap.contents,
       thumbnail: dbRoadmap.thumbnail,
+      bgcolor: dbRoadmap.bgcolor,
       like: dbRoadmap.LikeUsers?.length,
       created_at: dbRoadmap.created_at,
     };
@@ -377,6 +378,7 @@ export class RoadmapsService {
       newRoadmap.title = roadmap.title;
       newRoadmap.contents = roadmap.contents;
       newRoadmap.thumbnail = roadmap.thumbnail;
+      newRoadmap.bgcolor = roadmap.bgcolor;
       newRoadmap.User = user;
       newRoadmap.RoadmapItems = newRoadmapItems;
       newRoadmap.RoadmapEdges = newRoadmapEdges;

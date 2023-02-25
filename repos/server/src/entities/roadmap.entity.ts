@@ -41,6 +41,9 @@ export class Roadmap {
   @Column({ nullable: true })
   thumbnail?: string;
 
+  @Column({ nullable: true })
+  bgcolor?: string;
+
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;
 

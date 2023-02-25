@@ -12,7 +12,7 @@ const FavoriteList = () => {
   useTitle('북마크 - Dev Roadmap');
   const { id } = useParams();
   const [roadmaps, setRoadmaps] = useState<RoadmapCategoryDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('recently');
 
   const loadMyRoadmaps = useCallback(async () => {

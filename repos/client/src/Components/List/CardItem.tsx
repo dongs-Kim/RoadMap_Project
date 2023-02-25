@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import {
   Avatar,
   Card,
@@ -7,24 +8,63 @@ import {
   Flex,
   Heading,
   Image,
-  Link,
   List,
   ListItem,
   Text,
 } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { RoadmapCategoryDto } from '../../Interface/roadmap';
 import { AiFillHeart } from 'react-icons/ai';
 import { Loading } from '../../Components/Page/Loading';
 import dayjs from 'dayjs';
 import { BsPatchExclamation } from 'react-icons/bs';
+import { ReactNode } from 'react';
+
+const BG_COLOR_MAP: { [key: string]: string } = {
+  '#ffffff': '#444',
+  '#d9e3f0': '#444',
+  '#9eabbf': '#eee',
+  '#ffff00': '#444',
+  '#ffe599': '#444',
+  '#f47373': '#eee',
+  '#37d67a': '#444',
+  '#aee6ef': '#444',
+  '#dce775': '#444',
+  '#ff8a65': '#eee',
+  '#dea7e7': '#444',
+};
 
 interface Props {
   loading?: boolean;
   roadmaps: RoadmapCategoryDto[];
+  renderMore?(roadmap: RoadmapCategoryDto): ReactNode;
 }
 
-export const CardItem = ({ loading, roadmaps }: Props) => {
+export const CardItem = ({ loading, roadmaps, renderMore }: Props) => {
+  const [showEdit, setShowEdit] = useState<{ [key: string]: boolean }>({});
+  const navigate = useNavigate();
+
+  const onMouseEnterItem = useCallback((id: string) => {
+    if (id) {
+      setShowEdit((prev) => ({ ...prev, [id]: true }));
+    }
+  }, []);
+
+  const onMouseLeaveItem = useCallback((id: string) => {
+    if (id) {
+      setShowEdit((prev) => ({ ...prev, [id]: false }));
+    }
+  }, []);
+
+  const onClickItem = useCallback(
+    (id: string) => {
+      if (id) {
+        navigate(`/Roadmap/view/${id}`);
+      }
+    },
+    [navigate],
+  );
+
   return (
     <>
       <Loading isOpen={!!loading} />
@@ -38,7 +78,13 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
       <List display="flex" flexWrap="wrap">
         {!loading &&
           roadmaps.map((roadmap) => (
-            <ListItem display="flex" key={roadmap.id} margin="15px">
+            <ListItem
+              display="flex"
+              key={roadmap.id}
+              margin="15px"
+              onMouseEnter={renderMore ? () => onMouseEnterItem(roadmap.id ?? '') : undefined}
+              onMouseLeave={renderMore ? () => onMouseLeaveItem(roadmap.id ?? '') : undefined}
+            >
               <Card
                 w="15rem"
                 bg="#fff"
@@ -57,54 +103,56 @@ export const CardItem = ({ loading, roadmaps }: Props) => {
                   boxShadow: 'rgb(0 0 0 / 15%) 0px 2px 2px 0px',
                 }}
               >
-                <Link as={RouterLink} to={`/Roadmap/view/${roadmap.id}`} _hover={{ textDecoration: 'none' }}>
-                  <CardBody padding="0">
-                    {/* 썸네일 */}
-                    {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="130px" objectFit="cover" />}
-                    {!roadmap.thumbnail && (
-                      <Flex
-                        w="100%"
-                        h="130px"
-                        alignItems="center"
-                        justifyContent="center"
-                        background="blackAlpha.500"
-                        p={5}
+                <CardBody padding="0" cursor="pointer" onClick={() => onClickItem(roadmap.id ?? '')}>
+                  {/* 추가 기능 */}
+                  {renderMore && showEdit[roadmap.id ?? ''] && renderMore(roadmap)}
+
+                  {/* 썸네일 */}
+                  {roadmap.thumbnail && <Image src={roadmap.thumbnail} alt="" w="100%" h="130px" objectFit="cover" />}
+                  {!roadmap.thumbnail && (
+                    <Flex
+                      w="100%"
+                      h="130px"
+                      alignItems="center"
+                      justifyContent="center"
+                      background={roadmap.bgcolor ?? 'blackAlpha.500'}
+                      p={5}
+                    >
+                      <Text
+                        color={BG_COLOR_MAP[roadmap.bgcolor ?? ''] ?? '#fff'}
+                        fontSize="xl"
+                        fontWeight="bold"
+                        letterSpacing={1}
+                        whiteSpace="nowrap"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        textShadow="2px 4px 8px rgba(0,0,0,0.3)"
                       >
-                        <Text
-                          color="#fff"
-                          fontSize="xl"
-                          fontWeight="bold"
-                          letterSpacing={1}
-                          whiteSpace="nowrap"
-                          textOverflow="ellipsis"
-                          overflow="hidden"
-                          textShadow="2px 4px 8px rgba(0,0,0,0.3)"
-                        >
-                          {roadmap.title}
-                        </Text>
-                      </Flex>
-                    )}
-
-                    <Flex flexDir="column" p={3}>
-                      {/* 제목 */}
-                      <Heading fontSize="md" textOverflow="ellipsis" mb={2} whiteSpace="nowrap" overflow="hidden">
                         {roadmap.title}
-                      </Heading>
-
-                      {/* 내용 */}
-                      <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden">
-                        {roadmap.contents ?? ''}
                       </Text>
-
-                      {/* 작성시간, 댓글 */}
-                      <Flex fontSize="xs" gap={1} color="gray.500">
-                        <Text>{dayjs(roadmap.created_at).fromNow()}</Text>
-                        <span>·</span>
-                        <Text>댓글 {roadmap.reply}</Text>
-                      </Flex>
                     </Flex>
-                  </CardBody>
-                </Link>
+                  )}
+
+                  <Flex flexDir="column" p={3}>
+                    {/* 제목 */}
+                    <Heading fontSize="md" textOverflow="ellipsis" mb={2} whiteSpace="nowrap" overflow="hidden">
+                      {roadmap.title}
+                    </Heading>
+
+                    {/* 내용 */}
+                    <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden">
+                      {roadmap.contents ?? ''}
+                    </Text>
+
+                    {/* 작성시간, 댓글 */}
+                    <Flex fontSize="xs" gap={1} color="gray.500">
+                      <Text>{dayjs(roadmap.created_at).fromNow()}</Text>
+                      <span>·</span>
+                      <Text>댓글 {roadmap.reply}</Text>
+                    </Flex>
+                  </Flex>
+                </CardBody>
+
                 <Divider />
 
                 {/* 푸터 */}

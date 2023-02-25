@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Heading, Image, Link } from '@chakra-ui/react';
+import { Badge, Box, Flex, Heading, Link } from '@chakra-ui/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useViewer } from '../../Hooks/useViewer';
 import { FlowView } from './components/FlowView';
@@ -25,7 +25,7 @@ const RoadmapView = () => {
   const { roadmapId } = useParams();
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
-  const { userData, isLogined } = useUser();
+  const { isLogined } = useUser();
   const roadmapSet = useAppSelector((state) => state.roadmapView.roadmapSet);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   useViewer(viewerElRef, roadmapSet?.roadmap?.contents);
@@ -93,11 +93,11 @@ const RoadmapView = () => {
           <HeaderToolbar />
 
           {/* 썸네일 */}
-          {roadmapSet?.roadmap?.thumbnail && (
-            <Flex mt={10} mb={10} justifyContent="center">
-              <Image src={roadmapSet?.roadmap.thumbnail} w="100%" maxW="500px" />
+          {/* {roadmapSet?.roadmap?.thumbnail && (
+            <Flex mb={10} justifyContent="center" maxH="300px">
+              <Image src={roadmapSet?.roadmap.thumbnail} maxW="500px" objectFit="scale-down" />
             </Flex>
-          )}
+          )} */}
 
           {/* 설명 */}
           <Flex mb={5}>

@@ -14,6 +14,7 @@ interface RoadmapWriteState {
   edges: Edge<EdgeData>[];
   category: string;
   thumbnail?: string;
+  bgcolor?: string;
 }
 
 const getInitialNodes = (): Node<RoadmapItem>[] => [
@@ -32,6 +33,7 @@ const getInitialState = (): RoadmapWriteState => ({
   public: true,
   category: '',
   contents: '',
+  bgcolor: '#d9e3f0',
   nodes: getInitialNodes(),
   edges: [],
 });
@@ -60,6 +62,7 @@ const roadmapWriteSlice = createSlice({
       state.contents = roadmap.contents;
       state.category = roadmap.category;
       state.thumbnail = roadmap.thumbnail;
+      state.bgcolor = roadmap.bgcolor;
       state.nodes = nodes;
       state.edges = edges;
     },
@@ -81,6 +84,9 @@ const roadmapWriteSlice = createSlice({
     },
     setThumbnail: (state, action: PayloadAction<string | undefined>) => {
       state.thumbnail = action.payload;
+    },
+    setBgcolor: (state, action: PayloadAction<string | undefined>) => {
+      state.bgcolor = action.payload;
     },
     setNodes: (state, action: PayloadAction<Node<RoadmapItem>[]>) => {
       state.nodes = action.payload;
@@ -119,6 +125,7 @@ const roadmapWriteSlice = createSlice({
       state.contents = roadmap.contents;
       state.category = roadmap.category;
       state.thumbnail = roadmap.thumbnail;
+      state.bgcolor = roadmap.bgcolor;
       state.nodes = nodes.map((node) => {
         if (node.width) {
           node.style = node.style ?? {};
@@ -147,6 +154,7 @@ export const {
   setContents,
   setCategory,
   setThumbnail,
+  setBgcolor,
   setNodes,
   setEdges,
   addNode,
