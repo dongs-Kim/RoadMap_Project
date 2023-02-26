@@ -16,7 +16,8 @@ import { MoveConfirmDialog } from './MoveConfirmDialog';
 import { UsageModal } from './UsageModal';
 
 export const Toolbar = () => {
-  const { nodes, edges, ...roadmap } = useAppSelector((state) => state.roadmapWrite);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { nodes, edges, history, undoHistory, clipboard, ...roadmap } = useAppSelector((state) => state.roadmapWrite);
   const dispatch = useAppDispatch();
   const { editor, mode } = useContext(EditorContext);
   const navigate = useNavigate();

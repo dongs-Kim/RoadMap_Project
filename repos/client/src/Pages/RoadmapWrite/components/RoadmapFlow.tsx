@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { KeyboardEvent, useCallback, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -31,6 +31,7 @@ import {
 } from '../../../Interface/roadmap';
 import { addEdge, addNode, setEdges, setNodes, updateEdge, updateNode } from '../../../store/roadmapWriteSlice';
 import { useRedoUndo } from '../../../Hooks/useRedoUndo';
+import { useClipboard } from '../../../Hooks/useClipboard';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode('write'),
@@ -82,6 +83,7 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
   const connectingRef = useRef<Pick<OnConnectStartParams, 'nodeId' | 'handleId'> | null>(null);
   const { project } = useReactFlow();
   const { addHistory, onRedoUndoKeyDown } = useRedoUndo();
+  const { onClipboardKeyDown } = useClipboard();
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -197,9 +199,18 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
     [openEdgeModal, dispatch, addHistory],
   );
 
+  const onContainerKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      onRedoUndoKeyDown(e);
+      onClipboardKeyDown(e);
+    },
+    [onRedoUndoKeyDown, onClipboardKeyDown],
+  );
+
   return (
     <>
-      <div ref={containerRef} tabIndex={-1} style={{ height: 'calc(100% - 64.67px)' }} onKeyDown={onRedoUndoKeyDown}>
+      <div ref={containerRef} tabIndex={-1} style={{ height: 'calc(100% - 64.67px)' }} onKeyDown={onContainerKeyDown}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -218,6 +229,7 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
             maxZoom: 1,
           }}
           deleteKeyCode="Delete"
+          multiSelectionKeyCode="Control"
         >
           <MiniMap />
           <Controls />

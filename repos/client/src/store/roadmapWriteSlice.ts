@@ -18,6 +18,7 @@ interface RoadmapWriteState {
   bgcolor?: string;
   history: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
   undoHistory: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
+  clipboard: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] } | null;
 }
 
 const getInitialNodes = (): Node<RoadmapItem>[] => [
@@ -41,6 +42,7 @@ const getInitialState = (): RoadmapWriteState => ({
   edges: [],
   history: [],
   undoHistory: [],
+  clipboard: null,
 });
 
 export const getRoadmap = createAsyncThunk<RoadmapSetDto, { id: string }>(
@@ -72,6 +74,7 @@ const roadmapWriteSlice = createSlice({
       state.edges = edges;
       state.history = [];
       state.undoHistory = [];
+      state.clipboard = null;
     },
     clearRoadmap: (state) => {
       _.extend(state, getInitialState());
@@ -157,6 +160,14 @@ const roadmapWriteSlice = createSlice({
         state.history.push(last);
       }
     },
+    setClipboard: (state) => {
+      const selectedNodes = state.nodes.filter((node) => node.selected);
+      const selectedEdges = state.edges.filter((edge) => edge.selected);
+      if (!selectedNodes.length && !selectedEdges.length) {
+        return;
+      }
+      state.clipboard = { nodes: selectedNodes, edges: selectedEdges };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getRoadmap.fulfilled, (state, action) => {
@@ -186,6 +197,7 @@ const roadmapWriteSlice = createSlice({
       state.edges = edges;
       state.history = [];
       state.undoHistory = [];
+      state.clipboard = null;
     });
   },
 });
@@ -209,6 +221,7 @@ export const {
   addHistory,
   undoHistory,
   redoHistory,
+  setClipboard,
 } = roadmapWriteSlice.actions;
 
 export default roadmapWriteSlice.reducer;

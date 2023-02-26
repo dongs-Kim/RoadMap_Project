@@ -7,7 +7,11 @@ import { User } from './src/entities/user.entity';
 import { RoadmapEdge } from './src/entities/roadmap_edge.entity';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env.development') });
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: path.resolve(__dirname, '../../.env.production') });
+} else {
+  dotenv.config({ path: path.resolve(__dirname, '.env.development') });
+}
 
 const dataSource = new DataSource({
   type: 'mysql',

@@ -43,8 +43,6 @@ export const useRedoUndo = () => {
 
   const onRedoUndoKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      e.preventDefault();
-
       if (e.ctrlKey && e.key === 'z') {
         undo();
         return;
