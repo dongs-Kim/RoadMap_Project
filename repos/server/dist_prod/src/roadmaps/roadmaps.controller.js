@@ -58,7 +58,6 @@ let RoadmapsController = class RoadmapsController {
     }
     async uploadThumbnail(file, id) {
         const url = `/${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
-        await this.roadmapsService.uploadThumbnail(id, url);
         return url;
     }
 };

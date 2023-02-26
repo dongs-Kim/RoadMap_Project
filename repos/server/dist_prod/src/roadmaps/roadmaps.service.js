@@ -77,6 +77,7 @@ let RoadmapsService = class RoadmapsService {
             public: dbRoadmap.public,
             contents: dbRoadmap.contents,
             thumbnail: dbRoadmap.thumbnail,
+            bgcolor: dbRoadmap.bgcolor,
             like: (_a = dbRoadmap.LikeUsers) === null || _a === void 0 ? void 0 : _a.length,
             created_at: dbRoadmap.created_at,
         };
@@ -113,32 +114,51 @@ let RoadmapsService = class RoadmapsService {
         }));
         return roadmapDto;
     }
-    findMyAll(user) {
-        return this.roadmapsRepository.find({
+    async findMyAll(user) {
+        const result = await this.roadmapsRepository.find({
             where: {
                 User: {
                     id: user.id,
                 },
             },
-        });
-    }
-    findCategory(category) {
-        return this.roadmapsRepository.find({
-            where: {
-                category: category,
-                public: true,
-            },
             relations: {
                 LikeUsers: true,
+                Replies: true,
                 User: true,
             },
             order: {
                 updated_at: 'desc',
             },
         });
+        return result.map((roadmap) => {
+            const { LikeUsers, Replies, User } = roadmap, restRoadmap = __rest(roadmap, ["LikeUsers", "Replies", "User"]);
+            const { password } = User, restUser = __rest(User, ["password"]);
+            return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
+        });
     }
-    findByUser(Userid) {
-        return this.roadmapsRepository.find({
+    async findCategory(category) {
+        const result = await this.roadmapsRepository.find({
+            where: {
+                category: category,
+                public: true,
+            },
+            relations: {
+                LikeUsers: true,
+                Replies: true,
+                User: true,
+            },
+            order: {
+                updated_at: 'desc',
+            },
+        });
+        return result.map((roadmap) => {
+            const { LikeUsers, Replies, User } = roadmap, restRoadmap = __rest(roadmap, ["LikeUsers", "Replies", "User"]);
+            const { password } = User, restUser = __rest(User, ["password"]);
+            return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
+        });
+    }
+    async findByUser(Userid) {
+        const result = await this.roadmapsRepository.find({
             where: {
                 User: {
                     id: Userid,
@@ -147,11 +167,17 @@ let RoadmapsService = class RoadmapsService {
             },
             relations: {
                 LikeUsers: true,
+                Replies: true,
                 User: true,
             },
             order: {
                 updated_at: 'desc',
             },
+        });
+        return result.map((roadmap) => {
+            const { LikeUsers, Replies, User } = roadmap, restRoadmap = __rest(roadmap, ["LikeUsers", "Replies", "User"]);
+            const { password } = User, restUser = __rest(User, ["password"]);
+            return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
         });
     }
     async remove(id, user) {
@@ -297,6 +323,7 @@ let RoadmapsService = class RoadmapsService {
             newRoadmap.title = roadmap.title;
             newRoadmap.contents = roadmap.contents;
             newRoadmap.thumbnail = roadmap.thumbnail;
+            newRoadmap.bgcolor = roadmap.bgcolor;
             newRoadmap.User = user;
             newRoadmap.RoadmapItems = newRoadmapItems;
             newRoadmap.RoadmapEdges = newRoadmapEdges;

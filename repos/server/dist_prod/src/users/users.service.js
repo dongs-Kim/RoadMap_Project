@@ -11,6 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -51,17 +62,38 @@ let UsersService = class UsersService {
         return this.usersRepository.findOneBy({ email });
     }
     async findUserRoadmap(id) {
-        const roadmapUser = this.usersRepository.findOneBy({ id });
-        return roadmapUser;
+        const roadmapUser = await this.usersRepository.findOneBy({ id });
+        const { password } = roadmapUser, rest = __rest(roadmapUser, ["password"]);
+        return rest;
     }
     async getFavoriteRoadmaps(id) {
         const user = await this.usersRepository.findOne({
+            select: {
+                StoredRoadmaps: { id: true },
+            },
             where: { id },
             relations: {
                 StoredRoadmaps: true,
             },
         });
-        return user.StoredRoadmaps;
+        const result = await this.roadmapsRepository.find({
+            where: {
+                id: (0, typeorm_2.In)(user.StoredRoadmaps.map((x) => x.id)),
+            },
+            relations: {
+                LikeUsers: true,
+                Replies: true,
+                User: true,
+            },
+            order: {
+                updated_at: 'desc',
+            },
+        });
+        return result.map((roadmap) => {
+            const { LikeUsers, Replies, User } = roadmap, restRoadmap = __rest(roadmap, ["LikeUsers", "Replies", "User"]);
+            const { password } = User, restUser = __rest(User, ["password"]);
+            return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
+        });
     }
     async update(id, updateUserDto) {
         await this.usersRepository.update(id, updateUserDto);

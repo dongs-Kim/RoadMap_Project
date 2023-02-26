@@ -9,6 +9,7 @@ export declare class Roadmap {
     title: string;
     contents?: string;
     thumbnail?: string;
+    bgcolor?: string;
     created_at: Date;
     updated_at: Date;
     User: User;

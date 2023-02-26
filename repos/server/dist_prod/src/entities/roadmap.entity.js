@@ -47,6 +47,10 @@ __decorate([
     __metadata("design:type", String)
 ], Roadmap.prototype, "thumbnail", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Roadmap.prototype, "bgcolor", void 0);
+__decorate([
     (0, typeorm_1.Column)({ default: () => 'CURRENT_TIMESTAMP', update: false }),
     __metadata("design:type", Date)
 ], Roadmap.prototype, "created_at", void 0);

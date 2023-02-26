@@ -6,5 +6,6 @@ export declare class CreateRoadmapDto {
     contents?: string;
     like?: number;
     thumbnail?: string;
+    bgcolor?: string;
     created_at?: Date;
 }
