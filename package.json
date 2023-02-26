@@ -7,9 +7,7 @@
     "build": "node scripts/build",
     "mklink": "node scripts/mklink",
     "start": "cross-env NODE_ENV=production pm2 start ecosystem.config.js",
-    "kill": "pm2 kill",
-    "db:create": "cross-env NODE_ENV=production ts-node ./repos/server/node_modules/typeorm-extension/dist/cli/index.js db:create -d ./repos/server/dataSource.ts",
-    "db:drop": "cross-env NODE_ENV=production ts-node ./repos/server/node_modules/typeorm-extension/dist/cli/index.js db:drop -d ./repos/server/dataSource.ts"
+    "kill": "pm2 kill"
   },
   "repository": {
     "type": "git",
