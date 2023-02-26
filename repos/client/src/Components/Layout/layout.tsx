@@ -232,6 +232,7 @@ const Layout = () => {
         onClickMypage={onClickMypage}
         onClickProfile={onClickProfile}
         onClickSignUp={onClickSignUp}
+        onClickNewRoadMap={onClickNewRoadMap}
       />
     </div>
   );

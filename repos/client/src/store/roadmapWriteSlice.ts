@@ -4,6 +4,7 @@ import { Connection, Edge, Node, addEdge as flowAddEdge } from 'reactflow';
 import shortUUID from 'short-uuid';
 import _ from 'lodash';
 import { EdgeData, RoadmapItem, RoadmapSetDto } from '../Interface/roadmap';
+import { isEqualEdge, isEqualNode } from '../Utils/roadmap';
 
 interface RoadmapWriteState {
   id: string;
@@ -15,6 +16,8 @@ interface RoadmapWriteState {
   category: string;
   thumbnail?: string;
   bgcolor?: string;
+  history: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
+  undoHistory: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
 }
 
 const getInitialNodes = (): Node<RoadmapItem>[] => [
@@ -36,6 +39,8 @@ const getInitialState = (): RoadmapWriteState => ({
   bgcolor: '#d9e3f0',
   nodes: getInitialNodes(),
   edges: [],
+  history: [],
+  undoHistory: [],
 });
 
 export const getRoadmap = createAsyncThunk<RoadmapSetDto, { id: string }>(
@@ -65,6 +70,8 @@ const roadmapWriteSlice = createSlice({
       state.bgcolor = roadmap.bgcolor;
       state.nodes = nodes;
       state.edges = edges;
+      state.history = [];
+      state.undoHistory = [];
     },
     clearRoadmap: (state) => {
       _.extend(state, getInitialState());
@@ -115,6 +122,41 @@ const roadmapWriteSlice = createSlice({
         edge.data = action.payload.data;
       }
     },
+    addHistory: (state) => {
+      const { nodes, edges } = state;
+      const { nodes: lastNodes, edges: lastEdges } = state.history[state.history.length - 1] ?? {};
+
+      // 변경내역이 있는지 확인
+      if (
+        nodes.length === lastNodes?.length &&
+        nodes.every((node, i) => isEqualNode(node, lastNodes[i])) &&
+        edges.length === lastEdges?.length &&
+        edges.every((edge, i) => isEqualEdge(edge, lastEdges[i]))
+      ) {
+        return;
+      }
+
+      //여태까지 실행취소한 이력은 삭제되고 새로운 이력이 쌓인다. 복구 불가함
+      state.undoHistory = [];
+
+      //이력 10개 제한
+      if (state.history.length >= 10) {
+        state.history = state.history.slice(state.history.length - 9, state.history.length);
+      }
+      state.history.push({ nodes: state.nodes, edges: state.edges });
+    },
+    undoHistory: (state) => {
+      const last = state.history.pop();
+      if (last) {
+        state.undoHistory.push(last);
+      }
+    },
+    redoHistory: (state) => {
+      const last = state.undoHistory.pop();
+      if (last) {
+        state.history.push(last);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getRoadmap.fulfilled, (state, action) => {
@@ -142,6 +184,8 @@ const roadmapWriteSlice = createSlice({
         return node;
       });
       state.edges = edges;
+      state.history = [];
+      state.undoHistory = [];
     });
   },
 });
@@ -162,6 +206,9 @@ export const {
   addEdgeByConnection,
   updateNode,
   updateEdge,
+  addHistory,
+  undoHistory,
+  redoHistory,
 } = roadmapWriteSlice.actions;
 
 export default roadmapWriteSlice.reducer;

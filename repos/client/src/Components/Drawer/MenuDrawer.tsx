@@ -16,6 +16,7 @@ import {
   MenuList,
   Text,
 } from '@chakra-ui/react';
+import { CiMap } from 'react-icons/ci';
 import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
 
 interface MenuDrawerProps {
@@ -29,6 +30,7 @@ interface MenuDrawerProps {
   onClickFavoriteList?(): void;
   onClickProfile?(): void;
   onClickLogOut?(): void;
+  onClickNewRoadMap?(): void;
 }
 
 export const MenuDrawer = ({
@@ -42,6 +44,7 @@ export const MenuDrawer = ({
   onClickFavoriteList,
   onClickProfile,
   onClickLogOut,
+  onClickNewRoadMap,
 }: MenuDrawerProps) => {
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} closeOnOverlayClick>
@@ -92,6 +95,20 @@ export const MenuDrawer = ({
                   </Menu>
                 </span>
               )}
+            </Flex>
+
+            <Flex>
+              <Button
+                leftIcon={<CiMap size="20px" />}
+                variant="ghost"
+                size="sm"
+                borderRadius={20}
+                colorScheme="gray"
+                color="#555"
+                onClick={onClickNewRoadMap}
+              >
+                새 로드맵 작성
+              </Button>
             </Flex>
 
             <Flex flexDir="column" gap={3} mt={5}>

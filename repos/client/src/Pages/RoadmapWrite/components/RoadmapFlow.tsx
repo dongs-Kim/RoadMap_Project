@@ -30,6 +30,7 @@ import {
   RoadmapItem,
 } from '../../../Interface/roadmap';
 import { addEdge, addNode, setEdges, setNodes, updateEdge, updateNode } from '../../../store/roadmapWriteSlice';
+import { useRedoUndo } from '../../../Hooks/useRedoUndo';
 
 const nodeTypes = {
   [EN_ROADMAP_NODE_TYPE.StartNode]: StartNode('write'),
@@ -80,19 +81,22 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const connectingRef = useRef<Pick<OnConnectStartParams, 'nodeId' | 'handleId'> | null>(null);
   const { project } = useReactFlow();
+  const { addHistory, onRedoUndoKeyDown } = useRedoUndo();
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       dispatch(setNodes(applyNodeChanges(changes, nodes)));
+      addHistory();
     },
-    [dispatch, nodes],
+    [dispatch, nodes, addHistory],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       dispatch(setEdges(applyEdgeChanges(changes, edges)));
+      addHistory();
     },
-    [dispatch, edges],
+    [dispatch, edges, addHistory],
   );
 
   const onConnect = useCallback(
@@ -114,8 +118,9 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
         },
       };
       dispatch(addEdge(newEdge));
+      addHistory();
     },
-    [dispatch],
+    [dispatch, addHistory],
   );
 
   const onConnectStart = useCallback(
@@ -165,8 +170,9 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
 
       dispatch(addNode(newNode));
       dispatch(addEdge(newEdge));
+      addHistory();
     },
-    [project, dispatch, nodes],
+    [project, dispatch, nodes, addHistory],
   );
 
   const onNodeDoubleClick = useCallback(
@@ -174,9 +180,10 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
       const data = await openModal({ ...targetNode.data }, targetNode.type);
       if (data) {
         dispatch(updateNode({ id: targetNode.id, data }));
+        addHistory();
       }
     },
-    [openModal, dispatch],
+    [openModal, dispatch, addHistory],
   );
 
   const onEdgeDoubleClick = useCallback(
@@ -184,14 +191,15 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
       const data = await openEdgeModal({ ...targetEdge.data });
       if (data) {
         dispatch(updateEdge({ id: targetEdge.id, data }));
+        addHistory();
       }
     },
-    [openEdgeModal, dispatch],
+    [openEdgeModal, dispatch, addHistory],
   );
 
   return (
     <>
-      <div ref={containerRef} style={{ height: 'calc(100% - 64.67px)' }}>
+      <div ref={containerRef} tabIndex={-1} style={{ height: 'calc(100% - 64.67px)' }} onKeyDown={onRedoUndoKeyDown}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -209,6 +217,7 @@ export const RoadmapFlow = ({ openModal, openEdgeModal }: FlowProps) => {
           fitViewOptions={{
             maxZoom: 1,
           }}
+          deleteKeyCode="Delete"
         >
           <MiniMap />
           <Controls />
