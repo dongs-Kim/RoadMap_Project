@@ -11,7 +11,12 @@ const reply_entity_1 = require("./src/entities/reply.entity");
 const user_entity_1 = require("./src/entities/user.entity");
 const roadmap_edge_entity_1 = require("./src/entities/roadmap_edge.entity");
 const path_1 = __importDefault(require("path"));
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '.env.development') });
+if (process.env.NODE_ENV === 'production') {
+    dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env.production') });
+}
+else {
+    dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '.env.development') });
+}
 const dataSource = new typeorm_1.DataSource({
     type: 'mysql',
     host: process.env.DB_HOST,
