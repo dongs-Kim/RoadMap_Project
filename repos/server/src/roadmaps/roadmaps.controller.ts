@@ -47,6 +47,12 @@ export class RoadmapsController {
     return this.roadmapsService.findMyAll(user);
   }
 
+  @ApiOperation({ summary: '로드맵 홈화면 조회' })
+  @Get('list/home/:category')
+  findHomeByLimit(@Param('category') category: string) {
+    return this.roadmapsService.findHomeListByCount(category);
+  }
+
   @ApiOperation({ summary: '로드맵 카테고리별 조회' })
   @Get('list/:category')
   findCategory(@Param('category') category: string) {

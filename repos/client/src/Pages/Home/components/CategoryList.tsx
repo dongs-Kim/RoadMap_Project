@@ -13,7 +13,7 @@ export const CategoryList = ({ category }: CategoryListProps) => {
 
   const loadRoadmaps = useCallback(async () => {
     try {
-      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/${category}`);
+      const { data } = await axios.get<RoadmapCategoryDto[]>(`/api/roadmaps/list/home/${category}`);
       setRoadmaps(data);
     } catch (err) {
       console.error(err);
