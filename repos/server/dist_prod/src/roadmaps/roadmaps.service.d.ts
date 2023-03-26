@@ -40,6 +40,35 @@ export declare class RoadmapsService {
         RoadmapEdges: RoadmapEdge[];
         StoringUsers: User[];
     }[]>;
+    findHomeListByCount(category: string): Promise<{
+        User: {
+            id: string;
+            email: string;
+            nickname: string;
+            comment?: string;
+            image?: string;
+            created_at: Date;
+            updated_at: Date;
+            Roadmaps: Roadmap[];
+            Replies: import("../entities/reply.entity").Reply[];
+            LikeRoadmaps: Roadmap[];
+            StoredRoadmaps: Roadmap[];
+        };
+        like: number;
+        reply: number;
+        id: string;
+        category: string;
+        public: boolean;
+        title: string;
+        contents?: string;
+        thumbnail?: string;
+        bgcolor?: string;
+        created_at: Date;
+        updated_at: Date;
+        RoadmapItems: RoadmapItem[];
+        RoadmapEdges: RoadmapEdge[];
+        StoringUsers: User[];
+    }[]>;
     findCategory(category: string): Promise<{
         User: {
             id: string;

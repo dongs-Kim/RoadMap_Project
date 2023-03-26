@@ -36,6 +36,35 @@ export declare class RoadmapsController {
         RoadmapEdges: import("../entities/roadmap_edge.entity").RoadmapEdge[];
         StoringUsers: UserEntity[];
     }[]>;
+    findHomeByLimit(category: string): Promise<{
+        User: {
+            id: string;
+            email: string;
+            nickname: string;
+            comment?: string;
+            image?: string;
+            created_at: Date;
+            updated_at: Date;
+            Roadmaps: import("../entities/roadmap.entity").Roadmap[];
+            Replies: import("../entities/reply.entity").Reply[];
+            LikeRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+            StoredRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+        };
+        like: number;
+        reply: number;
+        id: string;
+        category: string;
+        public: boolean;
+        title: string;
+        contents?: string;
+        thumbnail?: string;
+        bgcolor?: string;
+        created_at: Date;
+        updated_at: Date;
+        RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];
+        RoadmapEdges: import("../entities/roadmap_edge.entity").RoadmapEdge[];
+        StoringUsers: UserEntity[];
+    }[]>;
     findCategory(category: string): Promise<{
         User: {
             id: string;

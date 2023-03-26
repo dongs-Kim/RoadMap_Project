@@ -35,6 +35,9 @@ let RoadmapsController = class RoadmapsController {
     findMyAll(user) {
         return this.roadmapsService.findMyAll(user);
     }
+    findHomeByLimit(category) {
+        return this.roadmapsService.findHomeListByCount(category);
+    }
     findCategory(category) {
         return this.roadmapsService.findCategory(category);
     }
@@ -87,6 +90,14 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", void 0)
 ], RoadmapsController.prototype, "findMyAll", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: '로드맵 홈화면 조회' }),
+    (0, common_1.Get)('list/home/:category'),
+    __param(0, (0, common_1.Param)('category')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], RoadmapsController.prototype, "findHomeByLimit", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: '로드맵 카테고리별 조회' }),
     (0, common_1.Get)('list/:category'),

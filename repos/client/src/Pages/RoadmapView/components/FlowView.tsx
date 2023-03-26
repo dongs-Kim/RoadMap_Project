@@ -78,7 +78,9 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
     }
     containerRef.current.style.height = `${adjustHeight}px`;
 
-    fitView();
+    setTimeout(() => {
+      fitView();
+    }, 200);
   }, [nodes, edges, fitView]);
 
   const onNodeClick = useCallback(async (event: React.MouseEvent, targetNode: Node<RoadmapItem>) => {

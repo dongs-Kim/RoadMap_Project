@@ -136,6 +136,29 @@ let RoadmapsService = class RoadmapsService {
             return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
         });
     }
+    async findHomeListByCount(category) {
+        const result = await this.roadmapsRepository.find({
+            where: {
+                category: category,
+                public: true,
+            },
+            relations: {
+                LikeUsers: true,
+                Replies: true,
+                User: true,
+            },
+            order: {
+                updated_at: 'desc',
+            },
+            take: 5,
+            skip: 0,
+        });
+        return result.map((roadmap) => {
+            const { LikeUsers, Replies, User } = roadmap, restRoadmap = __rest(roadmap, ["LikeUsers", "Replies", "User"]);
+            const { password } = User, restUser = __rest(User, ["password"]);
+            return Object.assign(Object.assign({}, restRoadmap), { User: restUser, like: LikeUsers.length, reply: Replies.length });
+        });
+    }
     async findCategory(category) {
         const result = await this.roadmapsRepository.find({
             where: {
