@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
+import { LearnResource } from './learn_resource';
 import { Reply } from './reply.entity';
 import { Roadmap } from './roadmap.entity';
 
@@ -46,6 +47,9 @@ export class User {
 
   @OneToMany(() => Reply, (reply) => reply.User)
   Replies: Reply[];
+
+  @OneToMany(() => LearnResource, (learn_resource) => learn_resource.User)
+  LearnResources: LearnResource[];
 
   @ManyToMany(() => Roadmap, (roadmap) => roadmap.LikeUsers)
   LikeRoadmaps: Roadmap[];

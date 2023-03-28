@@ -14,8 +14,10 @@ import { RoadmapItem } from './entities/roadmap_item.entity';
 import { RepliesModule } from './replies/replies.module';
 import { Reply } from './entities/reply.entity';
 import { RoadmapEdge } from './entities/roadmap_edge.entity';
+import { LearnResource } from './entities/learn_resource';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { LearnResourceModule } from './learn_resource/learn_resource.module';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { join } from 'path';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Roadmap, RoadmapItem, RoadmapEdge, Reply],
+      entities: [User, Roadmap, RoadmapItem, RoadmapEdge, Reply, LearnResource],
       charset: 'utf8mb4_general_ci',
       synchronize: isProduction() ? false : true,
       logging: isProduction() ? false : true,
@@ -43,6 +45,7 @@ import { join } from 'path';
     AuthModule,
     RoadmapItemsModule,
     RepliesModule,
+    LearnResourceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
