@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { LearnResourceWrite } from './Pages/LearnResourceWrite/LearnResourceWrite';
+import { LearnResourceList } from './Pages/LearnResourceList/LearnResourceList';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -33,12 +34,13 @@ function App() {
         <Route path="/Profile" element={<Profile />} />
         <Route path="/Mypage" element={<Mypage />} />
         <Route path="/Roadmap/view/:roadmapId" element={<RoadmapView />} />
+        <Route path="/LearnResource/write" element={<LearnResourceWrite />} />
+        <Route path="/LearnResource/list" element={<LearnResourceList />} />
       </Route>
       <Route path="/Roadmap/write">
         <Route index element={<RoadmapWrite />} />
         <Route path=":roadmapId" element={<RoadmapWrite />} />
       </Route>
-      <Route path="/LearnResource/write" element={<LearnResourceWrite />} />
     </Routes>
   );
 }

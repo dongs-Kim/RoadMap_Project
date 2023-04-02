@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { User as UserEntity } from 'src/entities/user.entity';
 import { LearnResourceService } from './learn_resource.service';
@@ -15,7 +16,7 @@ import { UpdateLearnResourceDto } from './dto/update-learn_resource.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { LoggedInGuard } from 'src/auth/logged-in.guard';
 
-@Controller('learn-resource')
+@Controller('api/learn-resource')
 export class LearnResourceController {
   constructor(private readonly learnResourceService: LearnResourceService) {}
 
@@ -29,25 +30,19 @@ export class LearnResourceController {
   }
 
   @Get()
-  findAll() {
-    return this.learnResourceService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.learnResourceService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateLearnResourceDto: UpdateLearnResourceDto,
+  getList(
+    @Query('category') category: string,
+    @Query('keyword') keyword: string,
+    @Query('sort') sort: string,
+    @Query('sortType') sortType: string,
+    @Query('page') page: number,
   ) {
-    return this.learnResourceService.update(+id, updateLearnResourceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.learnResourceService.remove(+id);
+    return this.learnResourceService.getLearnResources(
+      category,
+      keyword,
+      sort,
+      sortType,
+      page,
+    );
   }
 }

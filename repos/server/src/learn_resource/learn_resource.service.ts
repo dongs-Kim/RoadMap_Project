@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
+import _ from 'lodash';
 import { LearnResource } from 'src/entities/learn_resource';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CreateLearnResourceDto } from './dto/create-learn_resource.dto';
-import { UpdateLearnResourceDto } from './dto/update-learn_resource.dto';
+
+const PAGE_SIZE = 3;
 
 @Injectable()
 export class LearnResourceService {
@@ -14,7 +16,7 @@ export class LearnResourceService {
     private learnResourceRepository: Repository<LearnResource>,
   ) {}
 
-  create(user: User, createLearnResourceDto: CreateLearnResourceDto) {
+  async create(user: User, createLearnResourceDto: CreateLearnResourceDto) {
     const learnResource = new LearnResource();
     learnResource.id = shortUUID.generate();
     learnResource.name = createLearnResourceDto.name;
@@ -22,23 +24,86 @@ export class LearnResourceService {
     learnResource.url = createLearnResourceDto.url;
     learnResource.category = createLearnResourceDto.category;
     learnResource.User = user;
-    this.learnResourceRepository.create(learnResource);
+    await this.learnResourceRepository.save(learnResource);
     return true;
   }
 
-  findAll() {
-    return `This action returns all learnResource`;
-  }
+  async getLearnResources(
+    category?: string,
+    keyword?: string,
+    sort?: string,
+    sortType?: string,
+    page?: number,
+  ) {
+    //초기화
+    page = page ?? 1;
 
-  findOne(id: number) {
-    return `This action returns a #${id} learnResource`;
-  }
+    //검색조건
+    const where: FindOptionsWhere<LearnResource>[] = [];
+    if (category) {
+      where.push({ category });
+    }
+    if (keyword) {
+      where.push({ ...where[0], name: ILike(`%${keyword}%`) });
+      where.push({ ...where[0], contents: ILike(`%${keyword}%`) });
+    }
 
-  update(id: number, updateLearnResourceDto: UpdateLearnResourceDto) {
-    return `This action updates a #${id} learnResource`;
-  }
+    //좋아요 정렬
+    if (sort === 'like') {
+      const learnResources = await this.learnResourceRepository.find({
+        where: _.isEmpty(where) ? undefined : where,
+        relations: {
+          LikeUsers: true,
+          User: true,
+        },
+      });
 
-  remove(id: number) {
-    return `This action removes a #${id} learnResource`;
+      const ascSorted = _.sortBy(
+        learnResources.map((resource) => {
+          const { LikeUsers, User, ...rest } = resource;
+          return {
+            ...rest,
+            like: LikeUsers.length,
+            user_id: User.id,
+            user_nickname: User.nickname,
+          };
+        }),
+        'like',
+      );
+      return {
+        items: (sortType === 'asc' ? ascSorted : ascSorted.reverse()).slice(
+          PAGE_SIZE * (page - 1),
+          PAGE_SIZE * (page - 1) + PAGE_SIZE,
+        ),
+        totalCount: ascSorted.length,
+      };
+    }
+
+    //최신순 정렬
+    const [learnResources, total] =
+      await this.learnResourceRepository.findAndCount({
+        where: _.isEmpty(where) ? undefined : where,
+        relations: {
+          LikeUsers: true,
+          User: true,
+        },
+        order: {
+          created_at: sortType ? 'asc' : 'desc',
+        },
+        skip: PAGE_SIZE * (page - 1),
+        take: PAGE_SIZE,
+      });
+    return {
+      items: learnResources.map((resource) => {
+        const { LikeUsers, User, ...rest } = resource;
+        return {
+          ...rest,
+          like: LikeUsers.length,
+          user_id: User.id,
+          user_nickname: User.nickname,
+        };
+      }),
+      totalCount: total,
+    };
   }
 }

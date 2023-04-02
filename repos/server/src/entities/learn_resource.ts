@@ -1,5 +1,12 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
@@ -26,4 +33,8 @@ export class LearnResource {
 
   @ManyToOne(() => User, (user) => user.LearnResources)
   User: User;
+
+  @ManyToMany(() => User, (user) => user.LikeLearnResources, { cascade: true })
+  @JoinTable()
+  LikeUsers: User[];
 }

@@ -54,6 +54,9 @@ export class User {
   @ManyToMany(() => Roadmap, (roadmap) => roadmap.LikeUsers)
   LikeRoadmaps: Roadmap[];
 
+  @ManyToMany(() => LearnResource, (learnResource) => learnResource.LikeUsers)
+  LikeLearnResources: LearnResource[];
+
   @ManyToMany(() => Roadmap, (roadmap) => roadmap.StoringUsers)
   StoredRoadmaps: Roadmap[];
 }
