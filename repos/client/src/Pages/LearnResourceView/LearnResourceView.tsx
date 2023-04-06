@@ -1,0 +1,80 @@
+import { Button, Flex, Heading, Text, Tooltip } from '@chakra-ui/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AiFillHeart } from 'react-icons/ai';
+import { useParams } from 'react-router-dom';
+import { Loading } from '../../Components/Page/Loading';
+import { useUser } from '../../Hooks/dataFetch/useUser';
+import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
+import { useTitle } from '../../Hooks/useTitle';
+import { useViewer } from '../../Hooks/useViewer';
+import { getLearnResourceView } from '../../store/learnResourceViewSlice';
+
+export const LearnResourceView = () => {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { isLogined } = useUser();
+  const learnResource = useAppSelector((state) => state.learnResource.learnResource);
+  const viewerElRef = useRef<HTMLDivElement | null>(null);
+  useViewer(viewerElRef, learnResource?.contents);
+  useTitle(`${learnResource?.name ?? ''} - Dev Roadmap`);
+
+  const initLearnResource = useCallback(async () => {
+    if (id) {
+      await dispatch(getLearnResourceView({ id: id }));
+    }
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, [dispatch, id]);
+
+  // 리소스 데이터 조회
+  useEffect(() => {
+    initLearnResource();
+  }, [initLearnResource]);
+
+  const isLike = true;
+
+  return (
+    <>
+      {/* 로딩 */}
+      <Loading isOpen={loading} />
+
+      <Flex flexDir="column">
+        <Heading size="xl">{learnResource?.name}</Heading>
+
+        <div>url</div>
+        <div>{learnResource?.url}</div>
+
+        <div>카테고리</div>
+        <div>{learnResource?.category}</div>
+
+        <div>좋아요</div>
+        <div>{learnResource?.like}</div>
+
+        <div>작성자</div>
+        <div>{learnResource?.user_nickname}</div>
+
+        <div>작성일</div>
+        <div>{learnResource?.created_at}</div>
+
+        {/* 좋아요 */}
+        <Tooltip label="좋아요">
+          <Button
+            leftIcon={<AiFillHeart />}
+            colorScheme={isLike ? 'red' : 'gray'}
+            ml={3}
+            onClick={() => {
+              //
+            }}
+          >
+            <Text>{learnResource?.like ?? 0}</Text>
+          </Button>
+        </Tooltip>
+
+        <div>내용</div>
+        <div ref={viewerElRef}></div>
+      </Flex>
+    </>
+  );
+};

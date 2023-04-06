@@ -3,16 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Query,
 } from '@nestjs/common';
 import { User as UserEntity } from 'src/entities/user.entity';
 import { LearnResourceService } from './learn_resource.service';
 import { CreateLearnResourceDto } from './dto/create-learn_resource.dto';
-import { UpdateLearnResourceDto } from './dto/update-learn_resource.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { LoggedInGuard } from 'src/auth/logged-in.guard';
 
@@ -44,5 +41,10 @@ export class LearnResourceController {
       sortType,
       page,
     );
+  }
+
+  @Get(':id')
+  getOne(@Param('id') id: string) {
+    return this.learnResourceService.getOne(id);
   }
 }

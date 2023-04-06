@@ -106,4 +106,27 @@ export class LearnResourceService {
       totalCount: total,
     };
   }
+
+  async getOne(id: string) {
+    const learnResource = await this.learnResourceRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        LikeUsers: true,
+        User: true,
+      },
+    });
+    if (!learnResource) {
+      return null;
+    }
+
+    const { LikeUsers, User, ...rest } = learnResource;
+    return {
+      ...rest,
+      like: LikeUsers.length,
+      user_id: User.id,
+      user_nickname: User.nickname,
+    };
+  }
 }

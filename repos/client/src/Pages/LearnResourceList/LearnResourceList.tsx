@@ -1,8 +1,9 @@
-import { Flex, Input, Select, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Flex, Input, Link, Select, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import axios from 'axios';
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import { BsPatchExclamation } from 'react-icons/bs';
 import ReactPaginate from 'react-paginate';
+import { Link as RouterLink } from 'react-router-dom';
 import { RoadmapSortList } from '../../Components/List/RoadmapSortList';
 import { Loading } from '../../Components/Page/Loading';
 import { LearnResourceListDto } from '../../Interface/learnResource';
@@ -100,7 +101,9 @@ export const LearnResourceList = () => {
                   learnResources.items.map((resource) => (
                     <Tr key={resource.id}>
                       <Td>{resource.category}</Td>
-                      <Td>{resource.name}</Td>
+                      <Td>
+                        <RouterLink to={`/LearnResource/view/${resource.id}`}>{resource.name}</RouterLink>
+                      </Td>
                       <Td isNumeric>{resource.like}</Td>
                       <Td>{resource.user_nickname}</Td>
                       <Td>{resource.created_at}</Td>
