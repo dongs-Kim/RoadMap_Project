@@ -14,6 +14,8 @@ export class LearnResourceService {
   constructor(
     @InjectRepository(LearnResource)
     private learnResourceRepository: Repository<LearnResource>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(user: User, createLearnResourceDto: CreateLearnResourceDto) {
@@ -128,5 +130,60 @@ export class LearnResourceService {
       user_id: User.id,
       user_nickname: User.nickname,
     };
+  }
+
+  async isLike(id: string, user: User) {
+    const likeUser = await this.usersRepository.findOne({
+      where: { id: user.id },
+      relations: { LikeLearnResources: true },
+    });
+    if (!likeUser) {
+      return false;
+    }
+    return likeUser.LikeLearnResources.some((resource) => resource.id === id);
+  }
+
+  async like(id: string, user: User) {
+    // resource 조회
+    const resource = await this.learnResourceRepository.findOne({
+      where: { id },
+      relations: {
+        LikeUsers: true,
+      },
+    });
+    if (!resource) {
+      return;
+    }
+
+    // 이미 like 했는지 체크
+    if (resource.LikeUsers.some((x) => x.id === user.id)) {
+      return;
+    }
+
+    // LikeUsers에 추가
+    resource.LikeUsers.push(user);
+    await this.learnResourceRepository.save(resource);
+  }
+
+  async unlike(roadmap_id: string, user: User) {
+    // resource 조회
+    const resource = await this.learnResourceRepository.findOne({
+      where: { id: roadmap_id },
+      relations: {
+        LikeUsers: true,
+      },
+    });
+    if (!resource) {
+      return;
+    }
+
+    // like 되어 있는지 확인
+    if (!resource.LikeUsers.some((x) => x.id === user.id)) {
+      return;
+    }
+
+    // LikeUsers에서 삭제
+    resource.LikeUsers = resource.LikeUsers.filter((x) => x.id !== user.id);
+    await this.learnResourceRepository.save(resource);
   }
 }

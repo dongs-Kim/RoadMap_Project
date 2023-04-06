@@ -47,4 +47,22 @@ export class LearnResourceController {
   getOne(@Param('id') id: string) {
     return this.learnResourceService.getOne(id);
   }
+
+  @UseGuards(LoggedInGuard)
+  @Get(':id/isLike')
+  isLike(@User() user: UserEntity, @Param('id') id: string) {
+    return this.learnResourceService.isLike(id, user);
+  }
+
+  @UseGuards(LoggedInGuard)
+  @Post(':id/like')
+  like(@User() user: UserEntity, @Param('id') id: string) {
+    return this.learnResourceService.like(id, user);
+  }
+
+  @UseGuards(LoggedInGuard)
+  @Post(':id/unlike')
+  unlike(@User() user: UserEntity, @Param('id') id: string) {
+    return this.learnResourceService.unlike(id, user);
+  }
 }
