@@ -7,6 +7,7 @@ import {
   FormLabel,
   InputGroup,
   InputLeftAddon,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,13 +18,14 @@ import {
   Select,
   Switch,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import Editor from '@toast-ui/editor';
+import _ from 'lodash';
+import { Link as RouterLink } from 'react-router-dom';
 import { ColorResult } from 'react-color';
 import { RoadmapItem } from '../../../Interface/roadmap';
 import { ColorPicker } from './ColorPicker';
-import { ROADMAP_ITEM_NAME_LIST } from '../../../Constants/roadmap';
 import {
   RoadmapItemRequired,
   RoadmapItemStatus,
@@ -31,8 +33,8 @@ import {
   ROADMAP_ITEM_STATUS,
 } from '../../../Constants/roadmapItem';
 import { ItemAutocomplete } from './ItemAutocomplete';
-
-const autocompleteItems = ROADMAP_ITEM_NAME_LIST.map(({ name }, i) => ({ id: i, name }));
+import { LearnResourceList } from '../../LearnResourceList/LearnResourceList';
+import { RoadmapLearnResourceDto } from '../../../Interface/learnResource';
 
 //---------------------
 // state
@@ -45,6 +47,7 @@ const initialState: State = {
   border: true,
   status: '',
   required: '',
+  learnResources: [],
 };
 type SetRoadmapItemAction = { type: 'setRoadmapItem'; roadmapItem: RoadmapItem };
 type ClearRoadmapItemAction = { type: 'clearRoadmapItem' };
@@ -54,6 +57,8 @@ type SetDescriptionAction = { type: 'setDescription'; description: string };
 type SetStatusAction = { type: 'setStatus'; status?: RoadmapItemStatus };
 type SetBorderAction = { type: 'setBorder'; border: boolean };
 type SetRequiredAction = { type: 'setRequired'; required?: RoadmapItemRequired };
+type AddLearnResourceAction = { type: 'addLearnResource'; learnResource: RoadmapLearnResourceDto };
+type RemoveLearnResourceAction = { type: 'removeLearnResource'; learnResource: RoadmapLearnResourceDto };
 type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
@@ -62,7 +67,9 @@ type Action =
   | SetStatusAction
   | SetBorderAction
   | ClearRoadmapItemAction
-  | SetRequiredAction;
+  | SetRequiredAction
+  | AddLearnResourceAction
+  | RemoveLearnResourceAction;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -82,6 +89,13 @@ function reducer(state: State, action: Action): State {
       return { ...action.roadmapItem };
     case 'clearRoadmapItem':
       return initialState;
+    case 'addLearnResource':
+      return { ...state, learnResources: _.unionBy([...(state.learnResources ?? []), action.learnResource], 'id') };
+    case 'removeLearnResource':
+      return {
+        ...state,
+        learnResources: state.learnResources?.filter((learnResource) => learnResource.id !== action.learnResource.id),
+      };
     default:
       throw new Error();
   }
@@ -100,6 +114,7 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
   const editorElRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { isOpen: isOpenResource, onOpen: onOpenResource, onClose: onCloseResource } = useDisclosure();
 
   // 에디터 생성
   useEffect(() => {
@@ -156,87 +171,133 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
         ...state,
         description: editorRef.current.getMarkdown(),
       });
+      onCloseResource();
       dispatch({ type: 'clearRoadmapItem' });
     }
-  }, [onClose, state]);
+  }, [onClose, onCloseResource, state]);
 
   const onCloseModal = useCallback(() => {
     onClose();
+    onCloseResource();
     dispatch({ type: 'clearRoadmapItem' });
-  }, [onClose]);
+  }, [onClose, onCloseResource]);
 
   const onChangeName = useCallback((name: string) => {
     dispatch({ type: 'setName', name });
   }, []);
 
+  const onClickResource = useCallback(() => {
+    onOpenResource();
+  }, [onOpenResource]);
+
+  const onApplyLearnResources = useCallback((learnResources: RoadmapLearnResourceDto[]) => {
+    learnResources.forEach((learnResource) => {
+      dispatch({ type: 'addLearnResource', learnResource });
+    });
+  }, []);
+
+  const onRemoveLearnResource = useCallback((learnResource: RoadmapLearnResourceDto) => {
+    dispatch({ type: 'removeLearnResource', learnResource });
+  }, []);
+
   return (
-    <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>항목 수정</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          {/* 항목명 */}
-          <FormControl zIndex={1000} mb={5}>
-            <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.name} onChange={onChangeName} />
-          </FormControl>
-
-          <Flex mb={5} alignItems="center" justifyContent="space-between">
-            {/* 배경색 */}
-            <Box flex={1} mr={2}>
-              <ColorPicker color={state.bgcolor} onChange={onChangeBgColor} />
-            </Box>
-
-            {/* 테두리 */}
-            <FormControl display="flex" alignItems="center" width={90} justifyContent="flex-end">
-              <FormLabel mb="0" color="#666" fontWeight="thin" fontSize="sm">
-                테두리
-              </FormLabel>
-              <Switch colorScheme="teal" isChecked={state.border} onChange={onChangeBorder} />
+    <>
+      <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>항목 수정</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* 항목명 */}
+            <FormControl zIndex={1000} mb={5}>
+              <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.name} onChange={onChangeName} />
             </FormControl>
-          </Flex>
 
-          {/* 진행상태 */}
-          <InputGroup mb={5}>
-            <InputLeftAddon>
-              <Text fontSize="sm">진행상태</Text>
-            </InputLeftAddon>
-            <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
-              {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
+            <Flex mb={5} alignItems="center" justifyContent="space-between">
+              {/* 배경색 */}
+              <Box flex={1} mr={2}>
+                <ColorPicker color={state.bgcolor} onChange={onChangeBgColor} />
+              </Box>
+
+              {/* 테두리 */}
+              <FormControl display="flex" alignItems="center" width={90} justifyContent="flex-end">
+                <FormLabel mb="0" color="#666" fontWeight="thin" fontSize="sm">
+                  테두리
+                </FormLabel>
+                <Switch colorScheme="teal" isChecked={state.border} onChange={onChangeBorder} />
+              </FormControl>
+            </Flex>
+
+            {/* 진행상태 */}
+            <InputGroup mb={5}>
+              <InputLeftAddon>
+                <Text fontSize="sm">진행상태</Text>
+              </InputLeftAddon>
+              <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
+                {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+            </InputGroup>
+
+            {/* 필수여부 */}
+            <InputGroup mb={5}>
+              <InputLeftAddon>
+                <Text fontSize="sm">필수여부</Text>
+              </InputLeftAddon>
+              <Select placeholder="----" value={state.required ?? ''} onChange={onChangeRequired}>
+                {Object.entries(ROADMAP_ITEM_REQUIRED).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value}
+                  </option>
+                ))}
+              </Select>
+            </InputGroup>
+
+            {/* 에디터 */}
+            <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
+
+            {/* 추천 학습 리소스 */}
+            <div>추천 학습 리소스</div>
+            <Link color="teal" onClick={onClickResource}>
+              추가하기
+            </Link>
+            <Flex flexDir="column">
+              {state.learnResources?.map((learnResource) => (
+                <Flex key={learnResource.id}>
+                  <Link as={RouterLink} color="teal" to={`/LearnResource/view/${learnResource.id}`} target="_blank">
+                    {learnResource.name}
+                  </Link>
+                  <Link color="red" ml={2} onClick={() => onRemoveLearnResource(learnResource)}>
+                    삭제
+                  </Link>
+                </Flex>
               ))}
-            </Select>
-          </InputGroup>
+            </Flex>
+          </ModalBody>
 
-          {/* 필수여부 */}
-          <InputGroup mb={5}>
-            <InputLeftAddon>
-              <Text fontSize="sm">필수여부</Text>
-            </InputLeftAddon>
-            <Select placeholder="----" value={state.required ?? ''} onChange={onChangeRequired}>
-              {Object.entries(ROADMAP_ITEM_REQUIRED).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </Select>
-          </InputGroup>
+          <ModalFooter>
+            <Button colorScheme="teal" mr={3} onClick={onClickApply}>
+              적용
+            </Button>
+            <Button variant="ghost" onClick={onCloseModal}>
+              취소
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-          {/* 에디터 */}
-          <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme="teal" mr={3} onClick={onClickApply}>
-            적용
-          </Button>
-          <Button variant="ghost" onClick={onCloseModal}>
-            취소
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      {/* 추천 학습 리소스 modal */}
+      <Modal isOpen={isOpenResource} size="5xl" onClose={onCloseResource}>
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <LearnResourceList isModal onClose={onCloseResource} onApply={onApplyLearnResources} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

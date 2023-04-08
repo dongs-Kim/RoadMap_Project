@@ -34,12 +34,6 @@ export class RoadmapsController {
     return this.roadmapsService.save(user, saveRoadmapDto);
   }
 
-  @ApiOperation({ summary: '전체 로드맵 조회' })
-  @Get()
-  findAll() {
-    return this.roadmapsService.findAll();
-  }
-
   @ApiOperation({ summary: '내 로드맵 조회' })
   @UseGuards(LoggedInGuard)
   @Get('list/my')

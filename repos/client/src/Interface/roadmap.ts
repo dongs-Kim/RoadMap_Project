@@ -1,5 +1,6 @@
 import { Edge, Node } from 'reactflow';
 import { RoadmapItemRequired, RoadmapItemStatus } from '../Constants/roadmapItem';
+import { RoadmapLearnResourceDto } from './learnResource';
 
 export interface RoadmapItem {
   name: string;
@@ -9,6 +10,7 @@ export interface RoadmapItem {
   status?: RoadmapItemStatus;
   url?: string;
   required?: RoadmapItemRequired;
+  learnResources?: RoadmapLearnResourceDto[];
 }
 
 export enum EN_ROADMAP_NODE_TYPE {

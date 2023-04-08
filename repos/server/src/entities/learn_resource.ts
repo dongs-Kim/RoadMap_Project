@@ -8,6 +8,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { RoadmapItem } from './roadmap_item.entity';
 
 @Entity()
 export class LearnResource {
@@ -37,4 +38,8 @@ export class LearnResource {
   @ManyToMany(() => User, (user) => user.LikeLearnResources, { cascade: true })
   @JoinTable()
   LikeUsers: User[];
+
+  @ManyToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.LearnResources)
+  @JoinTable()
+  RoadmapItems: RoadmapItem[];
 }

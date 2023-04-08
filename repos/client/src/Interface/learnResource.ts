@@ -21,3 +21,5 @@ export interface LearnResourceListItem {
   created_at: string;
   url?: string;
 }
+
+export type RoadmapLearnResourceDto = Omit<LearnResourceListItem, 'like' | 'user_id' | 'user_nickname'>;

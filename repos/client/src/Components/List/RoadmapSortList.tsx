@@ -11,12 +11,13 @@ const sortButtons = [
 interface RoadmapSortListProps extends PropsWithChildren {
   title: ReactNode;
   sort: string;
+  width?: string;
   onClickSort(id: string): void;
 }
 
-export const RoadmapSortList = ({ title, sort, children, onClickSort }: RoadmapSortListProps) => {
+export const RoadmapSortList = ({ title, sort, width, children, onClickSort }: RoadmapSortListProps) => {
   return (
-    <Box pb={20} pt={10} w="1410px" m="0 auto">
+    <Box pb={20} pt={10} w={width ?? '1410px'} m="0 auto">
       <Heading color="#333" pb="2" fontSize="3xl" ml="15px">
         {title}
       </Heading>

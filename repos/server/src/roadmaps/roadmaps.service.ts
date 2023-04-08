@@ -25,6 +25,7 @@ import {
   UPLOAD_THUMBNAIL_PATH,
 } from './thumbnail-upload.option';
 import { PUBLIC_PATH } from 'src/config/configuration';
+import { LearnResource } from 'src/entities/learn_resource';
 
 @Injectable()
 export class RoadmapsService {
@@ -36,19 +37,13 @@ export class RoadmapsService {
     private dataSource: DataSource,
   ) {}
 
-  findAll() {
-    return this.roadmapsRepository.find({
-      where: {
-        public: true,
-      },
-    });
-  }
-
   async findOneSet(id: string, mode?: string, user?: User) {
     const dbRoadmap = await this.roadmapsRepository.findOne({
       where: { id },
       relations: {
-        RoadmapItems: true,
+        RoadmapItems: {
+          LearnResources: true,
+        },
         RoadmapEdges: true,
         User: true,
         LikeUsers: mode === 'view' ? true : false,
@@ -72,26 +67,29 @@ export class RoadmapsService {
       like: dbRoadmap.LikeUsers?.length,
       created_at: dbRoadmap.created_at,
     };
-    roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
-      id: item.id,
-      type: item.type,
-      width: item.width,
-      height: item.height,
-      zIndex: item.zIndex,
-      data: {
-        name: item.name,
-        description: item.description,
-        status: item.status as EN_ROADMAP_ITEM_STATUS | null,
-        bgcolor: item.bgcolor,
-        border: item.border,
-        url: item.url,
-        required: item.required as EN_ROADMAP_ITEM_REQUIRED | null,
-      },
-      position: {
-        x: item.positionX,
-        y: item.positionY,
-      },
-    }));
+    roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => {
+      return {
+        id: item.id,
+        type: item.type,
+        width: item.width,
+        height: item.height,
+        zIndex: item.zIndex,
+        data: {
+          name: item.name,
+          description: item.description,
+          status: item.status as EN_ROADMAP_ITEM_STATUS | null,
+          bgcolor: item.bgcolor,
+          border: item.border,
+          url: item.url,
+          required: item.required as EN_ROADMAP_ITEM_REQUIRED | null,
+          learnResources: item.LearnResources,
+        },
+        position: {
+          x: item.positionX,
+          y: item.positionY,
+        },
+      };
+    });
     roadmapDto.edges = dbRoadmap.RoadmapEdges.map((edge) => ({
       id: edge.id,
       type: edge.type,
@@ -376,6 +374,16 @@ export class RoadmapsService {
         roadmapItem.height = node.height;
         roadmapItem.zIndex = node.zIndex;
         roadmapItem.required = node.data.required;
+
+        // learnResources
+        const newLearnResources = node.data.learnResources?.map(
+          (learnResource) => {
+            const newLearnResource = new LearnResource();
+            newLearnResource.id = learnResource.id;
+            return newLearnResource;
+          },
+        );
+        roadmapItem.LearnResources = newLearnResources;
         return roadmapItem;
       });
       await queryRunner.manager

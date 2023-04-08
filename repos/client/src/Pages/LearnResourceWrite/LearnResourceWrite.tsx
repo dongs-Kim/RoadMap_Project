@@ -1,8 +1,9 @@
 import { ChangeEvent, useCallback, useEffect, useReducer, useRef } from 'react';
-import { Button, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, Input, Select } from '@chakra-ui/react';
 import Editor from '@toast-ui/editor';
 import { LearnResourceCreateDto } from '../../Interface/learnResource';
 import { createLearnResourceAsync } from '../../Apis/learnResourceApi';
+import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
 
 //---------------------
 // state
@@ -65,8 +66,8 @@ export const LearnResourceWrite = () => {
     dispatch({ type: 'setName', name: e.target.value });
   }, []);
 
-  const onChangeCategory = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    dispatch({ type: 'setCategory', category: e.target.value });
+  const onChangeCategory = useCallback((value: string) => {
+    dispatch({ type: 'setCategory', category: value });
   }, []);
 
   const onChangeUrl = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -89,11 +90,10 @@ export const LearnResourceWrite = () => {
 
   return (
     <div>
+      <FormControl zIndex={1000} mb={5}>
+        <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.category} onChange={onChangeCategory} />
+      </FormControl>
       <Input placeholder="제목을 입력하세요" value={state.name} onChange={onChangeName} />
-      <Select placeholder="-- 카테고리 --" value={state.category} onChange={onChangeCategory}>
-        <option>React</option>
-        <option>C#</option>
-      </Select>
       <Input type="url" placeholder="링크를 입력하세요" value={state.url} onChange={onChangeUrl} />
       <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
       <Button onClick={onClickSave}>저장</Button>

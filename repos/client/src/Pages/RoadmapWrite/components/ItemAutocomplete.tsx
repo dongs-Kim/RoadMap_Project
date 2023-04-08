@@ -26,9 +26,10 @@ interface ItemAutocompleteProps {
   value: string;
   placeholder?: string;
   onChange(value: string): void;
+  onComplete?(value?: string): void;
 }
 
-export const ItemAutocomplete = ({ value, placeholder, onChange }: ItemAutocompleteProps) => {
+export const ItemAutocomplete = ({ value, placeholder, onChange, onComplete }: ItemAutocompleteProps) => {
   const [fuseResult, setFuseResult] = useState<FuseResult[]>([]);
   const [showResult, setShowResult] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -68,7 +69,8 @@ export const ItemAutocomplete = ({ value, placeholder, onChange }: ItemAutocompl
 
   const onClickClear = useCallback(() => {
     onChange('');
-  }, [onChange]);
+    onComplete?.('');
+  }, [onChange, onComplete]);
 
   const onKeyDownInput = useCallback(
     (e: KeyboardEvent) => {
@@ -80,6 +82,7 @@ export const ItemAutocomplete = ({ value, placeholder, onChange }: ItemAutocompl
           }
           setShowResult(false);
           inputRef.current?.blur();
+          onComplete?.(selectedResult?.name);
           break;
         }
         case 'ArrowDown': {
@@ -119,7 +122,7 @@ export const ItemAutocomplete = ({ value, placeholder, onChange }: ItemAutocompl
           break;
       }
     },
-    [fuseResult, onChange],
+    [fuseResult, onChange, onComplete],
   );
 
   const onClickItem = (name: string) => {

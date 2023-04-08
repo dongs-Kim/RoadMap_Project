@@ -10,6 +10,7 @@ import {
 } from 'src/common/enums';
 import { User } from 'src/entities/user.entity';
 import { CreateRoadmapDto } from './create-roadmap.dto';
+import { LearnResource } from 'src/entities/learn_resource';
 
 export class SaveRoadmapDto {
   @IsNotEmptyObject()
@@ -53,6 +54,7 @@ export class RoadmapNodeDto {
     border: boolean;
     url?: string;
     required?: EN_ROADMAP_ITEM_REQUIRED;
+    learnResources?: LearnResource[];
   };
 }
 

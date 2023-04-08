@@ -91,9 +91,9 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
     ) {
       return;
     }
-    if (!targetNode.data.description) {
-      return;
-    }
+    // if (!targetNode.data.description) {
+    //   return;
+    // }
     setRoadmapItem({ ...targetNode.data });
     onOpenItem();
   }, []);

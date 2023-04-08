@@ -23,7 +23,8 @@ export const NodeBase = ({ data, selected, mode }: NodeProps<RoadmapItem> & { mo
         letterSpacing="1px"
         justifyContent="center"
         alignItems="center"
-        className={data.description ? 'has-description' : 'no-description'}
+        // className={data.description ? 'has-description' : 'no-description'}
+        className="has-description"
       >
         {!data.name && mode === 'write' ? <Box color="gray.400">항목명</Box> : data.name}
         <RequiredIcon required={data.required} />

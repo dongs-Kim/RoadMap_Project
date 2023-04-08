@@ -46,6 +46,7 @@ export class LearnResourceService {
       where.push({ category });
     }
     if (keyword) {
+      where.push({ ...where[0], category: ILike(`%${keyword}%`) });
       where.push({ ...where[0], name: ILike(`%${keyword}%`) });
       where.push({ ...where[0], contents: ILike(`%${keyword}%`) });
     }

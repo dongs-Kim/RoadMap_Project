@@ -3,8 +3,16 @@ import {
   EN_ROADMAP_ITEM_REQUIRED,
   EN_ROADMAP_ITEM_STATUS,
 } from '../common/enums';
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { Roadmap } from './roadmap.entity';
+import { LearnResource } from './learn_resource';
 
 @Entity()
 export class RoadmapItem {
@@ -57,4 +65,10 @@ export class RoadmapItem {
     onDelete: 'CASCADE',
   })
   Roadmap: Roadmap;
+
+  @ManyToMany(
+    () => LearnResource,
+    (learnResource) => learnResource.RoadmapItems,
+  )
+  LearnResources: LearnResource[];
 }

@@ -1,6 +1,18 @@
 import { ArrowRightIcon } from '@chakra-ui/icons';
-import { Badge, Drawer, DrawerBody, DrawerContent, DrawerHeader, Flex, IconButton, Text } from '@chakra-ui/react';
+import {
+  Badge,
+  Box,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  Flex,
+  IconButton,
+  Link,
+  Text,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { getRoadmapItemRequiredName, getRoadmapItemStatusName } from '../../../Constants/roadmapItem';
 import { useViewer } from '../../../Hooks/useViewer';
 import { RoadmapItem } from '../../../Interface/roadmap';
@@ -90,6 +102,18 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
           </DrawerHeader>
 
           <DrawerBody>
+            {/* 학습 리소스 링크 */}
+            <Box mb={5}>
+              <Link
+                as={RouterLink}
+                to={`/LearnResource/list?category=${roadmapItem?.name}`}
+                color="teal"
+                target="_blank"
+              >
+                관련 학습 리소스
+              </Link>
+            </Box>
+
             {/* 설명 뷰어 */}
             <div ref={viewerElRef}></div>
           </DrawerBody>
