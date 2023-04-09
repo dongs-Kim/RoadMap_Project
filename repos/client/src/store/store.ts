@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import learnResourceViewSlice from './learnResourceViewSlice';
+import learnResourceWriteSlice from './learnResourceWriteSlice';
 import roadmapViewSlice from './roadmapViewSlice';
 import roadmapWriteSlice from './roadmapWriteSlice';
 import userReducer from './userSlice';
@@ -9,7 +10,8 @@ export const store = configureStore({
     user: userReducer,
     roadmapWrite: roadmapWriteSlice,
     roadmapView: roadmapViewSlice,
-    learnResource: learnResourceViewSlice,
+    learnResourceWrite: learnResourceWriteSlice,
+    learnResourceView: learnResourceViewSlice,
   },
 });
 

@@ -1,45 +1,54 @@
-import { ChangeEvent, useCallback, useEffect, useReducer, useRef } from 'react';
-import { Button, FormControl, Input, Select } from '@chakra-ui/react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { Button, FormControl, Input } from '@chakra-ui/react';
 import Editor from '@toast-ui/editor';
 import { LearnResourceCreateDto } from '../../Interface/learnResource';
 import { createLearnResourceAsync } from '../../Apis/learnResourceApi';
 import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
-
-//---------------------
-// state
-//---------------------
-type State = LearnResourceCreateDto;
-const initialState: State = {
-  name: '',
-  category: '',
-  contents: '',
-  url: '',
-};
-type SetNameAction = { type: 'setName'; name: string };
-type SetCategoryAction = { type: 'setCategory'; category: string };
-type SetContentsAction = { type: 'setContents'; contents: string };
-type SeUrlAction = { type: 'setUrl'; url: string };
-
-type Action = SetNameAction | SetCategoryAction | SetContentsAction | SeUrlAction;
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'setName':
-      return { ...state, name: action.name };
-    case 'setCategory':
-      return { ...state, category: action.category };
-    case 'setContents':
-      return { ...state, contents: action.contents };
-    case 'setUrl':
-      return { ...state, url: action.url };
-    default:
-      throw new Error();
-  }
-}
+import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
+import {
+  clearLearnResource,
+  getLearnResource,
+  setCategory,
+  setName,
+  setUrl,
+} from '../../store/learnResourceWriteSlice';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useTitle } from '../../Hooks/useTitle';
+import { Loading } from '../../Components/Page/Loading';
+import { toastError, toastSuccess } from '../../Utils/toast';
 
 export const LearnResourceWrite = () => {
+  const { id } = useParams();
   const editorElRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const state = useAppSelector((state) => state.learnResourceWrite);
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  useTitle('학습 리소스 작성 - Dev Roadmap');
+
+  const mode = useMemo(() => {
+    if (id) {
+      return 'modify';
+    }
+    return 'new';
+  }, [id]);
+
+  const initLearnResource = useCallback(async () => {
+    if (id) {
+      // 수정
+      await dispatch(getLearnResource({ id }));
+    } else {
+      // 신규
+      await dispatch(clearLearnResource());
+    }
+    setLoading(false);
+  }, [dispatch, id]);
+
+  // 데이터 조회
+  useEffect(() => {
+    initLearnResource();
+  }, [initLearnResource]);
 
   // 에디터 생성
   useEffect(() => {
@@ -62,34 +71,73 @@ export const LearnResourceWrite = () => {
     }
   }, [state.contents]);
 
-  const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'setName', name: e.target.value });
-  }, []);
+  const onChangeName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(setName(e.target.value));
+    },
+    [dispatch],
+  );
 
-  const onChangeCategory = useCallback((value: string) => {
-    dispatch({ type: 'setCategory', category: value });
-  }, []);
+  const onChangeCategory = useCallback(
+    (value: string) => {
+      dispatch(setCategory(value));
+    },
+    [dispatch],
+  );
 
-  const onChangeUrl = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'setUrl', url: e.target.value });
+  const onChangeUrl = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(setUrl(e.target.value));
+    },
+    [dispatch],
+  );
+
+  const validateSave = useCallback((saveDto: LearnResourceCreateDto) => {
+    if (!saveDto.name) {
+      toastError('제목을 입력해 주세요');
+      return false;
+    }
+    if (!saveDto.category) {
+      toastError('카테고리를 입력해 주세요');
+      return false;
+    }
+    return true;
   }, []);
 
   const onClickSave = useCallback(async () => {
     if (!editorRef.current) {
       return;
     }
+
     const saveDto: LearnResourceCreateDto = {
+      id: mode === 'modify' ? state.id : undefined,
       name: state.name,
       category: state.category,
       contents: editorRef.current.getMarkdown(),
       url: state.url,
+      mode,
     };
 
-    await createLearnResourceAsync(saveDto);
-  }, [state]);
+    //유효성 검사
+    if (!validateSave(saveDto)) {
+      return;
+    }
+
+    // 저장
+    try {
+      await createLearnResourceAsync(saveDto);
+      toastSuccess('학습 리소스를 저장했습니다');
+      navigate(-1);
+    } catch {
+      toastError('저장하지 못했습니다');
+    }
+  }, [state, validateSave, navigate, mode]);
 
   return (
     <div>
+      {/* 로딩 */}
+      <Loading isOpen={loading} />
+
       <FormControl zIndex={1000} mb={5}>
         <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.category} onChange={onChangeCategory} />
       </FormControl>

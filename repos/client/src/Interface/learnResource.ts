@@ -1,7 +1,9 @@
 export interface LearnResourceCreateDto {
+  id?: string;
   name: string;
   contents: string;
   category: string;
+  mode: 'new' | 'modify';
   url?: string;
 }
 

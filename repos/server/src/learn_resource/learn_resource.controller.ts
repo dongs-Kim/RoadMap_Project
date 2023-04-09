@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { User as UserEntity } from 'src/entities/user.entity';
 import { LearnResourceService } from './learn_resource.service';
@@ -30,6 +31,7 @@ export class LearnResourceController {
   getList(
     @Query('category') category: string,
     @Query('keyword') keyword: string,
+    @Query('user_id') user_id: string,
     @Query('sort') sort: string,
     @Query('sortType') sortType: string,
     @Query('page') page: number,
@@ -37,6 +39,7 @@ export class LearnResourceController {
     return this.learnResourceService.getLearnResources(
       category,
       keyword,
+      user_id,
       sort,
       sortType,
       page,
@@ -64,5 +67,11 @@ export class LearnResourceController {
   @Post(':id/unlike')
   unlike(@User() user: UserEntity, @Param('id') id: string) {
     return this.learnResourceService.unlike(id, user);
+  }
+
+  @UseGuards(LoggedInGuard)
+  @Delete(':id')
+  delete(@User() user: UserEntity, @Param('id') id: string) {
+    return this.learnResourceService.delete(id, user);
   }
 }

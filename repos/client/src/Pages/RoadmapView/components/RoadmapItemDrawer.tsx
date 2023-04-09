@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import _ from 'lodash';
 import { getRoadmapItemRequiredName, getRoadmapItemStatusName } from '../../../Constants/roadmapItem';
 import { useViewer } from '../../../Hooks/useViewer';
 import { RoadmapItem } from '../../../Interface/roadmap';
@@ -116,6 +117,20 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
 
             {/* 설명 뷰어 */}
             <div ref={viewerElRef}></div>
+
+            {/* 추천 학습 리소스 */}
+            {!_.isEmpty(roadmapItem?.learnResources) && (
+              <Box mt={5}>
+                <Text fontSize="2xl">추천 학습 리소스</Text>
+                {roadmapItem?.learnResources?.map((learnResource) => (
+                  <Box key={learnResource.id}>
+                    <Link as={RouterLink} to={`/LearnResource/view/${learnResource.id}`} color="teal" target="_blank">
+                      {learnResource.name}
+                    </Link>
+                  </Box>
+                ))}
+              </Box>
+            )}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

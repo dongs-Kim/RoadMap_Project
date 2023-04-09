@@ -66,14 +66,22 @@ const Layout = () => {
     onCloseDrawer();
     navigate(`/Favorite/List/${userData.id}`);
   }, [navigate, userData, onCloseDrawer]);
+
   const onClickMypage = useCallback(() => {
     onCloseDrawer();
     navigate('/Mypage');
   }, [navigate, onCloseDrawer]);
+
+  const onClickMyLearnResource = useCallback(() => {
+    onCloseDrawer();
+    navigate('/MyLearnResource');
+  }, [navigate, onCloseDrawer]);
+
   const onClickProfile = useCallback(() => {
     onCloseDrawer();
     navigate('/Profile');
   }, [navigate, onCloseDrawer]);
+
   const onClickCategory = useCallback(
     (category: string) => {
       onCloseDrawer();
@@ -151,6 +159,9 @@ const Layout = () => {
                   <MenuList color="#333" fontFamily="monospace">
                     <MenuItem pb={3} onClick={onClickMypage}>
                       내 로드맵
+                    </MenuItem>
+                    <MenuItem pb={3} onClick={onClickMyLearnResource}>
+                      내 학습리소스
                     </MenuItem>
                     <MenuItem pb={3} onClick={onClickFavoriteList}>
                       북마크

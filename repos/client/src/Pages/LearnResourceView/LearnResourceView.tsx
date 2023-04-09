@@ -17,8 +17,8 @@ export const LearnResourceView = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const { isLogined } = useUser();
-  const learnResource = useAppSelector((state) => state.learnResource.learnResource);
-  const isLike = useAppSelector((state) => state.learnResource.isLike);
+  const learnResource = useAppSelector((state) => state.learnResourceView.learnResource);
+  const isLike = useAppSelector((state) => state.learnResourceView.isLike);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
 

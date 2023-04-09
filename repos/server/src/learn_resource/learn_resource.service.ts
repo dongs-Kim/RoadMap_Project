@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import shortUUID from 'short-uuid';
 import _ from 'lodash';
@@ -19,8 +24,30 @@ export class LearnResourceService {
   ) {}
 
   async create(user: User, createLearnResourceDto: CreateLearnResourceDto) {
+    // 수정인 경우
+    if (createLearnResourceDto.mode === 'modify') {
+      // 존재하는지 확인
+      const existRoadmap = await this.learnResourceRepository.findOne({
+        where: { id: createLearnResourceDto.id },
+        relations: {
+          User: true,
+        },
+      });
+      if (!existRoadmap) {
+        throw new BadRequestException();
+      }
+
+      // 내 리소스가 맞는지 확인
+      if (existRoadmap.User.id !== user.id) {
+        throw new ForbiddenException();
+      }
+    }
+
+    if (!createLearnResourceDto.name || !createLearnResourceDto.category) {
+      throw new BadRequestException();
+    }
     const learnResource = new LearnResource();
-    learnResource.id = shortUUID.generate();
+    learnResource.id = createLearnResourceDto.id ?? shortUUID.generate();
     learnResource.name = createLearnResourceDto.name;
     learnResource.contents = createLearnResourceDto.contents;
     learnResource.url = createLearnResourceDto.url;
@@ -33,6 +60,7 @@ export class LearnResourceService {
   async getLearnResources(
     category?: string,
     keyword?: string,
+    user_id?: string,
     sort?: string,
     sortType?: string,
     page?: number,
@@ -42,13 +70,33 @@ export class LearnResourceService {
 
     //검색조건
     const where: FindOptionsWhere<LearnResource>[] = [];
-    if (category) {
-      where.push({ category });
-    }
     if (keyword) {
-      where.push({ ...where[0], category: ILike(`%${keyword}%`) });
-      where.push({ ...where[0], name: ILike(`%${keyword}%`) });
-      where.push({ ...where[0], contents: ILike(`%${keyword}%`) });
+      where.push({ category: ILike(`%${keyword}%`) });
+      where.push({ name: ILike(`%${keyword}%`) });
+      where.push({ contents: ILike(`%${keyword}%`) });
+      where.push({ User: { id: ILike(`%${keyword}%`) } });
+    }
+    if (category) {
+      if (_.isEmpty(where)) {
+        where.push({ category: category });
+      } else {
+        _.remove(where, (w) => {
+          const keys = _.keys(w);
+          return keys.length === 1 && keys[0] === 'category';
+        });
+        where.forEach((w) => (w.category = category));
+      }
+    }
+    if (user_id) {
+      if (_.isEmpty(where)) {
+        where.push({ User: { id: user_id } });
+      } else {
+        _.remove(where, (w) => {
+          const keys = _.keys(w);
+          return keys.length === 1 && keys[0] === 'User';
+        });
+        where.forEach((w) => (w.User = { id: user_id }));
+      }
     }
 
     //좋아요 정렬
@@ -186,5 +234,24 @@ export class LearnResourceService {
     // LikeUsers에서 삭제
     resource.LikeUsers = resource.LikeUsers.filter((x) => x.id !== user.id);
     await this.learnResourceRepository.save(resource);
+  }
+
+  async delete(id: string, user: User) {
+    const learnResource = await this.learnResourceRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        User: true,
+      },
+    });
+    if (!learnResource) {
+      throw new BadRequestException();
+    }
+    if (learnResource.User.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+    await this.learnResourceRepository.delete(id);
+    return true;
   }
 }
