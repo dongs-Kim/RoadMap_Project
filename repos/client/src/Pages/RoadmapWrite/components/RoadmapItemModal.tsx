@@ -35,6 +35,7 @@ import {
 import { ItemAutocomplete } from './ItemAutocomplete';
 import { LearnResourceList } from '../../LearnResourceList/LearnResourceList';
 import { RoadmapLearnResourceDto } from '../../../Interface/learnResource';
+import { LearnResourceListContainer } from '../../LearnResourceListContainer/LearnResourceListContainer';
 
 //---------------------
 // state
@@ -294,7 +295,7 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <LearnResourceList isModal onClose={onCloseResource} onApply={onApplyLearnResources} />
+            <LearnResourceListContainer isModal onClose={onCloseResource} onApply={onApplyLearnResources} />
           </ModalBody>
         </ModalContent>
       </Modal>

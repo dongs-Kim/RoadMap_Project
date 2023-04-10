@@ -17,7 +17,11 @@ import { useTitle } from '../../Hooks/useTitle';
 import { Loading } from '../../Components/Page/Loading';
 import { toastError, toastSuccess } from '../../Utils/toast';
 
-export const LearnResourceWrite = () => {
+interface LearnResourceWriteProps {
+  goList?(): void;
+}
+
+export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
   const { id } = useParams();
   const editorElRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
@@ -104,6 +108,14 @@ export const LearnResourceWrite = () => {
     return true;
   }, []);
 
+  const onClickPrev = useCallback(() => {
+    if (goList) {
+      goList();
+    } else {
+      navigate(-1);
+    }
+  }, [goList, navigate]);
+
   const onClickSave = useCallback(async () => {
     if (!editorRef.current) {
       return;
@@ -127,11 +139,11 @@ export const LearnResourceWrite = () => {
     try {
       await createLearnResourceAsync(saveDto);
       toastSuccess('학습 리소스를 저장했습니다');
-      navigate(-1);
+      onClickPrev();
     } catch {
       toastError('저장하지 못했습니다');
     }
-  }, [state, validateSave, navigate, mode]);
+  }, [state, validateSave, mode, onClickPrev]);
 
   return (
     <div>
@@ -145,6 +157,7 @@ export const LearnResourceWrite = () => {
       <Input type="url" placeholder="링크를 입력하세요" value={state.url} onChange={onChangeUrl} />
       <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
       <Button onClick={onClickSave}>저장</Button>
+      <Button onClick={onClickPrev}>이전</Button>
     </div>
   );
 };

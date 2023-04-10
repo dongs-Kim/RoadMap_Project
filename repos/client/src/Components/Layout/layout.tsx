@@ -125,6 +125,13 @@ const Layout = () => {
                   ))}
                 </MenuList>
               </Menu>
+              <Menu>
+                <RouterLink to="/LearnResource/list">
+                  <MenuButton size="md" colorScheme="#333" variant="ghost" as={Button}>
+                    학습 리소스
+                  </MenuButton>
+                </RouterLink>
+              </Menu>
             </Flex>
           </Flex>
 

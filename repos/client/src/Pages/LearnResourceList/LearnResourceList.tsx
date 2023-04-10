@@ -17,7 +17,7 @@ import axios from 'axios';
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import { BsPatchExclamation } from 'react-icons/bs';
 import ReactPaginate from 'react-paginate';
-import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { RoadmapSortList } from '../../Components/List/RoadmapSortList';
 import { Loading } from '../../Components/Page/Loading';
 import { useUser } from '../../Hooks/dataFetch/useUser';
@@ -30,14 +30,21 @@ import './pagination.css';
 
 const PAGE_SIZE = 3;
 
-interface LearnResourceListProps {
+export interface LearnResourceListProps {
   isModal?: boolean;
   isMyResource?: boolean;
   onClose?: () => void;
   onApply?: (learnResources: RoadmapLearnResourceDto[]) => void;
+  writeLearnResource?: () => void;
 }
 
-export const LearnResourceList = ({ isModal, isMyResource, onClose, onApply }: LearnResourceListProps) => {
+export const LearnResourceList = ({
+  isModal,
+  isMyResource,
+  onClose,
+  onApply,
+  writeLearnResource,
+}: LearnResourceListProps) => {
   useTitle(`학습 리소스 - Dev Roadmap`);
   const [searchParam] = useSearchParams();
   const categoryQuery = searchParam.get('category');
@@ -55,6 +62,7 @@ export const LearnResourceList = ({ isModal, isMyResource, onClose, onApply }: L
   const { userData, isLogined } = useUser();
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
   const [toDeleteId, setToDeleteId] = useState<string>();
+  const navigate = useNavigate();
 
   const loadLearnResources = useCallback(async () => {
     setLoading(true);
@@ -159,12 +167,25 @@ export const LearnResourceList = ({ isModal, isMyResource, onClose, onApply }: L
     }
   }, [toDeleteId, loadLearnResources, onCloseDelete]);
 
+  const onClickWrite = useCallback(() => {
+    if (isModal) {
+      writeLearnResource?.();
+    } else {
+      navigate('/LearnResource/write');
+    }
+  }, [writeLearnResource, navigate, isModal]);
+
   return (
     <>
       <Loading isOpen={loading} />
 
       <RoadmapSortList
-        title="내 학습 리소스"
+        title={
+          <>
+            {'내 학습 리소스'}
+            <Button onClick={onClickWrite}>작성하기</Button>
+          </>
+        }
         onClickSort={onClickSort}
         sort={sort}
         width={isModal ? '100%' : undefined}
