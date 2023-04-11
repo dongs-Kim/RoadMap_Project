@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { Button, FormControl, Input } from '@chakra-ui/react';
+import { Button, Flex, FormControl, Heading, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
 import Editor from '@toast-ui/editor';
 import { LearnResourceCreateDto } from '../../Interface/learnResource';
 import { createLearnResourceAsync } from '../../Apis/learnResourceApi';
@@ -69,11 +69,28 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
       editorRef.current = editor;
 
       // 에디터 오류로 인해 초기값을 공백으로 설정해서 잘못된 값을 지운 후 다시 빈 문자열로 설정한다
-      setTimeout(() => {
-        editor.setMarkdown(state.contents ?? '');
-      });
+      if (mode === 'new') {
+        setTimeout(() => {
+          editor.setMarkdown(state.contents ?? '');
+        });
+      }
     }
-  }, [state.contents]);
+  }, [state.contents, mode]);
+
+  //로딩 후 에디터 설정
+  useEffect(() => {
+    if (editorRef.current && !loading) {
+      editorRef.current.setMarkdown(state.contents ?? '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  //unmount시 초기화
+  useEffect(() => {
+    return () => {
+      dispatch(clearLearnResource());
+    };
+  }, [dispatch]);
 
   const onChangeName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -146,18 +163,58 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
   }, [state, validateSave, mode, onClickPrev]);
 
   return (
-    <div>
+    <>
       {/* 로딩 */}
       <Loading isOpen={loading} />
 
-      <FormControl zIndex={1000} mb={5}>
-        <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.category} onChange={onChangeCategory} />
-      </FormControl>
-      <Input placeholder="제목을 입력하세요" value={state.name} onChange={onChangeName} />
-      <Input type="url" placeholder="링크를 입력하세요" value={state.url} onChange={onChangeUrl} />
-      <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
-      <Button onClick={onClickSave}>저장</Button>
-      <Button onClick={onClickPrev}>이전</Button>
-    </div>
+      <Flex justifyContent="center" w="100%">
+        <Flex flexDir="column" w={{ base: '100%', md: '800px' }} mt={10}>
+          <Heading size="lg">학습 리소스 작성</Heading>
+
+          <Flex flexDir="column" mt={5}>
+            {/* 카테고리 */}
+            <FormControl zIndex={1000} mb={5}>
+              <ItemAutocomplete
+                placeholder="카테고리를 입력하세요"
+                value={state.category}
+                onChange={onChangeCategory}
+              />
+            </FormControl>
+
+            {/* 제목 */}
+            <InputGroup>
+              <InputLeftAddon>
+                <Text fontSize="sm">제목</Text>
+              </InputLeftAddon>
+              <Input placeholder="제목을 입력하세요" bg="#fff" value={state.name} onChange={onChangeName} />
+            </InputGroup>
+
+            {/* url */}
+            <InputGroup mt={3} mb={3}>
+              <InputLeftAddon>
+                <Text fontSize="sm">url</Text>
+              </InputLeftAddon>
+              <Input
+                type="url"
+                placeholder="관련 링크를 입력하세요"
+                bg="#fff"
+                value={state.url}
+                onChange={onChangeUrl}
+              />
+            </InputGroup>
+
+            {/* 에디터 */}
+            <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
+          </Flex>
+
+          <Flex mt={8} justifyContent="flex-end" gap={3}>
+            <Button colorScheme="teal" onClick={onClickSave}>
+              저장
+            </Button>
+            <Button onClick={onClickPrev}>이전</Button>
+          </Flex>
+        </Flex>
+      </Flex>
+    </>
   );
 };

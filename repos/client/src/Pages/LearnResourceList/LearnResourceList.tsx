@@ -18,6 +18,7 @@ import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 're
 import { BsPatchExclamation } from 'react-icons/bs';
 import ReactPaginate from 'react-paginate';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
+import { LoginDialog } from '../../Components/Dialog/LoginDialog';
 import { RoadmapSortList } from '../../Components/List/RoadmapSortList';
 import { Loading } from '../../Components/Page/Loading';
 import { useUser } from '../../Hooks/dataFetch/useUser';
@@ -31,6 +32,7 @@ import './pagination.css';
 const PAGE_SIZE = 3;
 
 export interface LearnResourceListProps {
+  title?: string;
   isModal?: boolean;
   isMyResource?: boolean;
   onClose?: () => void;
@@ -39,6 +41,7 @@ export interface LearnResourceListProps {
 }
 
 export const LearnResourceList = ({
+  title,
   isModal,
   isMyResource,
   onClose,
@@ -61,6 +64,7 @@ export const LearnResourceList = ({
   const [isMy, setIsMy] = useState(isMyResource ?? false);
   const { userData, isLogined } = useUser();
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+  const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
   const [toDeleteId, setToDeleteId] = useState<string>();
   const navigate = useNavigate();
 
@@ -168,12 +172,16 @@ export const LearnResourceList = ({
   }, [toDeleteId, loadLearnResources, onCloseDelete]);
 
   const onClickWrite = useCallback(() => {
-    if (isModal) {
-      writeLearnResource?.();
+    if (isLogined) {
+      if (isModal) {
+        writeLearnResource?.();
+      } else {
+        navigate('/LearnResource/write');
+      }
     } else {
-      navigate('/LearnResource/write');
+      onOpenLogin();
     }
-  }, [writeLearnResource, navigate, isModal]);
+  }, [writeLearnResource, navigate, isModal, isLogined, onOpenLogin]);
 
   return (
     <>
@@ -182,30 +190,42 @@ export const LearnResourceList = ({
       <RoadmapSortList
         title={
           <>
-            {'내 학습 리소스'}
-            <Button onClick={onClickWrite}>작성하기</Button>
+            <Flex justifyContent="space-between">
+              {title ?? '학습 리소스'}
+              <Flex>
+                {isLogined && isModal && (
+                  <Button colorScheme={isMy ? 'blue' : 'gray'} size="sm" onClick={onClickMy}>
+                    내가 작성한 리소스
+                  </Button>
+                )}
+                <Button colorScheme="teal" onClick={onClickWrite}>
+                  작성하기
+                </Button>
+              </Flex>
+            </Flex>
           </>
         }
         onClickSort={onClickSort}
         sort={sort}
         width={isModal ? '100%' : undefined}
       >
-        {isLogined && isModal && (
-          <Button colorScheme={isMy ? 'blue' : 'gray'} size="sm" onClick={onClickMy}>
-            내가 작성한 리소스
-          </Button>
-        )}
-
-        <FormControl zIndex={1000} mb={5}>
-          <ItemAutocomplete
-            placeholder="카테고리를 입력하세요"
-            value={inputCategory}
-            onChange={onChangeInputCategory}
-            onComplete={onCategoryComplete}
+        <Flex>
+          <Input
+            placeholder="검색 키워드"
+            bg="#fff"
+            value={keyword}
+            onChange={onChangeKeyword}
+            onKeyDown={onKeyDownKeyword}
           />
-        </FormControl>
-
-        <Input placeholder="검색 키워드" value={keyword} onChange={onChangeKeyword} onKeyDown={onKeyDownKeyword} />
+          <FormControl zIndex={1000} mb={5}>
+            <ItemAutocomplete
+              placeholder="카테고리를 입력하세요"
+              value={inputCategory}
+              onChange={onChangeInputCategory}
+              onComplete={onCategoryComplete}
+            />
+          </FormControl>
+        </Flex>
 
         {!loading && learnResources.items.length == 0 && (
           <Flex justifyContent="center" marginTop="40px" flexDir="column" alignItems="center" gap="3">
@@ -298,6 +318,7 @@ export const LearnResourceList = ({
       )}
 
       <LearnResourceDeleteDialog isOpen={isOpenDelete} onClose={onCloseDelete} onDelete={onDelete} />
+      <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </>
   );
 };

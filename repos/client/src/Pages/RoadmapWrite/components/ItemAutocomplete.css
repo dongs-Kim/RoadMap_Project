@@ -38,6 +38,11 @@
   font-size: inherit;
   font-family: inherit;
   color: #212121;
+  font-weight: 600;
+}
+
+.autocomplete-container > .wrapper > .input-container input::placeholder {
+  font-weight: 400;
 }
 
 .autocomplete-container > .wrapper > .result-container .line {
