@@ -12,7 +12,7 @@ import { User } from 'src/entities/user.entity';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CreateLearnResourceDto } from './dto/create-learn_resource.dto';
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 10;
 
 @Injectable()
 export class LearnResourceService {
@@ -152,6 +152,7 @@ export class LearnResourceService {
           like: LikeUsers.length,
           user_id: User.id,
           user_nickname: User.nickname,
+          user_image: User.image,
         };
       }),
       totalCount: total,

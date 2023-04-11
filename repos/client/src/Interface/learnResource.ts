@@ -20,6 +20,7 @@ export interface LearnResourceListItem {
   like: number;
   user_id: string;
   user_nickname: string;
+  user_image?: string;
   created_at: string;
   url?: string;
 }

@@ -1,19 +1,23 @@
 import {
+  Avatar,
   Button,
   Checkbox,
   Flex,
   FormControl,
   Input,
+  Link,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import { BsPatchExclamation } from 'react-icons/bs';
 import ReactPaginate from 'react-paginate';
@@ -29,7 +33,7 @@ import { LearnResourceDeleteDialog } from '../MyLearnResource/components/LearnRe
 import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
 import './pagination.css';
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 10;
 
 export interface LearnResourceListProps {
   title?: string;
@@ -193,13 +197,22 @@ export const LearnResourceList = ({
             <Flex justifyContent="space-between">
               {title ?? '학습 리소스'}
               <Flex>
+                <Input
+                  placeholder="검색 키워드"
+                  bg="#fff"
+                  value={keyword}
+                  w="300px"
+                  mr={3}
+                  onChange={onChangeKeyword}
+                  onKeyDown={onKeyDownKeyword}
+                />
                 {isLogined && isModal && (
                   <Button colorScheme={isMy ? 'blue' : 'gray'} size="sm" onClick={onClickMy}>
                     내가 작성한 리소스
                   </Button>
                 )}
-                <Button colorScheme="teal" onClick={onClickWrite}>
-                  작성하기
+                <Button colorScheme="blue" onClick={onClickWrite}>
+                  새로 만들기
                 </Button>
               </Flex>
             </Flex>
@@ -207,17 +220,9 @@ export const LearnResourceList = ({
         }
         onClickSort={onClickSort}
         sort={sort}
-        width={isModal ? '100%' : undefined}
-      >
-        <Flex>
-          <Input
-            placeholder="검색 키워드"
-            bg="#fff"
-            value={keyword}
-            onChange={onChangeKeyword}
-            onKeyDown={onKeyDownKeyword}
-          />
-          <FormControl zIndex={1000} mb={5}>
+        width={isModal ? '100%' : { base: '100%', md: '800px', lg: '1000px' }}
+        sortRightItem={
+          <FormControl zIndex={1000} w="300px">
             <ItemAutocomplete
               placeholder="카테고리를 입력하세요"
               value={inputCategory}
@@ -225,8 +230,8 @@ export const LearnResourceList = ({
               onComplete={onCategoryComplete}
             />
           </FormControl>
-        </Flex>
-
+        }
+      >
         {!loading && learnResources.items.length == 0 && (
           <Flex justifyContent="center" marginTop="40px" flexDir="column" alignItems="center" gap="3">
             <BsPatchExclamation size="30px"></BsPatchExclamation>
@@ -234,16 +239,31 @@ export const LearnResourceList = ({
           </Flex>
         )}
         {learnResources.items.length > 0 && (
-          <TableContainer>
-            <Table variant="simple">
+          <TableContainer mt={5}>
+            <Table variant="simple" style={{ tableLayout: 'fixed' }}>
+              <colgroup>
+                {isModal && <col width="50px"></col>}
+                <col width="100px"></col>
+                <col width="450px"></col>
+                <col width="100px"></col>
+                <col width="100px"></col>
+                <col width="50px"></col>
+                {isMyResource && (
+                  <>
+                    <col width="50px"></col>
+                    <col width="50px"></col>
+                  </>
+                )}
+              </colgroup>
+
               <Thead>
                 <Tr>
                   {isModal && <Th></Th>}
                   <Th>카테고리</Th>
                   <Th>제목</Th>
-                  <Th isNumeric>좋아요</Th>
                   <Th>작성자</Th>
                   <Th>작성일</Th>
+                  <Th isNumeric>좋아요</Th>
                   {isMyResource && (
                     <>
                       <Th></Th>
@@ -264,13 +284,28 @@ export const LearnResourceList = ({
                           ></Checkbox>
                         </Td>
                       )}
-                      <Td>{resource.category}</Td>
-                      <Td>
-                        <RouterLink to={`/LearnResource/view/${resource.id}`}>{resource.name}</RouterLink>
+                      <Td fontSize="sm" fontWeight="500">
+                        {resource.category}
                       </Td>
-                      <Td isNumeric>{resource.like}</Td>
-                      <Td>{resource.user_nickname}</Td>
-                      <Td>{resource.created_at}</Td>
+                      <Td overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
+                        <Link as={RouterLink} color="teal" to={`/LearnResource/view/${resource.id}`}>
+                          {resource.name}
+                        </Link>
+                      </Td>
+                      <Td>
+                        <RouterLink to={`/Roadmap/User/${resource.user_id}`}>
+                          <Flex fontSize="xs" ml="2" gap={2} alignItems="center">
+                            <Avatar size="xs" name={resource.user_nickname} src={resource.user_image} />
+                            <Text>{resource.user_nickname}</Text>
+                          </Flex>
+                        </RouterLink>
+                      </Td>
+                      <Td>
+                        <Text fontSize="11pt">{dayjs(resource.created_at).fromNow()}</Text>
+                      </Td>
+                      <Td isNumeric fontSize="11pt">
+                        {resource.like}
+                      </Td>
                       {isMyResource && (
                         <>
                           <Td>
