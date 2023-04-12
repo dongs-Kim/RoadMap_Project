@@ -20,6 +20,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import { BsPatchExclamation } from 'react-icons/bs';
+import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
 import ReactPaginate from 'react-paginate';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { LoginDialog } from '../../Components/Dialog/LoginDialog';
@@ -240,14 +241,14 @@ export const LearnResourceList = ({
         )}
         {learnResources.items.length > 0 && (
           <TableContainer mt={5}>
-            <Table variant="simple" style={{ tableLayout: 'fixed' }}>
+            <Table variant="unstyled" style={{ tableLayout: 'fixed' }}>
               <colgroup>
                 {isModal && <col width="50px"></col>}
                 <col width="100px"></col>
                 <col width="450px"></col>
                 <col width="100px"></col>
                 <col width="100px"></col>
-                <col width="50px"></col>
+                <col width="80px"></col>
                 {isMyResource && (
                   <>
                     <col width="50px"></col>
@@ -256,7 +257,7 @@ export const LearnResourceList = ({
                 )}
               </colgroup>
 
-              <Thead>
+              <Thead bg="#fff" borderTop="1px solid #ccc" borderBottom="1px solid #ccc">
                 <Tr>
                   {isModal && <Th></Th>}
                   <Th>카테고리</Th>
@@ -275,7 +276,7 @@ export const LearnResourceList = ({
               <Tbody>
                 {!loading &&
                   learnResources.items.map((resource) => (
-                    <Tr key={resource.id}>
+                    <Tr key={resource.id} fontSize="11pt" borderBottom="1px solid #ddd">
                       {isModal && (
                         <Td>
                           <Checkbox
@@ -300,10 +301,10 @@ export const LearnResourceList = ({
                           </Flex>
                         </RouterLink>
                       </Td>
-                      <Td>
-                        <Text fontSize="11pt">{dayjs(resource.created_at).fromNow()}</Text>
+                      <Td fontSize="sm">
+                        <Text>{dayjs(resource.created_at).fromNow()}</Text>
                       </Td>
-                      <Td isNumeric fontSize="11pt">
+                      <Td isNumeric fontSize="sm">
                         {resource.like}
                       </Td>
                       {isMyResource && (
@@ -326,19 +327,19 @@ export const LearnResourceList = ({
         )}
         {learnResources.items.length > 0 && pageCount > 1 && (
           <ReactPaginate
-            activeClassName="active-page"
+            activeClassName="active"
             // breakClassName={'item break-me '}
             breakLabel="..."
             containerClassName="pagination"
             // disabledClassName={'disabled-page'}
             nextClassName="next"
-            nextLabel=">"
+            nextLabel={<GrFormNext />}
             onPageChange={handlePageClick}
             pageCount={pageCount}
             pageClassName="page"
             pageRangeDisplayed={5}
             previousClassName="previous"
-            previousLabel="<"
+            previousLabel={<GrFormPrevious />}
           />
         )}
       </RoadmapSortList>

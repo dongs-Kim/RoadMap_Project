@@ -7,6 +7,7 @@
   list-style-type: none;
   position: relative;
   width: 1000px;
+  margin-top: 1rem;
 }
 
 .pagination .next {
@@ -17,34 +18,34 @@
   margin-right: 10px;
 }
 
-.pagination .page {
+.pagination .page a {
   align-items: center;
   border: 1px solid #eaeaea;
   border-radius: 4px;
   color: #000;
   display: flex;
   font-size: 14px;
-  height: 40px;
+  height: 30px;
   justify-content: center;
   margin: 0 5px;
-  width: 40px;
+  width: 30px;
 }
 
-.pagination .page:hover {
+.pagination .page a:hover {
   background-color: #eaeaea;
   cursor: pointer;
 }
 
-.pagination .page.active {
+.pagination .page.active a {
+  background-color: #3182ce;
+  color: #fff;
+}
+
+.pagination .page.disabled a {
   background-color: #eaeaea;
   color: #000;
 }
 
-.pagination .page.disabled {
-  background-color: #eaeaea;
-  color: #000;
-}
-
-.pagination .page.disabled:hover {
+.pagination .page.disabled a:hover {
   cursor: not-allowed;
 }
