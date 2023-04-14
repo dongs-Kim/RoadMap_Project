@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, Link, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AiFillHeart } from 'react-icons/ai';
 import { useParams } from 'react-router-dom';
@@ -11,6 +11,9 @@ import { useViewer } from '../../Hooks/useViewer';
 import { clearLike, clearState, getIsLike, getLearnResourceView, toggleLike } from '../../store/learnResourceViewSlice';
 import { LoginDialog } from '../../Components/Dialog/LoginDialog';
 import { likeLearnResourceAsync, unlikeLearnResourceAsync } from '../../Apis/learnResourceApi';
+import { HeaderToolbar } from './components/HeaderToolbar';
+import { ImLink } from 'react-icons/im';
+import { getUrl } from '../../Utils/url';
 
 export const LearnResourceView = () => {
   const { id } = useParams();
@@ -18,9 +21,7 @@ export const LearnResourceView = () => {
   const dispatch = useAppDispatch();
   const { isLogined } = useUser();
   const learnResource = useAppSelector((state) => state.learnResourceView.learnResource);
-  const isLike = useAppSelector((state) => state.learnResourceView.isLike);
   const viewerElRef = useRef<HTMLDivElement | null>(null);
-  const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
 
   useViewer(viewerElRef, learnResource?.contents);
   useTitle(`${learnResource?.name ?? ''} - Dev Roadmap`);
@@ -54,62 +55,54 @@ export const LearnResourceView = () => {
     };
   }, [dispatch]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onClickLike = useCallback(
-    _.throttle(() => {
-      if (!learnResource?.id) {
-        return;
-      }
-      if (!isLogined) {
-        onOpenLogin();
-        return;
-      }
-
-      if (isLike) {
-        unlikeLearnResourceAsync(learnResource.id);
-      } else {
-        likeLearnResourceAsync(learnResource.id);
-      }
-      dispatch(toggleLike());
-    }, 200),
-    [dispatch, learnResource, isLogined, isLike, onOpenLogin],
-  );
-
   return (
     <>
       {/* 로딩 */}
       <Loading isOpen={loading} />
 
-      <Flex flexDir="column">
-        <Heading size="xl">{learnResource?.name}</Heading>
+      <Flex width="100%" alignItems="center" flexDir="column" bg="#fff" pb={20} pt={10}>
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
+          {/* 카테고리 */}
+          <Flex pb={3}>
+            <Link>
+              <Badge colorScheme="messenger" mr={3}>
+                학습 리소스
+              </Badge>
+              <Badge colorScheme="green">{learnResource?.category}</Badge>
+            </Link>
+          </Flex>
 
-        <div>url</div>
-        <div>{learnResource?.url}</div>
+          {/* 제목 */}
+          <Flex pb={5}>
+            <Heading size="xl">{learnResource?.name}</Heading>
+          </Flex>
 
-        <div>카테고리</div>
-        <div>{learnResource?.category}</div>
+          {/* 툴바 */}
+          <HeaderToolbar />
 
-        <div>좋아요</div>
-        <div>{learnResource?.like}</div>
+          {/* url */}
+          {learnResource?.url && (
+            <Flex mb={5}>
+              <Link color="teal" fontSize="11pt" href={getUrl(learnResource?.url)} target="_blank">
+                <Flex alignItems="center">
+                  <ImLink style={{ display: 'inline-block', marginRight: '5px', color: '#888' }} />
+                  <Text> {learnResource?.url}</Text>
+                </Flex>
+              </Link>
+            </Flex>
+          )}
 
-        <div>작성자</div>
-        <div>{learnResource?.user_nickname}</div>
+          {/* 설명 */}
+          <Flex mb={5}>
+            <Box ref={viewerElRef}></Box>
+          </Flex>
+        </Flex>
 
-        <div>작성일</div>
-        <div>{learnResource?.created_at}</div>
-
-        {/* 좋아요 */}
-        <Tooltip label="좋아요">
-          <Button leftIcon={<AiFillHeart />} colorScheme={isLike ? 'red' : 'gray'} ml={3} onClick={onClickLike}>
-            <Text>{learnResource?.like ?? 0}</Text>
-          </Button>
-        </Tooltip>
-
-        <div>내용</div>
-        <div ref={viewerElRef}></div>
+        {/* 댓글 */}
+        {/* <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
+          <RoadmapReply roadmap_id={roadmapId} setLoading={setLoading} />
+        </Flex> */}
       </Flex>
-
-      <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </>
   );
 };

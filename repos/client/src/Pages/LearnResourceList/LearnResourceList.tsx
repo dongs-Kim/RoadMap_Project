@@ -29,8 +29,6 @@ import { Loading } from '../../Components/Page/Loading';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { useTitle } from '../../Hooks/useTitle';
 import { LearnResourceListDto, LearnResourceListItem, RoadmapLearnResourceDto } from '../../Interface/learnResource';
-import { toastSuccess } from '../../Utils/toast';
-import { LearnResourceDeleteDialog } from '../MyLearnResource/components/LearnResourceDeleteDialog';
 import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
 import './pagination.css';
 
@@ -68,9 +66,7 @@ export const LearnResourceList = ({
   const [selectedItems, setSelectedItems] = useState<LearnResourceListItem[]>([]);
   const [isMy, setIsMy] = useState(isMyResource ?? false);
   const { userData, isLogined } = useUser();
-  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
-  const [toDeleteId, setToDeleteId] = useState<string>();
   const navigate = useNavigate();
 
   const loadLearnResources = useCallback(async () => {
@@ -157,25 +153,6 @@ export const LearnResourceList = ({
     setIsMy(!isMy);
   }, [isMy]);
 
-  const onClickDelete = useCallback(
-    (id: string) => {
-      setToDeleteId(id);
-      onOpenDelete();
-    },
-    [onOpenDelete],
-  );
-
-  const onDelete = useCallback(async () => {
-    try {
-      await axios.delete(`/api/learn-resource/${toDeleteId}`);
-      toastSuccess('삭제했습니다');
-      setToDeleteId(undefined);
-      loadLearnResources();
-    } finally {
-      onCloseDelete();
-    }
-  }, [toDeleteId, loadLearnResources, onCloseDelete]);
-
   const onClickWrite = useCallback(() => {
     if (isLogined) {
       if (isModal) {
@@ -240,7 +217,7 @@ export const LearnResourceList = ({
           </Flex>
         )}
         {learnResources.items.length > 0 && (
-          <TableContainer mt={5}>
+          <TableContainer mt={8}>
             <Table variant="unstyled" style={{ tableLayout: 'fixed' }}>
               <colgroup>
                 {isModal && <col width="50px"></col>}
@@ -249,15 +226,9 @@ export const LearnResourceList = ({
                 <col width="100px"></col>
                 <col width="100px"></col>
                 <col width="80px"></col>
-                {isMyResource && (
-                  <>
-                    <col width="50px"></col>
-                    <col width="50px"></col>
-                  </>
-                )}
               </colgroup>
 
-              <Thead bg="#fff" borderTop="1px solid #ccc" borderBottom="1px solid #ccc">
+              <Thead borderTop="1px solid #ccc" borderBottom="1px solid #ccc">
                 <Tr>
                   {isModal && <Th></Th>}
                   <Th>카테고리</Th>
@@ -265,12 +236,6 @@ export const LearnResourceList = ({
                   <Th>작성자</Th>
                   <Th>작성일</Th>
                   <Th isNumeric>좋아요</Th>
-                  {isMyResource && (
-                    <>
-                      <Th></Th>
-                      <Th></Th>
-                    </>
-                  )}
                 </Tr>
               </Thead>
               <Tbody>
@@ -307,18 +272,6 @@ export const LearnResourceList = ({
                       <Td isNumeric fontSize="sm">
                         {resource.like}
                       </Td>
-                      {isMyResource && (
-                        <>
-                          <Td>
-                            <RouterLink to={`/LearnResource/write/${resource.id}`}>수정</RouterLink>
-                          </Td>
-                          <Td>
-                            <Button colorScheme="red" size="sm" onClick={() => onClickDelete(resource.id)}>
-                              삭제
-                            </Button>
-                          </Td>
-                        </>
-                      )}
                     </Tr>
                   ))}
               </Tbody>
@@ -353,7 +306,6 @@ export const LearnResourceList = ({
         </>
       )}
 
-      <LearnResourceDeleteDialog isOpen={isOpenDelete} onClose={onCloseDelete} onDelete={onDelete} />
       <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </>
   );

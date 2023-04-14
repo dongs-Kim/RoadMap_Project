@@ -3,15 +3,12 @@ import { NodeProps } from 'reactflow';
 import { ImLink } from 'react-icons/im';
 import { NodeMode, RoadmapItem } from '../../Interface/roadmap';
 import { NodeResizer } from '@reactflow/node-resizer';
+import { getUrl } from '../../Utils/url';
 
 export const StickerNode = (mode: NodeMode) => {
   const stickerNode = (props: NodeProps<RoadmapItem>) => {
     if (props.data.url) {
-      let url = props.data.url;
-      if (!url.match(/https?:\/\//i)) {
-        url = `//${props.data.url}`;
-      }
-
+      const url = getUrl(props.data.url);
       const component = (
         <StickerBox nodeProps={props} mode={mode}>
           <ImLink style={{ display: 'inline-block', marginRight: '5px' }} />
