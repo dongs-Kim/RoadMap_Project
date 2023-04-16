@@ -5,6 +5,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   InputGroup,
   InputLeftAddon,
   Link,
@@ -33,9 +34,9 @@ import {
   ROADMAP_ITEM_STATUS,
 } from '../../../Constants/roadmapItem';
 import { ItemAutocomplete } from './ItemAutocomplete';
-import { LearnResourceList } from '../../LearnResourceList/LearnResourceList';
 import { RoadmapLearnResourceDto } from '../../../Interface/learnResource';
 import { LearnResourceListContainer } from '../../LearnResourceListContainer/LearnResourceListContainer';
+import { SmallCloseIcon } from '@chakra-ui/icons';
 
 //---------------------
 // state
@@ -229,53 +230,66 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
               </FormControl>
             </Flex>
 
-            {/* 진행상태 */}
-            <InputGroup mb={5}>
-              <InputLeftAddon>
-                <Text fontSize="sm">진행상태</Text>
-              </InputLeftAddon>
-              <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
-                {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {value}
-                  </option>
-                ))}
-              </Select>
-            </InputGroup>
+            <Flex gap={3}>
+              {/* 진행상태 */}
+              <InputGroup mb={5}>
+                <InputLeftAddon>
+                  <Text fontSize="sm">진행상태</Text>
+                </InputLeftAddon>
+                <Select placeholder="----" value={state.status ?? ''} onChange={onChangeStatus}>
+                  {Object.entries(ROADMAP_ITEM_STATUS).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  ))}
+                </Select>
+              </InputGroup>
 
-            {/* 필수여부 */}
-            <InputGroup mb={5}>
-              <InputLeftAddon>
-                <Text fontSize="sm">필수여부</Text>
-              </InputLeftAddon>
-              <Select placeholder="----" value={state.required ?? ''} onChange={onChangeRequired}>
-                {Object.entries(ROADMAP_ITEM_REQUIRED).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {value}
-                  </option>
-                ))}
-              </Select>
-            </InputGroup>
+              {/* 필수여부 */}
+              <InputGroup mb={5}>
+                <InputLeftAddon>
+                  <Text fontSize="sm">필수여부</Text>
+                </InputLeftAddon>
+                <Select placeholder="----" value={state.required ?? ''} onChange={onChangeRequired}>
+                  {Object.entries(ROADMAP_ITEM_REQUIRED).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  ))}
+                </Select>
+              </InputGroup>
+            </Flex>
 
             {/* 에디터 */}
-            <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
+            <div ref={editorElRef} style={{ minHeight: '350px', marginBottom: '1.25rem' }}></div>
 
             {/* 추천 학습 리소스 */}
-            <div>추천 학습 리소스</div>
-            <Link color="teal" onClick={onClickResource}>
-              추가하기
-            </Link>
             <Flex flexDir="column">
-              {state.learnResources?.map((learnResource) => (
-                <Flex key={learnResource.id}>
-                  <Link as={RouterLink} color="teal" to={`/LearnResource/view/${learnResource.id}`} target="_blank">
-                    {learnResource.name}
-                  </Link>
-                  <Link color="red" ml={2} onClick={() => onRemoveLearnResource(learnResource)}>
-                    삭제
-                  </Link>
-                </Flex>
-              ))}
+              <Flex mb={1}>
+                <Heading fontSize="lg" mr={3}>
+                  추천 학습 리소스
+                </Heading>
+                <Link color="teal" onClick={onClickResource}>
+                  추가
+                </Link>
+              </Flex>
+              <Flex flexDir="column">
+                {state.learnResources?.map((learnResource) => (
+                  <Flex key={learnResource.id} alignItems="center">
+                    <Box maxW="500px" overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
+                      <Link as={RouterLink} color="teal" to={`/LearnResource/view/${learnResource.id}`} target="_blank">
+                        {learnResource.name}
+                      </Link>
+                    </Box>
+                    <SmallCloseIcon
+                      color="gray.500"
+                      ml={3}
+                      cursor="pointer"
+                      onClick={() => onRemoveLearnResource(learnResource)}
+                    />
+                  </Flex>
+                ))}
+              </Flex>
             </Flex>
           </ModalBody>
 

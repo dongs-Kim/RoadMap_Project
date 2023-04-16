@@ -207,7 +207,7 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
             <div ref={editorElRef} style={{ minHeight: '400px' }}></div>
           </Flex>
 
-          <Flex mt={8} justifyContent="flex-end" gap={3}>
+          <Flex mt={8} mb={5} justifyContent="flex-end" gap={3}>
             <Button colorScheme="teal" onClick={onClickSave}>
               저장
             </Button>

@@ -64,9 +64,11 @@ export class LearnResourceService {
     sort?: string,
     sortType?: string,
     page?: number,
+    pageSize?: number,
   ) {
     //초기화
     page = page ?? 1;
+    pageSize = pageSize ?? PAGE_SIZE;
 
     //검색조건
     const where: FindOptionsWhere<LearnResource>[] = [];
@@ -123,8 +125,8 @@ export class LearnResourceService {
       );
       return {
         items: (sortType === 'asc' ? ascSorted : ascSorted.reverse()).slice(
-          PAGE_SIZE * (page - 1),
-          PAGE_SIZE * (page - 1) + PAGE_SIZE,
+          pageSize * (page - 1),
+          pageSize * (page - 1) + pageSize,
         ),
         totalCount: ascSorted.length,
       };
@@ -141,8 +143,8 @@ export class LearnResourceService {
         order: {
           created_at: sortType ? 'asc' : 'desc',
         },
-        skip: PAGE_SIZE * (page - 1),
-        take: PAGE_SIZE,
+        skip: pageSize * (page - 1),
+        take: pageSize,
       });
     return {
       items: learnResources.map((resource) => {

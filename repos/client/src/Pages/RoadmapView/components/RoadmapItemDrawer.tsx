@@ -7,6 +7,7 @@ import {
   DrawerContent,
   DrawerHeader,
   Flex,
+  Heading,
   IconButton,
   Link,
   Text,
@@ -120,8 +121,10 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
 
             {/* 추천 학습 리소스 */}
             {!_.isEmpty(roadmapItem?.learnResources) && (
-              <Box mt={5}>
-                <Text fontSize="2xl">추천 학습 리소스</Text>
+              <Box mt={12}>
+                <Heading fontSize="lg" mb={3}>
+                  추천 학습 리소스
+                </Heading>
                 {roadmapItem?.learnResources?.map((learnResource) => (
                   <Box key={learnResource.id}>
                     <Link as={RouterLink} to={`/LearnResource/view/${learnResource.id}`} color="teal" target="_blank">

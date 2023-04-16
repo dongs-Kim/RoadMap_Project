@@ -14,6 +14,7 @@ interface RoadmapSortListProps extends PropsWithChildren {
   width?: ResponsiveValue<string>;
   sort_mt?: number;
   sortRightItem?: ReactNode;
+  pb?: number;
   onClickSort(id: string): void;
 }
 
@@ -23,11 +24,12 @@ export const RoadmapSortList = ({
   width,
   sort_mt,
   sortRightItem,
+  pb,
   children,
   onClickSort,
 }: RoadmapSortListProps) => {
   return (
-    <Box pb={20} pt={10} w={width ?? '1410px'} m="0 auto">
+    <Box pb={pb ?? 20} pt={10} w={width ?? '1410px'} m="0 auto">
       <Heading color="#333" pb="2" fontSize="3xl" ml="15px">
         {title}
       </Heading>

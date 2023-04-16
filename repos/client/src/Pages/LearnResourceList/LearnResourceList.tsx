@@ -62,12 +62,18 @@ export const LearnResourceList = ({
   const [searchKeyword, setSearchKeyword] = useState('');
   const [sort, setSort] = useState('recently');
   const [page, setPage] = useState(1);
-  const pageCount = Math.ceil(learnResources.totalCount / PAGE_SIZE);
   const [selectedItems, setSelectedItems] = useState<LearnResourceListItem[]>([]);
   const [isMy, setIsMy] = useState(isMyResource ?? false);
   const { userData, isLogined } = useUser();
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
   const navigate = useNavigate();
+
+  const getPageSize = useCallback(() => {
+    if (isModal) {
+      return 5;
+    }
+    return PAGE_SIZE;
+  }, [isModal]);
 
   const loadLearnResources = useCallback(async () => {
     setLoading(true);
@@ -82,13 +88,14 @@ export const LearnResourceList = ({
           user_id: isMy ? userData?.id : undefined,
           sort,
           page,
+          pageSize: isModal ? 5 : getPageSize(),
         },
       });
       setLeanResources(data);
     } finally {
       setLoading(false);
     }
-  }, [category, searchKeyword, isMy, userData, sort, page, isLogined]);
+  }, [isMy, isLogined, category, searchKeyword, userData?.id, sort, page, isModal, getPageSize]);
 
   useEffect(() => {
     loadLearnResources();
@@ -109,6 +116,7 @@ export const LearnResourceList = ({
   const onKeyDownKeyword = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
+        setPage(1);
         setSearchKeyword(keyword);
       }
     },
@@ -121,7 +129,10 @@ export const LearnResourceList = ({
 
   const onCategoryComplete = useCallback(
     (value?: string) => {
-      setTimeout(() => setCategory(value ?? inputCategory));
+      setTimeout(() => {
+        setPage(1);
+        setCategory(value ?? inputCategory);
+      }, 0);
     },
     [inputCategory],
   );
@@ -150,6 +161,7 @@ export const LearnResourceList = ({
   }, [onApply, onClose, selectedItems]);
 
   const onClickMy = useCallback(() => {
+    setPage(1);
     setIsMy(!isMy);
   }, [isMy]);
 
@@ -165,6 +177,8 @@ export const LearnResourceList = ({
     }
   }, [writeLearnResource, navigate, isModal, isLogined, onOpenLogin]);
 
+  const pageCount = Math.ceil(learnResources.totalCount / getPageSize());
+
   return (
     <>
       <Loading isOpen={loading} />
@@ -174,7 +188,7 @@ export const LearnResourceList = ({
           <>
             <Flex justifyContent="space-between">
               {title ?? '학습 리소스'}
-              <Flex>
+              <Flex alignItems="center">
                 <Input
                   placeholder="검색 키워드"
                   bg="#fff"
@@ -185,8 +199,8 @@ export const LearnResourceList = ({
                   onKeyDown={onKeyDownKeyword}
                 />
                 {isLogined && isModal && (
-                  <Button colorScheme={isMy ? 'blue' : 'gray'} size="sm" onClick={onClickMy}>
-                    내가 작성한 리소스
+                  <Button colorScheme={isMy ? 'green' : 'gray'} mr={3} size="sm" onClick={onClickMy}>
+                    내 학습 리소스
                   </Button>
                 )}
                 <Button colorScheme="blue" onClick={onClickWrite}>
@@ -199,6 +213,7 @@ export const LearnResourceList = ({
         onClickSort={onClickSort}
         sort={sort}
         width={isModal ? '100%' : { base: '100%', md: '800px', lg: '1000px' }}
+        pb={isModal ? 5 : 20}
         sortRightItem={
           <FormControl zIndex={1000} w="300px">
             <ItemAutocomplete
@@ -254,7 +269,12 @@ export const LearnResourceList = ({
                         {resource.category}
                       </Td>
                       <Td overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
-                        <Link as={RouterLink} color="teal" to={`/LearnResource/view/${resource.id}`}>
+                        <Link
+                          as={RouterLink}
+                          color="teal"
+                          to={`/LearnResource/view/${resource.id}`}
+                          target={isModal ? '_blank' : '_self'}
+                        >
                           {resource.name}
                         </Link>
                       </Td>
@@ -293,18 +313,21 @@ export const LearnResourceList = ({
             pageRangeDisplayed={5}
             previousClassName="previous"
             previousLabel={<GrFormPrevious />}
+            forcePage={page - 1}
           />
         )}
-      </RoadmapSortList>
 
-      {isModal && (
-        <>
-          <Button colorScheme="teal" onClick={onClickApply}>
-            적용
-          </Button>
-          <Button onClick={onClose}>닫기</Button>
-        </>
-      )}
+        {isModal && (
+          <Flex w="100%" justifyContent="flex-end">
+            <Flex gap={3}>
+              <Button colorScheme="teal" onClick={onClickApply}>
+                적용
+              </Button>
+              <Button onClick={onClose}>닫기</Button>
+            </Flex>
+          </Flex>
+        )}
+      </RoadmapSortList>
 
       <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
     </>

@@ -35,6 +35,7 @@ export class LearnResourceController {
     @Query('sort') sort: string,
     @Query('sortType') sortType: string,
     @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
   ) {
     return this.learnResourceService.getLearnResources(
       category,
@@ -43,6 +44,7 @@ export class LearnResourceController {
       sort,
       sortType,
       page,
+      pageSize,
     );
   }
 
