@@ -1,14 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { IReply } from '../Interface/db';
 import { LearnResourceListItem } from '../Interface/learnResource';
 
 interface LearnResourceViewSliceState {
   learnResource: LearnResourceListItem | null;
+  replies: IReply[];
   isLike?: boolean;
 }
 
 const initialState: LearnResourceViewSliceState = {
   learnResource: null,
+  replies: [],
 };
 
 export const getLearnResourceView = createAsyncThunk<LearnResourceListItem, { id: string }>(
@@ -35,6 +38,18 @@ export const getIsLike = createAsyncThunk<boolean, { id: string }>(
   },
 );
 
+export const getLearnResourceReplies = createAsyncThunk<IReply[], { id: string }>(
+  'learnResourceView/getLearnResourceReplies',
+  async ({ id }, thunkApi) => {
+    try {
+      const { data } = await axios.get<IReply[]>(`/api/learn-resource-replies/${id}`);
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err);
+    }
+  },
+);
+
 const learnResourceViewSlice = createSlice({
   name: 'learnResourceView',
   initialState,
@@ -52,6 +67,9 @@ const learnResourceViewSlice = createSlice({
     clearLike: (state) => {
       state.isLike = false;
     },
+    clearLearnResourceReplies: (state) => {
+      state.replies = [];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getLearnResourceView.fulfilled, (state, action) => {
@@ -60,9 +78,12 @@ const learnResourceViewSlice = createSlice({
     builder.addCase(getIsLike.fulfilled, (state, action) => {
       state.isLike = action.payload;
     });
+    builder.addCase(getLearnResourceReplies.fulfilled, (state, action) => {
+      state.replies = action.payload;
+    });
   },
 });
 
-export const { clearState, toggleLike, clearLike } = learnResourceViewSlice.actions;
+export const { clearState, toggleLike, clearLike, clearLearnResourceReplies } = learnResourceViewSlice.actions;
 
 export default learnResourceViewSlice.reducer;

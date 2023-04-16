@@ -7,7 +7,7 @@ const getInitialState = (): LearnResourceCreateDto => ({
   name: '',
   category: '',
   contents: '',
-  url: '',
+  url: [],
   mode: 'new',
 });
 
@@ -36,7 +36,7 @@ const learnResourceWriteSlice = createSlice({
     setContents: (state, action: PayloadAction<string>) => {
       state.contents = action.payload;
     },
-    setUrl: (state, action: PayloadAction<string>) => {
+    setUrl: (state, action: PayloadAction<string[]>) => {
       state.url = action.payload;
     },
     clearLearnResource: (state) => {

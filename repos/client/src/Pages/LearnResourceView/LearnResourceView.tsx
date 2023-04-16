@@ -1,19 +1,24 @@
-import { Badge, Box, Button, Flex, Heading, Link, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AiFillHeart } from 'react-icons/ai';
-import { useParams } from 'react-router-dom';
+import { Badge, Box, Flex, Heading, Link, Text } from '@chakra-ui/react';
 import _ from 'lodash';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Loading } from '../../Components/Page/Loading';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import { useTitle } from '../../Hooks/useTitle';
 import { useViewer } from '../../Hooks/useViewer';
-import { clearLike, clearState, getIsLike, getLearnResourceView, toggleLike } from '../../store/learnResourceViewSlice';
-import { LoginDialog } from '../../Components/Dialog/LoginDialog';
-import { likeLearnResourceAsync, unlikeLearnResourceAsync } from '../../Apis/learnResourceApi';
+import {
+  clearLearnResourceReplies,
+  clearLike,
+  clearState,
+  getIsLike,
+  getLearnResourceReplies,
+  getLearnResourceView,
+} from '../../store/learnResourceViewSlice';
 import { HeaderToolbar } from './components/HeaderToolbar';
 import { ImLink } from 'react-icons/im';
 import { getUrl } from '../../Utils/url';
+import { LearnResourceReply } from './components/LearnResourceReply';
 
 export const LearnResourceView = () => {
   const { id } = useParams();
@@ -42,6 +47,12 @@ export const LearnResourceView = () => {
 
   // 데이터 조회
   useEffect(() => {
+    if (id) {
+      dispatch(getLearnResourceReplies({ id }));
+    } else {
+      dispatch(clearLearnResourceReplies());
+    }
+
     if (isLogined && id) {
       dispatch(getIsLike({ id }));
     } else {
@@ -81,27 +92,31 @@ export const LearnResourceView = () => {
           <HeaderToolbar />
 
           {/* url */}
-          {learnResource?.url && (
-            <Flex mb={5}>
-              <Link color="teal" fontSize="11pt" href={getUrl(learnResource?.url)} target="_blank">
-                <Flex alignItems="center">
-                  <ImLink style={{ display: 'inline-block', marginRight: '5px', color: '#888' }} />
-                  <Text> {learnResource?.url}</Text>
+          {!_.isEmpty(learnResource?.url) && (
+            <Flex mb={5} flexDir="column" gap={2}>
+              {learnResource?.url?.map((url) => (
+                <Flex key={url}>
+                  <Link color="teal" fontSize="11pt" href={getUrl(url)} target="_blank">
+                    <Flex alignItems="center">
+                      <ImLink style={{ display: 'inline-block', marginRight: '5px', color: '#888' }} />
+                      <Text>{url}</Text>
+                    </Flex>
+                  </Link>
                 </Flex>
-              </Link>
+              ))}
             </Flex>
           )}
 
           {/* 설명 */}
-          <Flex mb={5}>
+          <Flex mb={5} mt={5}>
             <Box ref={viewerElRef}></Box>
           </Flex>
         </Flex>
 
         {/* 댓글 */}
-        {/* <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
-          <RoadmapReply roadmap_id={roadmapId} setLoading={setLoading} />
-        </Flex> */}
+        <Flex flexDir="column" width={{ base: '100%', lg: '1000px' }} pt={10} p={3}>
+          <LearnResourceReply learn_resource_id={id} setLoading={setLoading} />
+        </Flex>
       </Flex>
     </>
   );

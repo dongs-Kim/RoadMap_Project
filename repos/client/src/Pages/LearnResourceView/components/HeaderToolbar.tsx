@@ -94,7 +94,7 @@ export const HeaderToolbar = () => {
   }, [learnResource?.id, navigate, onCloseDelete]);
 
   return (
-    <Flex justifyContent="space-between" mb={10} flexDir={{ base: 'column', md: 'row' }} gap={2}>
+    <Flex justifyContent="space-between" mb={5} flexDir={{ base: 'column', md: 'row' }} gap={2}>
       {/* 작성자 */}
       <Flex alignItems="center" gap={1} fontSize="15px">
         {

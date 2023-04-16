@@ -12,7 +12,7 @@ export class CreateLearnResourceDto {
   @IsDefined()
   mode: 'new' | 'modify';
 
-  url?: string;
+  url?: string[];
 
   contents?: string;
 }

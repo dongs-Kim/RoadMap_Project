@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { Button, Flex, FormControl, Heading, Input, InputGroup, InputLeftAddon, Text } from '@chakra-ui/react';
+import { Button, Flex, FormControl, Heading, Input, InputGroup, InputLeftAddon, Link, Text } from '@chakra-ui/react';
 import Editor from '@toast-ui/editor';
 import { LearnResourceCreateDto } from '../../Interface/learnResource';
 import { createLearnResourceAsync } from '../../Apis/learnResourceApi';
@@ -28,6 +28,8 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
   const state = useAppSelector((state) => state.learnResourceWrite);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
+  const [showUrl2, setShowUrl2] = useState(false);
+  const [showUrl3, setShowUrl3] = useState(false);
   const navigate = useNavigate();
   useTitle('학습 리소스 작성 - Dev Roadmap');
 
@@ -107,10 +109,12 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
   );
 
   const onChangeUrl = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      dispatch(setUrl(e.target.value));
+    (e: ChangeEvent<HTMLInputElement>, index: number) => {
+      const url = [...(state.url ?? [])];
+      url[index] = e.target.value;
+      dispatch(setUrl(url));
     },
-    [dispatch],
+    [dispatch, state.url],
   );
 
   const validateSave = useCallback((saveDto: LearnResourceCreateDto) => {
@@ -143,7 +147,7 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
       name: state.name,
       category: state.category,
       contents: editorRef.current.getMarkdown(),
-      url: state.url,
+      url: state.url?.filter((x) => x),
       mode,
     };
 
@@ -161,6 +165,14 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
       toastError('저장하지 못했습니다');
     }
   }, [state, validateSave, mode, onClickPrev]);
+
+  const onClickAddUrl = useCallback(() => {
+    if (!showUrl2) {
+      setShowUrl2(true);
+    } else if (!showUrl3) {
+      setShowUrl3(true);
+    }
+  }, [showUrl2, showUrl3]);
 
   return (
     <>
@@ -191,16 +203,41 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
 
             {/* url */}
             <InputGroup mt={3} mb={3}>
-              <InputLeftAddon>
+              <InputLeftAddon h="100%">
                 <Text fontSize="sm">url</Text>
               </InputLeftAddon>
-              <Input
-                type="url"
-                placeholder="관련 링크를 입력하세요"
-                bg="#fff"
-                value={state.url}
-                onChange={onChangeUrl}
-              />
+              <Flex flexDir="column" w="100%">
+                <Input
+                  type="url"
+                  placeholder="관련 링크를 입력하세요"
+                  bg="#fff"
+                  value={state.url?.[0]}
+                  onChange={(e) => onChangeUrl(e, 0)}
+                />
+                {showUrl2 && (
+                  <Input
+                    type="url"
+                    placeholder="추가 url"
+                    bg="#fff"
+                    value={state.url?.[1]}
+                    onChange={(e) => onChangeUrl(e, 1)}
+                  />
+                )}
+                {showUrl3 && (
+                  <Input
+                    type="url"
+                    placeholder="추가 url"
+                    bg="#fff"
+                    value={state.url?.[2]}
+                    onChange={(e) => onChangeUrl(e, 2)}
+                  />
+                )}
+              </Flex>
+              <Flex p={3} w="60px" fontSize="sm" justifyContent="center">
+                <Link color="teal" onClick={onClickAddUrl}>
+                  추가
+                </Link>
+              </Flex>
             </InputGroup>
 
             {/* 에디터 */}

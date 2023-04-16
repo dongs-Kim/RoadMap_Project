@@ -5,10 +5,12 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { RoadmapItem } from './roadmap_item.entity';
+import { LearnResourceReply } from './learn_resource_reply.entity';
 
 @Entity()
 export class LearnResource {
@@ -23,8 +25,8 @@ export class LearnResource {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  url?: string;
+  @Column('simple-array', { nullable: true })
+  url?: string[];
 
   @Column('text', { nullable: true })
   contents?: string;
@@ -42,4 +44,9 @@ export class LearnResource {
   @ManyToMany(() => RoadmapItem, (roadmapItem) => roadmapItem.LearnResources)
   @JoinTable()
   RoadmapItems: RoadmapItem[];
+
+  @OneToMany(() => LearnResourceReply, (reply) => reply.LearnResource, {
+    cascade: true,
+  })
+  Replies: LearnResourceReply[];
 }
