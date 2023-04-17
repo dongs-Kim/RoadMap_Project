@@ -22,4 +22,6 @@ export class CreateRoadmapDto {
   bgcolor?: string;
 
   created_at?: Date;
+
+  tempImages?: string[];
 }

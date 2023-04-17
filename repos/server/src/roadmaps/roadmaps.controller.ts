@@ -21,6 +21,10 @@ import {
   thumbnailOption,
   UPLOAD_THUMBNAIL_PATH,
 } from './thumbnail-upload.option';
+import {
+  UPLOAD_TEMP_IMAGE_PATH,
+  tempImageOption,
+} from './temp-image-upload.option';
 
 @ApiTags('roadmaps')
 @Controller('api/roadmaps')
@@ -101,11 +105,17 @@ export class RoadmapsController {
   @UseGuards(LoggedInGuard)
   @UseInterceptors(FileInterceptor('image', thumbnailOption))
   @Post(':id/thumbnail')
-  async uploadThumbnail(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: string,
-  ) {
+  async uploadThumbnail(@UploadedFile() file: Express.Multer.File) {
     const url = `/${UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
+    return url;
+  }
+
+  @ApiOperation({ summary: '임시 이미지 업로드' })
+  @UseGuards(LoggedInGuard)
+  @UseInterceptors(FileInterceptor('image', tempImageOption))
+  @Post(':id/tempImage')
+  async uploadTempImage(@UploadedFile() file: Express.Multer.File) {
+    const url = `/${UPLOAD_TEMP_IMAGE_PATH}/${file.filename}`;
     return url;
   }
 }

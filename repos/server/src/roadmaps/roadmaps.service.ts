@@ -26,6 +26,13 @@ import {
 } from './thumbnail-upload.option';
 import { PUBLIC_PATH } from 'src/config/configuration';
 import { LearnResource } from 'src/entities/learn_resource';
+import { UPLOAD_TEMP_IMAGE_FULL_PATH } from './temp-image-upload.option';
+
+const UPLOAD_CONTENTS_PATH =
+  process.env.NODE_ENV === 'production'
+    ? 'static/contents'
+    : 'static-dev/contents';
+const UPLOAD_CONTENTS_FULL_PATH = path.join(PUBLIC_PATH, UPLOAD_CONTENTS_PATH);
 
 @Injectable()
 export class RoadmapsService {
@@ -242,6 +249,7 @@ export class RoadmapsService {
     if (roadmap.thumbnail) {
       this.removeThumbnail(id);
     }
+    this.removeContentsImage(id);
     return true;
   }
 
@@ -356,6 +364,24 @@ export class RoadmapsService {
       });
     }
 
+    // 임시 이미지 파일을 영구 이미지 파일로 변경
+    if (roadmap.tempImages?.length) {
+      roadmap.contents = this.moveTempImageToContents(
+        roadmap.id,
+        roadmap.tempImages,
+        roadmap.contents,
+      );
+    }
+    nodes.map((node) => {
+      if (node.data.tempImages?.length) {
+        node.data.description = this.moveTempImageToContents(
+          roadmap.id,
+          node.data.tempImages,
+          node.data.description,
+        );
+      }
+    });
+
     try {
       // nodes
       const newRoadmapItems = nodes.map((node) => {
@@ -438,14 +464,48 @@ export class RoadmapsService {
     }
   }
 
-  async uploadThumbnail(id: string, url: string) {
-    await this.roadmapsRepository.update(id, { thumbnail: url });
-  }
-
-  removeThumbnail(id: string) {
+  private removeThumbnail(id: string) {
     const files = glob.sync(`${UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`);
     files.forEach((file) => {
       fs.removeSync(file);
     });
+  }
+
+  private removeContentsImage(id: string) {
+    const files = glob.sync(`${UPLOAD_CONTENTS_FULL_PATH}/${id}*`);
+    files.forEach((file) => {
+      fs.removeSync(file);
+    });
+  }
+
+  private moveTempImageToContents(
+    id: string,
+    tempImages: string[],
+    contents?: string,
+  ) {
+    tempImages.forEach((tempImage) => {
+      // contents에 이미지가 없는 경우 삭제
+      if (!contents?.includes(tempImage)) {
+        fs.removeSync(path.join(PUBLIC_PATH, tempImage));
+        return;
+      }
+
+      // contents에 이미지가 있는 경우 영구 이미지로 변경
+      const tempImagePath = path.join(PUBLIC_PATH, tempImage);
+      const ext = path.extname(tempImagePath);
+      const newFileName = `${id}_${Date.now()}.contents${ext}`;
+      const contentsPath = path.join(
+        PUBLIC_PATH,
+        UPLOAD_CONTENTS_PATH,
+        newFileName,
+      );
+      fs.renameSync(tempImagePath, contentsPath);
+      contents = contents?.replace(
+        tempImage,
+        `/${UPLOAD_CONTENTS_PATH}/${newFileName}`,
+      );
+    });
+
+    return contents;
   }
 }
