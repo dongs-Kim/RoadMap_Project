@@ -38,6 +38,8 @@ import {
 } from '../../../Apis/roadmapApi';
 import { useUser } from '../../../Hooks/dataFetch/useUser';
 import { LoginDialog } from '../../../Components/Dialog/LoginDialog';
+import { RoadmapDeleteDialog } from '../../Mypage/components/RoadmapDeleteDialog';
+import axios from 'axios';
 
 export const HeaderToolbar = () => {
   const navigate = useNavigate();
@@ -47,7 +49,8 @@ export const HeaderToolbar = () => {
   const isLike = useAppSelector((state) => state.roadmapView.isLike);
   const { isOpen: isOpenCopy, onOpen: onOpenCopy, onClose: onCloseCopy } = useDisclosure();
   const { isOpen: isOpenLogin, onOpen: onOpenLogin, onClose: onCloseLogin } = useDisclosure();
-  const { isLogined } = useUser();
+  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+  const { userData, isLogined } = useUser();
 
   const onClickDownloadImage = useCallback(
     _.throttle(async () => {
@@ -163,6 +166,20 @@ export const HeaderToolbar = () => {
     [],
   );
 
+  const onClickDelete = useCallback(() => {
+    onOpenDelete();
+  }, [onOpenDelete]);
+
+  const onDelete = useCallback(async () => {
+    try {
+      await axios.delete(`/api/roadmaps/${roadmapSet?.roadmap.id}`);
+      toastSuccess('삭제했습니다');
+      navigate(-1);
+    } finally {
+      onCloseDelete();
+    }
+  }, [roadmapSet?.roadmap.id, navigate, onCloseDelete]);
+
   return (
     <Flex justifyContent="space-between" mb={10} flexDir={{ base: 'column', md: 'row' }} gap={2}>
       {/* 작성자 */}
@@ -180,6 +197,18 @@ export const HeaderToolbar = () => {
       </Flex>
 
       <Flex alignItems="center" gap={1}>
+        {/* 수정/삭제 */}
+        {userData?.id === roadmapSet?.user?.id && (
+          <Flex gap={3} mr={3}>
+            <Link as={RouterLink} color="teal" fontSize="11pt" to={`/Roadmap/write/${roadmapSet?.roadmap.id}`}>
+              수정
+            </Link>
+            <Link color="teal" fontSize="11pt" onClick={onClickDelete}>
+              삭제
+            </Link>
+          </Flex>
+        )}
+
         {/* 다운로드 */}
         <Menu>
           <Tooltip label="다운로드">
@@ -241,6 +270,7 @@ export const HeaderToolbar = () => {
 
       <CloneConfirmDialog isOpen={isOpenCopy} onClose={onCloseCopy} onCopy={onCopyRoadmap} />
       <LoginDialog isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <RoadmapDeleteDialog isOpen={isOpenDelete} onClose={onCloseDelete} onDelete={onDelete} />
     </Flex>
   );
 };

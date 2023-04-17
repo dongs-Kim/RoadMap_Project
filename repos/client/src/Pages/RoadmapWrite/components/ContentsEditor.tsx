@@ -1,6 +1,7 @@
 import { useRef, useEffect, useContext } from 'react';
 import Editor from '@toast-ui/editor';
 import { EditorContext } from '../contexts/EditorContext';
+import { toastError } from '../../../Utils/toast';
 
 export const ContentsEditor = () => {
   const editorElRef = useRef<HTMLDivElement | null>(null);
@@ -15,6 +16,15 @@ export const ContentsEditor = () => {
         initialEditType: 'markdown',
         previewStyle: 'tab',
         placeholder: '설명을 입력하세요',
+        hooks: {
+          addImageBlobHook(blob, callback) {
+            if (!blob.type.startsWith('image/')) {
+              toastError('이미지를 업로드해 주세요');
+              return;
+            }
+            callback('/sample.png');
+          },
+        },
       });
 
       // 에디터를 context에 설정
