@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import fs from 'fs-extra';
 import path from 'path';
-import glob from 'glob';
+import { glob } from 'glob';
 import shortUUID from 'short-uuid';
 import {
   EN_ROADMAP_ITEM_REQUIRED,
@@ -247,9 +247,9 @@ export class RoadmapsService {
 
     await this.roadmapsRepository.delete(id);
     if (roadmap.thumbnail) {
-      this.removeThumbnail(id);
+      await this.removeThumbnail(id);
     }
-    this.removeContentsImage(id);
+    await this.removeContentsImage(id);
     return true;
   }
 
@@ -466,7 +466,7 @@ export class RoadmapsService {
 
       //썸네일없는 경우 파일 삭제
       if (!newRoadmap.thumbnail) {
-        this.removeThumbnail(newRoadmap.id);
+        await this.removeThumbnail(newRoadmap.id);
       }
 
       return true;
@@ -478,15 +478,19 @@ export class RoadmapsService {
     }
   }
 
-  private removeThumbnail(id: string) {
-    const files = glob.sync(`${UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`);
+  private async removeThumbnail(id: string) {
+    const files = await glob(
+      `${UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`.replace(/\\/g, '/'),
+    );
     files.forEach((file) => {
       fs.removeSync(file);
     });
   }
 
-  private removeContentsImage(id: string) {
-    const files = glob.sync(`${UPLOAD_CONTENTS_FULL_PATH}/${id}*`);
+  private async removeContentsImage(id: string) {
+    const files = await glob(
+      `${UPLOAD_CONTENTS_FULL_PATH}/${id}*`.replace(/\\/g, '/'),
+    );
     files.forEach((file) => {
       fs.removeSync(file);
     });
