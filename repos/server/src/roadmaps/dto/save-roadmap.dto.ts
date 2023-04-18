@@ -55,7 +55,8 @@ export class RoadmapNodeDto {
     url?: string;
     required?: EN_ROADMAP_ITEM_REQUIRED;
     learnResources?: LearnResource[];
-    tempImages?: string[];
+    temp_images?: string[];
+    contents_images?: string[];
   };
 }
 

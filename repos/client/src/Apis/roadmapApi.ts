@@ -48,3 +48,10 @@ export const updateReplyAsync = async (id: string, contents: string) => {
   const { data } = await axios.patch<boolean>(`/api/replies/${id}`, { contents });
   return data;
 };
+
+export const saveTempImageAsync = async (file: File) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  const { data } = await axios.post<string>(`/api/roadmaps/tempImage`, formData);
+  return data;
+};

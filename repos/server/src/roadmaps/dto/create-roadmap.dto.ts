@@ -23,5 +23,7 @@ export class CreateRoadmapDto {
 
   created_at?: Date;
 
-  tempImages?: string[];
+  temp_images?: string[];
+
+  contents_images?: string[];
 }

@@ -16,6 +16,8 @@ interface RoadmapWriteState {
   category: string;
   thumbnail?: string;
   bgcolor?: string;
+  contents_images?: string[];
+  temp_images?: string[];
   history: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
   undoHistory: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] }[];
   clipboard: { nodes: Node<RoadmapItem>[]; edges: Edge<EdgeData>[] } | null;
@@ -70,6 +72,7 @@ const roadmapWriteSlice = createSlice({
       state.category = roadmap.category;
       state.thumbnail = roadmap.thumbnail;
       state.bgcolor = roadmap.bgcolor;
+      state.contents_images = roadmap.contents_images;
       state.nodes = nodes;
       state.edges = edges;
       state.history = [];
@@ -168,6 +171,9 @@ const roadmapWriteSlice = createSlice({
       }
       state.clipboard = { nodes: selectedNodes, edges: selectedEdges };
     },
+    addRoadmapTempImage: (state, action: PayloadAction<string>) => {
+      state.temp_images = [...(state.temp_images ?? []), action.payload];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getRoadmap.fulfilled, (state, action) => {
@@ -179,6 +185,7 @@ const roadmapWriteSlice = createSlice({
       state.category = roadmap.category;
       state.thumbnail = roadmap.thumbnail;
       state.bgcolor = roadmap.bgcolor;
+      state.contents_images = roadmap.contents_images;
       state.nodes = nodes.map((node) => {
         if (node.width) {
           node.style = node.style ?? {};
@@ -222,6 +229,7 @@ export const {
   undoHistory,
   redoHistory,
   setClipboard,
+  addRoadmapTempImage,
 } = roadmapWriteSlice.actions;
 
 export default roadmapWriteSlice.reducer;

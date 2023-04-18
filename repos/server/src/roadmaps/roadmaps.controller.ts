@@ -113,7 +113,7 @@ export class RoadmapsController {
   @ApiOperation({ summary: '임시 이미지 업로드' })
   @UseGuards(LoggedInGuard)
   @UseInterceptors(FileInterceptor('image', tempImageOption))
-  @Post(':id/tempImage')
+  @Post('tempImage')
   async uploadTempImage(@UploadedFile() file: Express.Multer.File) {
     const url = `/${UPLOAD_TEMP_IMAGE_PATH}/${file.filename}`;
     return url;

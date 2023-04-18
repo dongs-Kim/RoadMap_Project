@@ -26,7 +26,6 @@ import {
 } from './thumbnail-upload.option';
 import { PUBLIC_PATH } from 'src/config/configuration';
 import { LearnResource } from 'src/entities/learn_resource';
-import { UPLOAD_TEMP_IMAGE_FULL_PATH } from './temp-image-upload.option';
 
 const UPLOAD_CONTENTS_PATH =
   process.env.NODE_ENV === 'production'
@@ -69,6 +68,7 @@ export class RoadmapsService {
       category: dbRoadmap.category,
       public: dbRoadmap.public,
       contents: dbRoadmap.contents,
+      contents_images: dbRoadmap.contents_images,
       thumbnail: dbRoadmap.thumbnail,
       bgcolor: dbRoadmap.bgcolor,
       like: dbRoadmap.LikeUsers?.length,
@@ -365,21 +365,33 @@ export class RoadmapsService {
     }
 
     // 임시 이미지 파일을 영구 이미지 파일로 변경
-    if (roadmap.tempImages?.length) {
-      roadmap.contents = this.moveTempImageToContents(
-        roadmap.id,
-        roadmap.tempImages,
-        roadmap.contents,
-      );
-    }
+    const { contents, contentsImages } = this.moveTempImageToContents(
+      roadmap.id,
+      roadmap.temp_images,
+      roadmap.contents,
+    );
+    roadmap.contents = contents;
+
+    // 사용 중인 이미지 체크
+    roadmap.contents_images = this.getImagesInContents(
+      [...(roadmap.contents_images ?? []), ...contentsImages],
+      roadmap.contents,
+    );
+
     nodes.map((node) => {
-      if (node.data.tempImages?.length) {
-        node.data.description = this.moveTempImageToContents(
-          roadmap.id,
-          node.data.tempImages,
-          node.data.description,
-        );
-      }
+      // 임시 이미지 파일을 영구 이미지 파일로 변경
+      const { contents, contentsImages } = this.moveTempImageToContents(
+        roadmap.id,
+        node.data.temp_images,
+        node.data.description,
+      );
+      node.data.description = contents;
+
+      // 사용 중인 이미지 체크
+      node.data.contents_images = this.getImagesInContents(
+        [...(node.data.contents_images ?? []), ...contentsImages],
+        node.data.description,
+      );
     });
 
     try {
@@ -400,6 +412,7 @@ export class RoadmapsService {
         roadmapItem.height = node.height;
         roadmapItem.zIndex = node.zIndex;
         roadmapItem.required = node.data.required;
+        roadmapItem.contents_images = node.data.contents_images;
 
         // learnResources
         const newLearnResources = node.data.learnResources?.map(
@@ -444,6 +457,7 @@ export class RoadmapsService {
       newRoadmap.contents = roadmap.contents;
       newRoadmap.thumbnail = roadmap.thumbnail;
       newRoadmap.bgcolor = roadmap.bgcolor;
+      newRoadmap.contents_images = roadmap.contents_images;
       newRoadmap.User = user;
       newRoadmap.RoadmapItems = newRoadmapItems;
       newRoadmap.RoadmapEdges = newRoadmapEdges;
@@ -480,10 +494,11 @@ export class RoadmapsService {
 
   private moveTempImageToContents(
     id: string,
-    tempImages: string[],
+    tempImages?: string[],
     contents?: string,
   ) {
-    tempImages.forEach((tempImage) => {
+    const contentsImages: string[] = [];
+    tempImages?.forEach((tempImage) => {
       // contents에 이미지가 없는 경우 삭제
       if (!contents?.includes(tempImage)) {
         fs.removeSync(path.join(PUBLIC_PATH, tempImage));
@@ -494,18 +509,23 @@ export class RoadmapsService {
       const tempImagePath = path.join(PUBLIC_PATH, tempImage);
       const ext = path.extname(tempImagePath);
       const newFileName = `${id}_${Date.now()}.contents${ext}`;
-      const contentsPath = path.join(
-        PUBLIC_PATH,
-        UPLOAD_CONTENTS_PATH,
-        newFileName,
-      );
-      fs.renameSync(tempImagePath, contentsPath);
-      contents = contents?.replace(
-        tempImage,
-        `/${UPLOAD_CONTENTS_PATH}/${newFileName}`,
-      );
+      const contentsPath = `/${UPLOAD_CONTENTS_PATH}/${newFileName}`;
+      fs.ensureDirSync(path.join(PUBLIC_PATH, UPLOAD_CONTENTS_PATH));
+      fs.renameSync(tempImagePath, path.join(PUBLIC_PATH, contentsPath));
+      contents = contents?.replace(tempImage, contentsPath);
+      contentsImages.push(contentsPath);
     });
 
-    return contents;
+    return { contents, contentsImages };
+  }
+
+  private getImagesInContents(images: string[], contents?: string) {
+    return images.filter((imagePath) => {
+      if (contents?.includes(imagePath)) {
+        return true;
+      }
+      fs.removeSync(path.join(PUBLIC_PATH, imagePath));
+      return false;
+    });
   }
 }

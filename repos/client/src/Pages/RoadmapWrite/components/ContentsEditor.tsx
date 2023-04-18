@@ -2,10 +2,14 @@ import { useRef, useEffect, useContext } from 'react';
 import Editor from '@toast-ui/editor';
 import { EditorContext } from '../contexts/EditorContext';
 import { toastError } from '../../../Utils/toast';
+import { saveTempImageAsync } from '../../../Apis/roadmapApi';
+import { useAppDispatch } from '../../../Hooks/hooks';
+import { addRoadmapTempImage } from '../../../store/roadmapWriteSlice';
 
 export const ContentsEditor = () => {
   const editorElRef = useRef<HTMLDivElement | null>(null);
   const { setEditor, mode } = useContext(EditorContext);
+  const dispatch = useAppDispatch();
 
   // 에디터 생성
   useEffect(() => {
@@ -17,12 +21,17 @@ export const ContentsEditor = () => {
         previewStyle: 'tab',
         placeholder: '설명을 입력하세요',
         hooks: {
-          addImageBlobHook(blob, callback) {
+          async addImageBlobHook(blob, callback) {
             if (!blob.type.startsWith('image/')) {
               toastError('이미지를 업로드해 주세요');
               return;
             }
-            callback('/sample.png');
+
+            if (blob instanceof File) {
+              const tempImage = await saveTempImageAsync(blob);
+              callback(tempImage);
+              dispatch(addRoadmapTempImage(tempImage));
+            }
           },
         },
       });

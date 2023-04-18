@@ -61,6 +61,9 @@ export class RoadmapItem {
   @Column('int', { nullable: true })
   height?: number;
 
+  @Column('simple-array', { nullable: true })
+  contents_images?: string[];
+
   @ManyToOne(() => Roadmap, (roadmap) => roadmap.RoadmapItems, {
     onDelete: 'CASCADE',
   })

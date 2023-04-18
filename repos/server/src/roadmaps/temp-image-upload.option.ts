@@ -14,7 +14,7 @@ export const UPLOAD_TEMP_IMAGE_FULL_PATH = path.join(
 );
 
 export function getTempFilename(ext: string) {
-  return `${shortUUID.generate()}_${Date.now()}.temp${ext}`;
+  return `${shortUUID.generate()}.temp${ext}`;
 }
 
 export const tempImageOption = {
