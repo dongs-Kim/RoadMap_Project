@@ -30,6 +30,7 @@ import {
   moveTempImageToContents,
   getImagesInContents,
   removeContentsImage,
+  getContentsImageFilename,
 } from 'src/common/util';
 import _ from 'lodash';
 
@@ -353,7 +354,6 @@ export class RoadmapsService {
 
         roadmap.thumbnail = `/${UPLOAD_THUMBNAIL_PATH}/${thumbnail}`;
       }
-      //@TODO 컨텐츠 이미지 복사. 본문. 항목
 
       // id 새로 채번
       const idMap = new Map<string, string>();
@@ -369,6 +369,52 @@ export class RoadmapsService {
           source: idMap.get(source),
           target: idMap.get(target),
         };
+      });
+
+      // 본문 컨텐츠 이미지 복사
+      if (!_.isEmpty(roadmap.contents_images)) {
+        roadmap.contents_images = roadmap.contents_images.map((image) => {
+          const originFile = image;
+          const ext = path.extname(originFile);
+          const filename = getContentsImageFilename(roadmap.id, ext);
+
+          fs.copySync(
+            path.join(PUBLIC_PATH, originFile),
+            path.join(UPLOAD_CONTENTS_FULL_PATH, filename),
+          );
+
+          const newContentsImage = `/${UPLOAD_CONTENTS_PATH}/${filename}`;
+          roadmap.contents = roadmap.contents.replace(
+            new RegExp(originFile, 'g'),
+            newContentsImage,
+          );
+
+          return newContentsImage;
+        });
+      }
+
+      // 노드 컨텐츠 이미지 복사
+      nodes.forEach((node) => {
+        if (!_.isEmpty(node.data.contents_images)) {
+          node.data.contents_images = node.data.contents_images.map((image) => {
+            const originFile = image;
+            const ext = path.extname(originFile);
+            const filename = getContentsImageFilename(roadmap.id, ext);
+
+            fs.copySync(
+              path.join(PUBLIC_PATH, originFile),
+              path.join(UPLOAD_CONTENTS_FULL_PATH, filename),
+            );
+
+            const newContentsImage = `/${UPLOAD_CONTENTS_PATH}/${filename}`;
+            node.data.description = node.data.description.replace(
+              new RegExp(originFile, 'g'),
+              newContentsImage,
+            );
+
+            return newContentsImage;
+          });
+        }
       });
     }
 

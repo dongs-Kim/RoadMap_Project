@@ -94,10 +94,6 @@ const Layout = () => {
     onOpenDrawer();
   }, [onOpenDrawer]);
 
-  useEffect(() => {
-    revalidateUser();
-  });
-
   return (
     <div>
       {/* 헤더 */}

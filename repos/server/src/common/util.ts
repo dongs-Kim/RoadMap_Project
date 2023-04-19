@@ -14,6 +14,10 @@ export const UPLOAD_CONTENTS_FULL_PATH = path.join(
   UPLOAD_CONTENTS_PATH,
 );
 
+export function getContentsImageFilename(id: string, ext: string) {
+  return `${id}_${shortUUID.generate()}.contents${ext}`;
+}
+
 export function moveTempImageToContents(
   id: string,
   tempImages?: string[],
@@ -30,7 +34,7 @@ export function moveTempImageToContents(
     // contents에 이미지가 있는 경우 영구 이미지로 변경
     const tempImagePath = path.join(PUBLIC_PATH, tempImage);
     const ext = path.extname(tempImagePath);
-    const newFileName = `${id}_${shortUUID.generate()}.contents${ext}`;
+    const newFileName = getContentsImageFilename(id, ext);
     const contentsPath = `/${UPLOAD_CONTENTS_PATH}/${newFileName}`;
     fs.ensureDirSync(path.join(PUBLIC_PATH, UPLOAD_CONTENTS_PATH));
     fs.renameSync(tempImagePath, path.join(PUBLIC_PATH, contentsPath));
