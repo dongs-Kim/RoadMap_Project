@@ -46,7 +46,7 @@ export const ContentsEditor = () => {
         });
       }
     }
-  }, [editorElRef, setEditor, mode]);
+  }, [editorElRef, setEditor, mode, dispatch]);
 
   return <div ref={editorElRef} style={{ flex: 1, minHeight: '500px' }}></div>;
 };

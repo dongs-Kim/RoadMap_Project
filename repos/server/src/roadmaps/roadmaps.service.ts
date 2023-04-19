@@ -26,6 +26,12 @@ import {
 } from './thumbnail-upload.option';
 import { PUBLIC_PATH } from 'src/config/configuration';
 import { LearnResource } from 'src/entities/learn_resource';
+import {
+  moveTempImageToContents,
+  getImagesInContents,
+  removeContentsImage,
+} from 'src/common/util';
+import _ from 'lodash';
 
 const UPLOAD_CONTENTS_PATH =
   process.env.NODE_ENV === 'production'
@@ -90,6 +96,7 @@ export class RoadmapsService {
           url: item.url,
           required: item.required as EN_ROADMAP_ITEM_REQUIRED | null,
           learnResources: item.LearnResources,
+          contents_images: item.contents_images,
         },
         position: {
           x: item.positionX,
@@ -249,7 +256,7 @@ export class RoadmapsService {
     if (roadmap.thumbnail) {
       await this.removeThumbnail(id);
     }
-    await this.removeContentsImage(id);
+    await removeContentsImage(id);
     return true;
   }
 
@@ -346,6 +353,7 @@ export class RoadmapsService {
 
         roadmap.thumbnail = `/${UPLOAD_THUMBNAIL_PATH}/${thumbnail}`;
       }
+      //@TODO 컨텐츠 이미지 복사. 본문. 항목
 
       // id 새로 채번
       const idMap = new Map<string, string>();
@@ -365,7 +373,7 @@ export class RoadmapsService {
     }
 
     // 임시 이미지 파일을 영구 이미지 파일로 변경
-    const { contents, contentsImages } = this.moveTempImageToContents(
+    const { contents, contentsImages } = moveTempImageToContents(
       roadmap.id,
       roadmap.temp_images,
       roadmap.contents,
@@ -373,14 +381,14 @@ export class RoadmapsService {
     roadmap.contents = contents;
 
     // 사용 중인 이미지 체크
-    roadmap.contents_images = this.getImagesInContents(
+    roadmap.contents_images = getImagesInContents(
       [...(roadmap.contents_images ?? []), ...contentsImages],
       roadmap.contents,
     );
 
     nodes.map((node) => {
       // 임시 이미지 파일을 영구 이미지 파일로 변경
-      const { contents, contentsImages } = this.moveTempImageToContents(
+      const { contents, contentsImages } = moveTempImageToContents(
         roadmap.id,
         node.data.temp_images,
         node.data.description,
@@ -388,10 +396,14 @@ export class RoadmapsService {
       node.data.description = contents;
 
       // 사용 중인 이미지 체크
-      node.data.contents_images = this.getImagesInContents(
+      console.log(node.data.description);
+      console.log(node.data.contents_images);
+      console.log(contentsImages);
+      node.data.contents_images = getImagesInContents(
         [...(node.data.contents_images ?? []), ...contentsImages],
         node.data.description,
       );
+      console.log(node.data.contents_images);
     });
 
     try {
@@ -484,52 +496,6 @@ export class RoadmapsService {
     );
     files.forEach((file) => {
       fs.removeSync(file);
-    });
-  }
-
-  private async removeContentsImage(id: string) {
-    const files = await glob(
-      `${UPLOAD_CONTENTS_FULL_PATH}/${id}*`.replace(/\\/g, '/'),
-    );
-    files.forEach((file) => {
-      fs.removeSync(file);
-    });
-  }
-
-  private moveTempImageToContents(
-    id: string,
-    tempImages?: string[],
-    contents?: string,
-  ) {
-    const contentsImages: string[] = [];
-    tempImages?.forEach((tempImage) => {
-      // contents에 이미지가 없는 경우 삭제
-      if (!contents?.includes(tempImage)) {
-        fs.removeSync(path.join(PUBLIC_PATH, tempImage));
-        return;
-      }
-
-      // contents에 이미지가 있는 경우 영구 이미지로 변경
-      const tempImagePath = path.join(PUBLIC_PATH, tempImage);
-      const ext = path.extname(tempImagePath);
-      const newFileName = `${id}_${Date.now()}.contents${ext}`;
-      const contentsPath = `/${UPLOAD_CONTENTS_PATH}/${newFileName}`;
-      fs.ensureDirSync(path.join(PUBLIC_PATH, UPLOAD_CONTENTS_PATH));
-      fs.renameSync(tempImagePath, path.join(PUBLIC_PATH, contentsPath));
-      contents = contents?.replace(tempImage, contentsPath);
-      contentsImages.push(contentsPath);
-    });
-
-    return { contents, contentsImages };
-  }
-
-  private getImagesInContents(images: string[], contents?: string) {
-    return images.filter((imagePath) => {
-      if (contents?.includes(imagePath)) {
-        return true;
-      }
-      fs.removeSync(path.join(PUBLIC_PATH, imagePath));
-      return false;
     });
   }
 }

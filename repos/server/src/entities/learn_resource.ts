@@ -31,6 +31,9 @@ export class LearnResource {
   @Column('text', { nullable: true })
   contents?: string;
 
+  @Column('simple-array', { nullable: true })
+  contents_images?: string[];
+
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })
   created_at: Date;
 

@@ -12,6 +12,7 @@ export interface RoadmapItem {
   required?: RoadmapItemRequired;
   learnResources?: RoadmapLearnResourceDto[];
   contents_images?: string[];
+  temp_images?: string[];
 }
 
 export enum EN_ROADMAP_NODE_TYPE {

@@ -37,6 +37,8 @@ import { ItemAutocomplete } from './ItemAutocomplete';
 import { RoadmapLearnResourceDto } from '../../../Interface/learnResource';
 import { LearnResourceListContainer } from '../../LearnResourceListContainer/LearnResourceListContainer';
 import { SmallCloseIcon } from '@chakra-ui/icons';
+import { toastError } from '../../../Utils/toast';
+import { saveTempImageAsync } from '../../../Apis/roadmapApi';
 
 //---------------------
 // state
@@ -61,6 +63,7 @@ type SetBorderAction = { type: 'setBorder'; border: boolean };
 type SetRequiredAction = { type: 'setRequired'; required?: RoadmapItemRequired };
 type AddLearnResourceAction = { type: 'addLearnResource'; learnResource: RoadmapLearnResourceDto };
 type RemoveLearnResourceAction = { type: 'removeLearnResource'; learnResource: RoadmapLearnResourceDto };
+type AddTempImageAction = { type: 'addTempImage'; tempImage: string };
 type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
@@ -71,7 +74,8 @@ type Action =
   | ClearRoadmapItemAction
   | SetRequiredAction
   | AddLearnResourceAction
-  | RemoveLearnResourceAction;
+  | RemoveLearnResourceAction
+  | AddTempImageAction;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -98,6 +102,8 @@ function reducer(state: State, action: Action): State {
         ...state,
         learnResources: state.learnResources?.filter((learnResource) => learnResource.id !== action.learnResource.id),
       };
+    case 'addTempImage':
+      return { ...state, temp_images: [...(state.temp_images ?? []), action.tempImage] };
     default:
       throw new Error();
   }
@@ -131,6 +137,20 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
           initialEditType: 'markdown',
           previewStyle: 'tab',
           placeholder: '설명을 입력하세요',
+          hooks: {
+            async addImageBlobHook(blob, callback) {
+              if (!blob.type.startsWith('image/')) {
+                toastError('이미지를 업로드해 주세요');
+                return;
+              }
+
+              if (blob instanceof File) {
+                const tempImage = await saveTempImageAsync(blob);
+                callback(tempImage);
+                dispatch({ type: 'addTempImage', tempImage });
+              }
+            },
+          },
         });
 
         // 에디터를 ref에 설정

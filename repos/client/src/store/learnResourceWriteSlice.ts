@@ -43,6 +43,9 @@ const learnResourceWriteSlice = createSlice({
       _.extend(state, getInitialState());
       state.id = undefined;
     },
+    addLearnResourceTempImage: (state, action: PayloadAction<string>) => {
+      state.temp_images = [...(state.temp_images ?? []), action.payload];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getLearnResource.fulfilled, (state, action) => {
@@ -51,11 +54,13 @@ const learnResourceWriteSlice = createSlice({
       state.category = action.payload.category;
       state.contents = action.payload.contents;
       state.url = action.payload.url;
+      state.contents_images = action.payload.contents_images;
       state.mode = 'modify';
     });
   },
 });
 
-export const { setName, setCategory, setContents, setUrl, clearLearnResource } = learnResourceWriteSlice.actions;
+export const { setName, setCategory, setContents, setUrl, clearLearnResource, addLearnResourceTempImage } =
+  learnResourceWriteSlice.actions;
 
 export default learnResourceWriteSlice.reducer;

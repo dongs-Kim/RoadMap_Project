@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Avatar,
   Card,
@@ -141,7 +141,7 @@ export const CardItem = ({ loading, roadmaps, renderMore }: Props) => {
 
                     {/* 내용 */}
                     <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden">
-                      {roadmap.contents ?? ''}
+                      {(roadmap.contents ?? '').replaceAll(/!\[[^\]]*\]\([^)]*\)/g, '')}
                     </Text>
 
                     {/* 작성시간, 댓글 */}

@@ -5,6 +5,8 @@ export interface LearnResourceCreateDto {
   category: string;
   mode: 'new' | 'modify';
   url?: string[];
+  temp_images?: string[];
+  contents_images?: string[];
 }
 
 export interface LearnResourceListDto {
@@ -23,6 +25,7 @@ export interface LearnResourceListItem {
   user_image?: string;
   created_at: string;
   url?: string[];
+  contents_images?: string[];
 }
 
 export type RoadmapLearnResourceDto = Omit<LearnResourceListItem, 'like' | 'user_id' | 'user_nickname'>;

@@ -15,4 +15,8 @@ export class CreateLearnResourceDto {
   url?: string[];
 
   contents?: string;
+
+  temp_images?: string[];
+
+  contents_images?: string[];
 }

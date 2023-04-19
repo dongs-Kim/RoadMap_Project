@@ -108,7 +108,7 @@ export const LearnResourceView = () => {
           )}
 
           {/* 설명 */}
-          <Flex mb={5} mt={5}>
+          <Flex mb={20} mt={5}>
             <Box ref={viewerElRef}></Box>
           </Flex>
         </Flex>

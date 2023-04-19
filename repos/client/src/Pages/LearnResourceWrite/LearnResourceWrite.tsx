@@ -6,6 +6,7 @@ import { createLearnResourceAsync } from '../../Apis/learnResourceApi';
 import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import {
+  addLearnResourceTempImage,
   clearLearnResource,
   getLearnResource,
   setCategory,
@@ -16,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTitle } from '../../Hooks/useTitle';
 import { Loading } from '../../Components/Page/Loading';
 import { toastError, toastSuccess } from '../../Utils/toast';
+import { saveTempImageAsync } from '../../Apis/roadmapApi';
 
 interface LearnResourceWriteProps {
   goList?(): void;
@@ -65,6 +67,20 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
         initialEditType: 'markdown',
         previewStyle: 'tab',
         placeholder: '설명을 입력하세요',
+        hooks: {
+          async addImageBlobHook(blob, callback) {
+            if (!blob.type.startsWith('image/')) {
+              toastError('이미지를 업로드해 주세요');
+              return;
+            }
+
+            if (blob instanceof File) {
+              const tempImage = await saveTempImageAsync(blob);
+              callback(tempImage);
+              dispatch(addLearnResourceTempImage(tempImage));
+            }
+          },
+        },
       });
 
       // 에디터를 ref에 설정
@@ -148,6 +164,8 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
       category: state.category,
       contents: editorRef.current.getMarkdown(),
       url: state.url?.filter((x) => x),
+      temp_images: state.temp_images,
+      contents_images: state.contents_images,
       mode,
     };
 

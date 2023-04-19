@@ -11,6 +11,11 @@ import { LearnResource } from 'src/entities/learn_resource';
 import { User } from 'src/entities/user.entity';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { CreateLearnResourceDto } from './dto/create-learn_resource.dto';
+import {
+  getImagesInContents,
+  moveTempImageToContents,
+  removeContentsImage,
+} from 'src/common/util';
 
 const PAGE_SIZE = 10;
 
@@ -24,6 +29,8 @@ export class LearnResourceService {
   ) {}
 
   async create(user: User, createLearnResourceDto: CreateLearnResourceDto) {
+    const id = createLearnResourceDto.id ?? shortUUID.generate();
+
     // 수정인 경우
     if (createLearnResourceDto.mode === 'modify') {
       // 존재하는지 확인
@@ -46,12 +53,28 @@ export class LearnResourceService {
     if (!createLearnResourceDto.name || !createLearnResourceDto.category) {
       throw new BadRequestException();
     }
+
+    // 임시 이미지 파일을 영구 이미지 파일로 변경
+    const { contents, contentsImages } = moveTempImageToContents(
+      id,
+      createLearnResourceDto.temp_images,
+      createLearnResourceDto.contents,
+    );
+    createLearnResourceDto.contents = contents;
+
+    // 사용 중인 이미지 체크
+    createLearnResourceDto.contents_images = getImagesInContents(
+      [...(createLearnResourceDto.contents_images ?? []), ...contentsImages],
+      createLearnResourceDto.contents,
+    );
+
     const learnResource = new LearnResource();
-    learnResource.id = createLearnResourceDto.id ?? shortUUID.generate();
+    learnResource.id = id;
     learnResource.name = createLearnResourceDto.name;
     learnResource.contents = createLearnResourceDto.contents;
     learnResource.url = createLearnResourceDto.url;
     learnResource.category = createLearnResourceDto.category;
+    learnResource.contents_images = createLearnResourceDto.contents_images;
     learnResource.User = user;
     await this.learnResourceRepository.save(learnResource);
     return true;
@@ -255,6 +278,7 @@ export class LearnResourceService {
       throw new UnauthorizedException();
     }
     await this.learnResourceRepository.delete(id);
+    await removeContentsImage(id);
     return true;
   }
 }
