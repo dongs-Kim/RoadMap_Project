@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Avatar, Flex, Heading, Text } from '@chakra-ui/react';
+import { Avatar, Flex, Text } from '@chakra-ui/react';
 import { RoadmapCategoryDto, User } from '../../Interface/roadmap';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';

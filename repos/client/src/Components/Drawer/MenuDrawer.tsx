@@ -17,12 +17,12 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { CiMap } from 'react-icons/ci';
-import { Link as RouterLink } from 'react-router-dom';
 import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
+import { IUser } from '../../Interface/db';
 
 interface MenuDrawerProps {
   isOpen: boolean;
-  userData?: any;
+  userData?: IUser;
   onClose(): void;
   onClickLogIn?(): void;
   onClickSignUp?(): void;

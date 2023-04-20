@@ -1,4 +1,4 @@
-import { Avatar, Flex, Heading, IconButton, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { Avatar, Flex, IconButton, Text, Tooltip, useDisclosure } from '@chakra-ui/react';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';

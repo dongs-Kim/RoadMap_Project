@@ -93,7 +93,7 @@ export const LearnResourceWrite = ({ goList }: LearnResourceWriteProps) => {
         });
       }
     }
-  }, [state.contents, mode]);
+  }, [state.contents, mode, dispatch]);
 
   //로딩 후 에디터 설정
   useEffect(() => {

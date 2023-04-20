@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { List, Button, Heading, Link, Image, Card, CardBody, Stack, Divider } from '@chakra-ui/react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { RoadmapCategoryDto, RoadmapDto } from '../../Interface/roadmap';
+import { RoadmapCategoryDto } from '../../Interface/roadmap';
 import { toastError } from '../../Utils/toast';
 import { useTitle } from '../../Hooks/useTitle';
 import { RoadmapSortList } from '../../Components/List/RoadmapSortList';

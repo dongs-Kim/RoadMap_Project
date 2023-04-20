@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Link as RouterLink, useNavigate, Outlet } from 'react-router-dom';
 import { menuCategories } from '../Menu/menu';
 import { HiOutlineMail } from 'react-icons/hi';
@@ -48,7 +48,7 @@ const Layout = () => {
       .post('/api/users/logout', null, {
         withCredentials: true,
       })
-      .then((res) => {
+      .then(() => {
         revalidateUser(false);
         navigate('/');
       });

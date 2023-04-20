@@ -2,7 +2,7 @@
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BiFullscreen, BiLock, BiLockAlt, BiLockOpen, BiLockOpenAlt } from 'react-icons/bi';
+import { BiFullscreen, BiLockAlt, BiLockOpenAlt } from 'react-icons/bi';
 import ReactFlow, { useNodesState, useEdgesState, Node, useReactFlow } from 'reactflow';
 import _ from 'lodash';
 import { DownNode } from '../../../Components/RoadmapItem/DownNode';

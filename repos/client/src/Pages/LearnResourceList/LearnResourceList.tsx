@@ -9,15 +9,7 @@ import {
   Link,
   List,
   ListItem,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
-  UnorderedList,
   useDisclosure,
 } from '@chakra-ui/react';
 import axios from 'axios';
@@ -217,7 +209,7 @@ export const LearnResourceList = ({
         }
         onClickSort={onClickSort}
         sort={sort}
-        width={isModal ? '100%' : { base: '100%', md: '800px', lg: '1000px' }}
+        width={isModal ? '100%' : { base: '100%', md: '800px' }}
         pb={isModal ? 5 : 20}
         sortRightItem={
           <FormControl zIndex={1000} w="300px">
@@ -237,25 +229,34 @@ export const LearnResourceList = ({
           </Flex>
         )}
         {learnResources.items.length > 0 && (
-          <List>
+          <List mt={5}>
             {learnResources.items.map((resource) => (
               <ListItem key={resource.id} borderBottom="1px solid #eee" p={3}>
-                <Flex justifyContent="space-between" flexDir="column">
-                  <Flex>
-                    {isModal && (
-                      <Checkbox
-                        w="30px"
-                        isChecked={isChecked(resource.id)}
-                        onChange={() => onChangeSelectedItems(resource)}
-                      ></Checkbox>
-                    )}
-                    <Flex w="100%">
-                      <Flex>
-                        <Badge bg={uniqolor(resource.category, { lightness: 80 }).color} fontSize="8.5pt" mr={3} mb={1}>
-                          {resource.category}
-                        </Badge>
-                        <Flex w="100%"></Flex>
-                      </Flex>
+                <Flex flexDir="column" gap={2}>
+                  <Flex justifyContent="space-between">
+                    <Flex alignItems="center">
+                      {isModal && (
+                        <Checkbox
+                          w="30px"
+                          isChecked={isChecked(resource.id)}
+                          onChange={() => onChangeSelectedItems(resource)}
+                        ></Checkbox>
+                      )}
+                      <Badge bg={uniqolor(resource.category, { lightness: 85 }).color} fontSize="8.5pt">
+                        {resource.category}
+                      </Badge>
+                    </Flex>
+                    <Flex fontSize="xs" gap={1} color="gray.500" alignItems="center">
+                      <Text>{dayjs(resource.created_at).fromNow()}</Text>
+                      <span>·</span>
+                      <Text>좋아요 {resource.like}</Text>
+                      <span>·</span>
+                      <RouterLink to={`/Roadmap/User/${resource.user_id}`}>
+                        <Flex fontSize="xs" gap={2} alignItems="center">
+                          <Avatar size="xs" name={resource.user_nickname} src={resource.user_image} />
+                          <Text>{resource.user_nickname}</Text>
+                        </Flex>
+                      </RouterLink>
                     </Flex>
                   </Flex>
 
@@ -269,23 +270,10 @@ export const LearnResourceList = ({
                     whiteSpace="nowrap"
                     textOverflow="ellipsis"
                   >
-                    <Text as="span" fontSize="10.5pt">
+                    <Text as="span" fontSize="12pt">
                       {resource.name}
                     </Text>
                   </Link>
-
-                  <Flex fontSize="xs" gap={1} color="gray.500">
-                    <RouterLink to={`/Roadmap/User/${resource.user_id}`}>
-                      <Flex fontSize="xs" ml="2" gap={2} alignItems="center">
-                        <Avatar size="xs" name={resource.user_nickname} src={resource.user_image} />
-                        <Text>{resource.user_nickname}</Text>
-                      </Flex>
-                    </RouterLink>
-                    <span>·</span>
-                    <Text>{dayjs(resource.created_at).fromNow()}</Text>
-                    <span>·</span>
-                    <Text>좋아요 {resource.like}</Text>
-                  </Flex>
                 </Flex>
               </ListItem>
             ))}

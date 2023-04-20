@@ -235,6 +235,7 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
         e.target instanceof HTMLElement &&
         !e.target.classList.contains('more') &&
         !e.target.closest('.toastui-editor-dropdown-toolbar') &&
+        !e.target.closest('.toastui-editor-popup') &&
         editorToolbarEl?.style.display !== 'none'
       ) {
         if (editorRef.current) {

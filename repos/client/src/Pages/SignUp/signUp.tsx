@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEventHandler, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import axios from 'axios';
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import {
@@ -12,7 +12,6 @@ import {
   InputLeftElement,
   InputGroup,
   Text,
-  Link,
 } from '@chakra-ui/react';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { useTitle } from '../../Hooks/useTitle';
@@ -20,7 +19,7 @@ import { useTitle } from '../../Hooks/useTitle';
 const SignUp = () => {
   useTitle('회원가입 - Dev Roadmap');
   const navigate = useNavigate();
-  const { userData, error, mutate } = useUser();
+  const { userData } = useUser();
   //상태
   const [email, setEmail] = useState('');
   const [nickname, setNickName] = useState('');
@@ -141,7 +140,7 @@ const SignUp = () => {
               withCredentials: true,
             },
           )
-          .then((response) => {
+          .then(() => {
             setSignUpSuccess(true);
             navigate('/');
           });

@@ -2,8 +2,6 @@ import { useCallback, useReducer, useEffect } from 'react';
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   InputGroup,
   InputLeftAddon,
   Modal,

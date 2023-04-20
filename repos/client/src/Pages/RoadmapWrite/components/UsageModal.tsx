@@ -1,10 +1,6 @@
 import {
   Code,
-  Flex,
-  Heading,
   Kbd,
-  List,
-  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,9 +11,6 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Text,
-  Th,
-  Thead,
   Tr,
 } from '@chakra-ui/react';
 

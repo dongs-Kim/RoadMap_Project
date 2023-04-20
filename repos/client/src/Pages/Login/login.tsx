@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -12,8 +12,6 @@ import {
   InputLeftElement,
   Stack,
   Text,
-  Link,
-  FormHelperText,
 } from '@chakra-ui/react';
 import { useUser } from '../../Hooks/dataFetch/useUser';
 import { toastError } from '../../Utils/toast';
@@ -24,8 +22,8 @@ const Login = () => {
   useTitle('로그인 - Dev Roadmap');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [logInError, setLogInError] = useState(false);
-  const { userData, error, mutate } = useUser();
+  const [, setLogInError] = useState(false);
+  const { userData, mutate } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
