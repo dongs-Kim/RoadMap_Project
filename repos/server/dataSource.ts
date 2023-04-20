@@ -7,6 +7,7 @@ import { User } from './src/entities/user.entity';
 import { RoadmapEdge } from './src/entities/roadmap_edge.entity';
 import { LearnResource } from './src/entities/learn_resource';
 import path from 'path';
+import { LearnResourceReply } from './src/entities/learn_resource_reply.entity';
 
 if (process.env.NODE_ENV === 'production') {
   dotenv.config({ path: path.resolve(__dirname, '../../.env.production') });
@@ -21,7 +22,15 @@ const dataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [User, Roadmap, RoadmapItem, RoadmapEdge, Reply, LearnResource],
+  entities: [
+    User,
+    Roadmap,
+    RoadmapItem,
+    RoadmapEdge,
+    Reply,
+    LearnResource,
+    LearnResourceReply,
+  ],
   charset: 'utf8mb4_general_ci',
   synchronize: false,
   logging: true,
