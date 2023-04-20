@@ -17,6 +17,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { CiMap } from 'react-icons/ci';
+import { Link as RouterLink } from 'react-router-dom';
 import { ROADMAP_CATEGORY } from '../../Constants/roadmap';
 
 interface MenuDrawerProps {
@@ -31,6 +32,8 @@ interface MenuDrawerProps {
   onClickProfile?(): void;
   onClickLogOut?(): void;
   onClickNewRoadMap?(): void;
+  onClickMyLearnResource?(): void;
+  onClickLearnResource?(): void;
 }
 
 export const MenuDrawer = ({
@@ -45,6 +48,8 @@ export const MenuDrawer = ({
   onClickProfile,
   onClickLogOut,
   onClickNewRoadMap,
+  onClickMyLearnResource,
+  onClickLearnResource,
 }: MenuDrawerProps) => {
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} closeOnOverlayClick>
@@ -82,6 +87,9 @@ export const MenuDrawer = ({
                       <MenuItem pb={3} onClick={onClickMypage}>
                         내 로드맵
                       </MenuItem>
+                      <MenuItem pb={3} onClick={onClickMyLearnResource}>
+                        내 학습리소스
+                      </MenuItem>
                       <MenuItem pb={3} onClick={onClickFavoriteList}>
                         북마크
                       </MenuItem>
@@ -112,7 +120,11 @@ export const MenuDrawer = ({
             </Flex>
 
             <Flex flexDir="column" gap={3} mt={5}>
-              <Text fontSize="lg" fontWeight="bold">
+              <Text fontSize="lg" fontWeight="bold" onClick={onClickLearnResource}>
+                학습 리소스
+              </Text>
+
+              <Text fontSize="lg" fontWeight="bold" mt={5}>
                 카테고리
               </Text>
               <List display="flex" flexDir="column">

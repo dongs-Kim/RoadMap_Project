@@ -2,7 +2,7 @@
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BiFullscreen } from 'react-icons/bi';
+import { BiFullscreen, BiLock, BiLockAlt, BiLockOpen, BiLockOpenAlt } from 'react-icons/bi';
 import ReactFlow, { useNodesState, useEdgesState, Node, useReactFlow } from 'reactflow';
 import _ from 'lodash';
 import { DownNode } from '../../../Components/RoadmapItem/DownNode';
@@ -38,6 +38,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
   const { fitView, zoomIn, zoomOut } = useReactFlow();
   const { isOpen: isOpenItem, onOpen: onOpenItem, onClose: onCloseItem } = useDisclosure();
   const [roadmapItem, setRoadmapItem] = useState<RoadmapItem | undefined>();
+  const [panOnDrag, setPanOnDrag] = useState<boolean>(false);
 
   // 로드맵 크기 조절
   useEffect(() => {
@@ -91,9 +92,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
     ) {
       return;
     }
-    // if (!targetNode.data.description) {
-    //   return;
-    // }
+
     setRoadmapItem({ ...targetNode.data });
     onOpenItem();
   }, []);
@@ -119,6 +118,10 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
     [fitView],
   );
 
+  const onClickLock = useCallback(() => {
+    setPanOnDrag(!panOnDrag);
+  }, [panOnDrag]);
+
   return (
     <>
       <div ref={containerRef} style={{ width: '100%', height: 500 }}>
@@ -134,6 +137,7 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
           preventScrolling={false}
           proOptions={{ hideAttribution: true }}
           defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+          panOnDrag={panOnDrag}
         >
           <Flex position="absolute" top={5} left={5} zIndex={5} gap={2}>
             <Tooltip label="zoom in">
@@ -161,6 +165,15 @@ export const FlowView = ({ nodes, edges }: FlowProps) => {
                 size="sm"
                 colorScheme="blackAlpha"
                 onClick={onClickFitView}
+              />
+            </Tooltip>
+            <Tooltip label="화면 잠금">
+              <IconButton
+                aria-label="화면 잠금"
+                icon={panOnDrag ? <BiLockOpenAlt /> : <BiLockAlt />}
+                size="sm"
+                colorScheme="blackAlpha"
+                onClick={onClickLock}
               />
             </Tooltip>
           </Flex>

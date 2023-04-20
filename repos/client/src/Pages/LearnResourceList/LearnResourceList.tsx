@@ -1,11 +1,14 @@
 import {
   Avatar,
+  Badge,
   Button,
   Checkbox,
   Flex,
   FormControl,
   Input,
   Link,
+  List,
+  ListItem,
   Table,
   TableContainer,
   Tbody,
@@ -14,6 +17,7 @@ import {
   Th,
   Thead,
   Tr,
+  UnorderedList,
   useDisclosure,
 } from '@chakra-ui/react';
 import axios from 'axios';
@@ -30,6 +34,7 @@ import { useUser } from '../../Hooks/dataFetch/useUser';
 import { useTitle } from '../../Hooks/useTitle';
 import { LearnResourceListDto, LearnResourceListItem, RoadmapLearnResourceDto } from '../../Interface/learnResource';
 import { ItemAutocomplete } from '../RoadmapWrite/components/ItemAutocomplete';
+import uniqolor from 'uniqolor';
 import './pagination.css';
 
 const PAGE_SIZE = 10;
@@ -186,7 +191,7 @@ export const LearnResourceList = ({
       <RoadmapSortList
         title={
           <>
-            <Flex justifyContent="space-between">
+            <Flex justifyContent="space-between" flexDir={{ base: 'column', md: 'row' }}>
               {title ?? '학습 리소스'}
               <Flex alignItems="center">
                 <Input
@@ -232,72 +237,61 @@ export const LearnResourceList = ({
           </Flex>
         )}
         {learnResources.items.length > 0 && (
-          <TableContainer mt={8}>
-            <Table variant="unstyled" style={{ tableLayout: 'fixed' }}>
-              <colgroup>
-                {isModal && <col width="50px"></col>}
-                <col width="100px"></col>
-                <col width="450px"></col>
-                <col width="100px"></col>
-                <col width="100px"></col>
-                <col width="80px"></col>
-              </colgroup>
+          <List>
+            {learnResources.items.map((resource) => (
+              <ListItem key={resource.id} borderBottom="1px solid #eee" p={3}>
+                <Flex justifyContent="space-between" flexDir="column">
+                  <Flex>
+                    {isModal && (
+                      <Checkbox
+                        w="30px"
+                        isChecked={isChecked(resource.id)}
+                        onChange={() => onChangeSelectedItems(resource)}
+                      ></Checkbox>
+                    )}
+                    <Flex w="100%">
+                      <Flex>
+                        <Badge bg={uniqolor(resource.category, { lightness: 80 }).color} fontSize="8.5pt" mr={3} mb={1}>
+                          {resource.category}
+                        </Badge>
+                        <Flex w="100%"></Flex>
+                      </Flex>
+                    </Flex>
+                  </Flex>
 
-              <Thead borderTop="1px solid #ccc" borderBottom="1px solid #ccc">
-                <Tr>
-                  {isModal && <Th></Th>}
-                  <Th>카테고리</Th>
-                  <Th>제목</Th>
-                  <Th>작성자</Th>
-                  <Th>작성일</Th>
-                  <Th isNumeric>좋아요</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {!loading &&
-                  learnResources.items.map((resource) => (
-                    <Tr key={resource.id} fontSize="11pt" borderBottom="1px solid #ddd">
-                      {isModal && (
-                        <Td>
-                          <Checkbox
-                            isChecked={isChecked(resource.id)}
-                            onChange={() => onChangeSelectedItems(resource)}
-                          ></Checkbox>
-                        </Td>
-                      )}
-                      <Td fontSize="sm" fontWeight="500">
-                        {resource.category}
-                      </Td>
-                      <Td overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
-                        <Link
-                          as={RouterLink}
-                          color="teal"
-                          to={`/LearnResource/view/${resource.id}`}
-                          target={isModal ? '_blank' : '_self'}
-                        >
-                          {resource.name}
-                        </Link>
-                      </Td>
-                      <Td>
-                        <RouterLink to={`/Roadmap/User/${resource.user_id}`}>
-                          <Flex fontSize="xs" ml="2" gap={2} alignItems="center">
-                            <Avatar size="xs" name={resource.user_nickname} src={resource.user_image} />
-                            <Text>{resource.user_nickname}</Text>
-                          </Flex>
-                        </RouterLink>
-                      </Td>
-                      <Td fontSize="sm">
-                        <Text>{dayjs(resource.created_at).fromNow()}</Text>
-                      </Td>
-                      <Td isNumeric fontSize="sm">
-                        {resource.like}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
+                  <Link
+                    as={RouterLink}
+                    color="teal"
+                    to={`/LearnResource/view/${resource.id}`}
+                    target={isModal ? '_blank' : '_self'}
+                    w="100%"
+                    overflow="hidden"
+                    whiteSpace="nowrap"
+                    textOverflow="ellipsis"
+                  >
+                    <Text as="span" fontSize="10.5pt">
+                      {resource.name}
+                    </Text>
+                  </Link>
+
+                  <Flex fontSize="xs" gap={1} color="gray.500">
+                    <RouterLink to={`/Roadmap/User/${resource.user_id}`}>
+                      <Flex fontSize="xs" ml="2" gap={2} alignItems="center">
+                        <Avatar size="xs" name={resource.user_nickname} src={resource.user_image} />
+                        <Text>{resource.user_nickname}</Text>
+                      </Flex>
+                    </RouterLink>
+                    <span>·</span>
+                    <Text>{dayjs(resource.created_at).fromNow()}</Text>
+                    <span>·</span>
+                    <Text>좋아요 {resource.like}</Text>
+                  </Flex>
+                </Flex>
+              </ListItem>
+            ))}
+          </List>
         )}
+
         {learnResources.items.length > 0 && pageCount > 1 && (
           <ReactPaginate
             activeClassName="active"

@@ -33,7 +33,14 @@ export const RoadmapSortList = ({
       <Heading color="#333" pb="2" fontSize="3xl" ml="15px">
         {title}
       </Heading>
-      <Flex justifyContent="space-between" ml="15px" mt={sort_mt ?? 5} mb={3}>
+      <Flex
+        justifyContent="space-between"
+        ml="15px"
+        mt={sort_mt ?? 5}
+        mb={3}
+        flexDir={{ base: 'column', md: 'row' }}
+        gap={3}
+      >
         <List display="flex" gap={3}>
           {sortButtons.map((sortButton) => (
             <ListItem key={sortButton.id}>
@@ -51,7 +58,7 @@ export const RoadmapSortList = ({
             </ListItem>
           ))}
         </List>
-        {sortRightItem && <Box ml="auto">{sortRightItem}</Box>}
+        {sortRightItem && <Box>{sortRightItem}</Box>}
       </Flex>
       {children}
     </Box>

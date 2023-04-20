@@ -90,6 +90,11 @@ const Layout = () => {
     [navigate, onCloseDrawer],
   );
 
+  const onClickLearnResource = useCallback(() => {
+    onCloseDrawer();
+    navigate('/LearnResource/list');
+  }, [navigate, onCloseDrawer]);
+
   const onClickDrawerIcon = useCallback(() => {
     onOpenDrawer();
   }, [onOpenDrawer]);
@@ -247,6 +252,8 @@ const Layout = () => {
         onClickProfile={onClickProfile}
         onClickSignUp={onClickSignUp}
         onClickNewRoadMap={onClickNewRoadMap}
+        onClickMyLearnResource={onClickMyLearnResource}
+        onClickLearnResource={onClickLearnResource}
       />
     </div>
   );
