@@ -10,6 +10,7 @@ const roadmap_item_entity_1 = require("./src/entities/roadmap_item.entity");
 const reply_entity_1 = require("./src/entities/reply.entity");
 const user_entity_1 = require("./src/entities/user.entity");
 const roadmap_edge_entity_1 = require("./src/entities/roadmap_edge.entity");
+const learn_resource_1 = require("./src/entities/learn_resource");
 const path_1 = __importDefault(require("path"));
 if (process.env.NODE_ENV === 'production') {
     dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env.production') });
@@ -24,7 +25,7 @@ const dataSource = new typeorm_1.DataSource({
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    entities: [user_entity_1.User, roadmap_entity_1.Roadmap, roadmap_item_entity_1.RoadmapItem, roadmap_edge_entity_1.RoadmapEdge, reply_entity_1.Reply],
+    entities: [user_entity_1.User, roadmap_entity_1.Roadmap, roadmap_item_entity_1.RoadmapItem, roadmap_edge_entity_1.RoadmapEdge, reply_entity_1.Reply, learn_resource_1.LearnResource],
     charset: 'utf8mb4_general_ci',
     synchronize: false,
     logging: true,

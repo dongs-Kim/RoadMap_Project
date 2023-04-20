@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
+const learn_resource_1 = require("./learn_resource");
 const reply_entity_1 = require("./reply.entity");
 const roadmap_entity_1 = require("./roadmap.entity");
 let User = class User {
@@ -61,9 +62,17 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "Replies", void 0);
 __decorate([
+    (0, typeorm_1.OneToMany)(() => learn_resource_1.LearnResource, (learn_resource) => learn_resource.User),
+    __metadata("design:type", Array)
+], User.prototype, "LearnResources", void 0);
+__decorate([
     (0, typeorm_1.ManyToMany)(() => roadmap_entity_1.Roadmap, (roadmap) => roadmap.LikeUsers),
     __metadata("design:type", Array)
 ], User.prototype, "LikeRoadmaps", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => learn_resource_1.LearnResource, (learnResource) => learnResource.LikeUsers),
+    __metadata("design:type", Array)
+], User.prototype, "LikeLearnResources", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => roadmap_entity_1.Roadmap, (roadmap) => roadmap.StoringUsers),
     __metadata("design:type", Array)

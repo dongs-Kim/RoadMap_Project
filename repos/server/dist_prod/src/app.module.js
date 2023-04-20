@@ -23,8 +23,12 @@ const roadmap_item_entity_1 = require("./entities/roadmap_item.entity");
 const replies_module_1 = require("./replies/replies.module");
 const reply_entity_1 = require("./entities/reply.entity");
 const roadmap_edge_entity_1 = require("./entities/roadmap_edge.entity");
+const learn_resource_1 = require("./entities/learn_resource");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
+const learn_resource_module_1 = require("./learn_resource/learn_resource.module");
+const learn_resource_reply_entity_1 = require("./entities/learn_resource_reply.entity");
+const learn_resource_replies_module_1 = require("./learn_resource_replies/learn_resource_replies.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -41,7 +45,15 @@ AppModule = __decorate([
                 username: process.env.DB_USERNAME,
                 password: process.env.DB_PASSWORD,
                 database: process.env.DB_DATABASE,
-                entities: [user_entity_1.User, roadmap_entity_1.Roadmap, roadmap_item_entity_1.RoadmapItem, roadmap_edge_entity_1.RoadmapEdge, reply_entity_1.Reply],
+                entities: [
+                    user_entity_1.User,
+                    roadmap_entity_1.Roadmap,
+                    roadmap_item_entity_1.RoadmapItem,
+                    roadmap_edge_entity_1.RoadmapEdge,
+                    reply_entity_1.Reply,
+                    learn_resource_1.LearnResource,
+                    learn_resource_reply_entity_1.LearnResourceReply,
+                ],
                 charset: 'utf8mb4_general_ci',
                 synchronize: (0, configuration_1.isProduction)() ? false : true,
                 logging: (0, configuration_1.isProduction)() ? false : true,
@@ -54,6 +66,8 @@ AppModule = __decorate([
             auth_module_1.AuthModule,
             roadmap_items_module_1.RoadmapItemsModule,
             replies_module_1.RepliesModule,
+            learn_resource_module_1.LearnResourceModule,
+            learn_resource_replies_module_1.LearnResourceRepliesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

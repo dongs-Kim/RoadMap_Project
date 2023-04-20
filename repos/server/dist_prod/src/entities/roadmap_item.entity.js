@@ -14,6 +14,7 @@ const class_validator_1 = require("class-validator");
 const enums_1 = require("../common/enums");
 const typeorm_1 = require("typeorm");
 const roadmap_entity_1 = require("./roadmap.entity");
+const learn_resource_1 = require("./learn_resource");
 let RoadmapItem = class RoadmapItem {
 };
 __decorate([
@@ -76,11 +77,19 @@ __decorate([
     __metadata("design:type", Number)
 ], RoadmapItem.prototype, "height", void 0);
 __decorate([
+    (0, typeorm_1.Column)('simple-array', { nullable: true }),
+    __metadata("design:type", Array)
+], RoadmapItem.prototype, "contents_images", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => roadmap_entity_1.Roadmap, (roadmap) => roadmap.RoadmapItems, {
         onDelete: 'CASCADE',
     }),
     __metadata("design:type", roadmap_entity_1.Roadmap)
 ], RoadmapItem.prototype, "Roadmap", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => learn_resource_1.LearnResource, (learnResource) => learnResource.RoadmapItems),
+    __metadata("design:type", Array)
+], RoadmapItem.prototype, "LearnResources", void 0);
 RoadmapItem = __decorate([
     (0, typeorm_1.Entity)()
 ], RoadmapItem);

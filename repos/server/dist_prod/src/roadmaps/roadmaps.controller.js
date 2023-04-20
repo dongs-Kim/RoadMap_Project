@@ -22,15 +22,13 @@ const user_entity_1 = require("../entities/user.entity");
 const save_roadmap_dto_1 = require("./dto/save-roadmap.dto");
 const platform_express_1 = require("@nestjs/platform-express");
 const thumbnail_upload_option_1 = require("./thumbnail-upload.option");
+const temp_image_upload_option_1 = require("./temp-image-upload.option");
 let RoadmapsController = class RoadmapsController {
     constructor(roadmapsService) {
         this.roadmapsService = roadmapsService;
     }
     create(user, saveRoadmapDto) {
         return this.roadmapsService.save(user, saveRoadmapDto);
-    }
-    findAll() {
-        return this.roadmapsService.findAll();
     }
     findMyAll(user) {
         return this.roadmapsService.findMyAll(user);
@@ -59,8 +57,12 @@ let RoadmapsController = class RoadmapsController {
     isLike(user, id) {
         return this.roadmapsService.isLike(id, user);
     }
-    async uploadThumbnail(file, id) {
+    async uploadThumbnail(file) {
         const url = `/${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_PATH}/${file.filename}`;
+        return url;
+    }
+    async uploadTempImage(file) {
+        const url = `/${temp_image_upload_option_1.UPLOAD_TEMP_IMAGE_PATH}/${file.filename}`;
         return url;
     }
 };
@@ -74,13 +76,6 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, save_roadmap_dto_1.SaveRoadmapDto]),
     __metadata("design:returntype", void 0)
 ], RoadmapsController.prototype, "create", null);
-__decorate([
-    (0, swagger_1.ApiOperation)({ summary: '전체 로드맵 조회' }),
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], RoadmapsController.prototype, "findAll", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: '내 로드맵 조회' }),
     (0, common_1.UseGuards)(logged_in_guard_1.LoggedInGuard),
@@ -170,11 +165,20 @@ __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', thumbnail_upload_option_1.thumbnailOption)),
     (0, common_1.Post)(':id/thumbnail'),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RoadmapsController.prototype, "uploadThumbnail", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: '임시 이미지 업로드' }),
+    (0, common_1.UseGuards)(logged_in_guard_1.LoggedInGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', temp_image_upload_option_1.tempImageOption)),
+    (0, common_1.Post)('tempImage'),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RoadmapsController.prototype, "uploadTempImage", null);
 RoadmapsController = __decorate([
     (0, swagger_1.ApiTags)('roadmaps'),
     (0, common_1.Controller)('api/roadmaps'),

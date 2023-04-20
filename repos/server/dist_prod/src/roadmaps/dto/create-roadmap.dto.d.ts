@@ -8,4 +8,6 @@ export declare class CreateRoadmapDto {
     thumbnail?: string;
     bgcolor?: string;
     created_at?: Date;
+    temp_images?: string[];
+    contents_images?: string[];
 }

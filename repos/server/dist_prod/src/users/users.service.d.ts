@@ -22,7 +22,9 @@ export declare class UsersService {
         updated_at: Date;
         Roadmaps: Roadmap[];
         Replies: import("../entities/reply.entity").Reply[];
+        LearnResources: import("../entities/learn_resource").LearnResource[];
         LikeRoadmaps: Roadmap[];
+        LikeLearnResources: import("../entities/learn_resource").LearnResource[];
         StoredRoadmaps: Roadmap[];
     }>;
     getFavoriteRoadmaps(id: string): Promise<{
@@ -36,7 +38,9 @@ export declare class UsersService {
             updated_at: Date;
             Roadmaps: Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: import("../entities/learn_resource").LearnResource[];
             LikeRoadmaps: Roadmap[];
+            LikeLearnResources: import("../entities/learn_resource").LearnResource[];
             StoredRoadmaps: Roadmap[];
         };
         like: number;
@@ -48,6 +52,7 @@ export declare class UsersService {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];

@@ -10,6 +10,7 @@ export declare class Roadmap {
     contents?: string;
     thumbnail?: string;
     bgcolor?: string;
+    contents_images?: string[];
     created_at: Date;
     updated_at: Date;
     User: User;

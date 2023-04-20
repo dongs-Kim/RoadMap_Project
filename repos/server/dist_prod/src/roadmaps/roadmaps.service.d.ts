@@ -4,12 +4,12 @@ import { RoadmapItem } from 'src/entities/roadmap_item.entity';
 import { User } from 'src/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { SaveRoadmapDto } from './dto/save-roadmap.dto';
+import { LearnResource } from 'src/entities/learn_resource';
 export declare class RoadmapsService {
     private roadmapsRepository;
     private usersRepository;
     private dataSource;
     constructor(roadmapsRepository: Repository<Roadmap>, usersRepository: Repository<User>, dataSource: DataSource);
-    findAll(): Promise<Roadmap[]>;
     findOneSet(id: string, mode?: string, user?: User): Promise<SaveRoadmapDto>;
     findMyAll(user: User): Promise<{
         User: {
@@ -22,7 +22,9 @@ export declare class RoadmapsService {
             updated_at: Date;
             Roadmaps: Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: LearnResource[];
             LikeRoadmaps: Roadmap[];
+            LikeLearnResources: LearnResource[];
             StoredRoadmaps: Roadmap[];
         };
         like: number;
@@ -34,6 +36,7 @@ export declare class RoadmapsService {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: RoadmapItem[];
@@ -51,7 +54,9 @@ export declare class RoadmapsService {
             updated_at: Date;
             Roadmaps: Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: LearnResource[];
             LikeRoadmaps: Roadmap[];
+            LikeLearnResources: LearnResource[];
             StoredRoadmaps: Roadmap[];
         };
         like: number;
@@ -63,6 +68,7 @@ export declare class RoadmapsService {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: RoadmapItem[];
@@ -80,7 +86,9 @@ export declare class RoadmapsService {
             updated_at: Date;
             Roadmaps: Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: LearnResource[];
             LikeRoadmaps: Roadmap[];
+            LikeLearnResources: LearnResource[];
             StoredRoadmaps: Roadmap[];
         };
         like: number;
@@ -92,6 +100,7 @@ export declare class RoadmapsService {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: RoadmapItem[];
@@ -109,7 +118,9 @@ export declare class RoadmapsService {
             updated_at: Date;
             Roadmaps: Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: LearnResource[];
             LikeRoadmaps: Roadmap[];
+            LikeLearnResources: LearnResource[];
             StoredRoadmaps: Roadmap[];
         };
         like: number;
@@ -121,6 +132,7 @@ export declare class RoadmapsService {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: RoadmapItem[];
@@ -132,6 +144,5 @@ export declare class RoadmapsService {
     unlike(roadmap_id: string, user: User): Promise<void>;
     isLike(id: string, user: User): Promise<boolean>;
     save(user: User, { roadmap, nodes, edges, mode }: SaveRoadmapDto): Promise<boolean>;
-    uploadThumbnail(id: string, url: string): Promise<void>;
-    removeThumbnail(id: string): void;
+    private removeThumbnail;
 }

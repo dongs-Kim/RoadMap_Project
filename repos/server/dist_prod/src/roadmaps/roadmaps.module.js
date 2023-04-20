@@ -15,12 +15,19 @@ const user_entity_1 = require("../entities/user.entity");
 const roadmap_entity_1 = require("../entities/roadmap.entity");
 const roadmap_item_entity_1 = require("../entities/roadmap_item.entity");
 const roadmap_edge_entity_1 = require("../entities/roadmap_edge.entity");
+const learn_resource_1 = require("../entities/learn_resource");
 let RoadmapsModule = class RoadmapsModule {
 };
 RoadmapsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, roadmap_entity_1.Roadmap, roadmap_item_entity_1.RoadmapItem, roadmap_edge_entity_1.RoadmapEdge]),
+            typeorm_1.TypeOrmModule.forFeature([
+                user_entity_1.User,
+                roadmap_entity_1.Roadmap,
+                roadmap_item_entity_1.RoadmapItem,
+                roadmap_edge_entity_1.RoadmapEdge,
+                learn_resource_1.LearnResource,
+            ]),
         ],
         controllers: [roadmaps_controller_1.RoadmapsController],
         providers: [roadmaps_service_1.RoadmapsService],

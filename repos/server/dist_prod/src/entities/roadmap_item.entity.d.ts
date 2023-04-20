@@ -1,4 +1,5 @@
 import { Roadmap } from './roadmap.entity';
+import { LearnResource } from './learn_resource';
 export declare class RoadmapItem {
     id: string;
     name: string;
@@ -14,5 +15,7 @@ export declare class RoadmapItem {
     url?: string;
     width?: number;
     height?: number;
+    contents_images?: string[];
     Roadmap: Roadmap;
+    LearnResources: LearnResource[];
 }

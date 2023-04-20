@@ -6,7 +6,6 @@ export declare class RoadmapsController {
     private readonly roadmapsService;
     constructor(roadmapsService: RoadmapsService);
     create(user: UserEntity, saveRoadmapDto: SaveRoadmapDto): Promise<boolean>;
-    findAll(): Promise<import("../entities/roadmap.entity").Roadmap[]>;
     findMyAll(user: UserEntity): Promise<{
         User: {
             id: string;
@@ -18,7 +17,9 @@ export declare class RoadmapsController {
             updated_at: Date;
             Roadmaps: import("../entities/roadmap.entity").Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: import("../entities/learn_resource").LearnResource[];
             LikeRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+            LikeLearnResources: import("../entities/learn_resource").LearnResource[];
             StoredRoadmaps: import("../entities/roadmap.entity").Roadmap[];
         };
         like: number;
@@ -30,6 +31,7 @@ export declare class RoadmapsController {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];
@@ -47,7 +49,9 @@ export declare class RoadmapsController {
             updated_at: Date;
             Roadmaps: import("../entities/roadmap.entity").Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: import("../entities/learn_resource").LearnResource[];
             LikeRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+            LikeLearnResources: import("../entities/learn_resource").LearnResource[];
             StoredRoadmaps: import("../entities/roadmap.entity").Roadmap[];
         };
         like: number;
@@ -59,6 +63,7 @@ export declare class RoadmapsController {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];
@@ -76,7 +81,9 @@ export declare class RoadmapsController {
             updated_at: Date;
             Roadmaps: import("../entities/roadmap.entity").Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: import("../entities/learn_resource").LearnResource[];
             LikeRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+            LikeLearnResources: import("../entities/learn_resource").LearnResource[];
             StoredRoadmaps: import("../entities/roadmap.entity").Roadmap[];
         };
         like: number;
@@ -88,6 +95,7 @@ export declare class RoadmapsController {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];
@@ -105,7 +113,9 @@ export declare class RoadmapsController {
             updated_at: Date;
             Roadmaps: import("../entities/roadmap.entity").Roadmap[];
             Replies: import("../entities/reply.entity").Reply[];
+            LearnResources: import("../entities/learn_resource").LearnResource[];
             LikeRoadmaps: import("../entities/roadmap.entity").Roadmap[];
+            LikeLearnResources: import("../entities/learn_resource").LearnResource[];
             StoredRoadmaps: import("../entities/roadmap.entity").Roadmap[];
         };
         like: number;
@@ -117,6 +127,7 @@ export declare class RoadmapsController {
         contents?: string;
         thumbnail?: string;
         bgcolor?: string;
+        contents_images?: string[];
         created_at: Date;
         updated_at: Date;
         RoadmapItems: import("../entities/roadmap_item.entity").RoadmapItem[];
@@ -128,5 +139,6 @@ export declare class RoadmapsController {
     like(user: UserEntity, id: string): Promise<void>;
     unlike(user: UserEntity, id: string): Promise<void>;
     isLike(user: UserEntity, id: string): Promise<boolean>;
-    uploadThumbnail(file: Express.Multer.File, id: string): Promise<string>;
+    uploadThumbnail(file: Express.Multer.File): Promise<string>;
+    uploadTempImage(file: Express.Multer.File): Promise<string>;
 }

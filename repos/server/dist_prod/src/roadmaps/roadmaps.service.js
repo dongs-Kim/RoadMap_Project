@@ -31,7 +31,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-const glob_1 = __importDefault(require("glob"));
+const glob_1 = require("glob");
 const short_uuid_1 = __importDefault(require("short-uuid"));
 const roadmap_entity_1 = require("../entities/roadmap.entity");
 const roadmap_edge_entity_1 = require("../entities/roadmap_edge.entity");
@@ -41,25 +41,27 @@ const typeorm_2 = require("typeorm");
 const save_roadmap_dto_1 = require("./dto/save-roadmap.dto");
 const thumbnail_upload_option_1 = require("./thumbnail-upload.option");
 const configuration_1 = require("../config/configuration");
+const learn_resource_1 = require("../entities/learn_resource");
+const util_1 = require("../common/util");
+const lodash_1 = __importDefault(require("lodash"));
+const UPLOAD_CONTENTS_PATH = process.env.NODE_ENV === 'production'
+    ? 'static/contents'
+    : 'static-dev/contents';
+const UPLOAD_CONTENTS_FULL_PATH = path_1.default.join(configuration_1.PUBLIC_PATH, UPLOAD_CONTENTS_PATH);
 let RoadmapsService = class RoadmapsService {
     constructor(roadmapsRepository, usersRepository, dataSource) {
         this.roadmapsRepository = roadmapsRepository;
         this.usersRepository = usersRepository;
         this.dataSource = dataSource;
     }
-    findAll() {
-        return this.roadmapsRepository.find({
-            where: {
-                public: true,
-            },
-        });
-    }
     async findOneSet(id, mode, user) {
         var _a;
         const dbRoadmap = await this.roadmapsRepository.findOne({
             where: { id },
             relations: {
-                RoadmapItems: true,
+                RoadmapItems: {
+                    LearnResources: true,
+                },
                 RoadmapEdges: true,
                 User: true,
                 LikeUsers: mode === 'view' ? true : false,
@@ -76,31 +78,36 @@ let RoadmapsService = class RoadmapsService {
             category: dbRoadmap.category,
             public: dbRoadmap.public,
             contents: dbRoadmap.contents,
+            contents_images: dbRoadmap.contents_images,
             thumbnail: dbRoadmap.thumbnail,
             bgcolor: dbRoadmap.bgcolor,
             like: (_a = dbRoadmap.LikeUsers) === null || _a === void 0 ? void 0 : _a.length,
             created_at: dbRoadmap.created_at,
         };
-        roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => ({
-            id: item.id,
-            type: item.type,
-            width: item.width,
-            height: item.height,
-            zIndex: item.zIndex,
-            data: {
-                name: item.name,
-                description: item.description,
-                status: item.status,
-                bgcolor: item.bgcolor,
-                border: item.border,
-                url: item.url,
-                required: item.required,
-            },
-            position: {
-                x: item.positionX,
-                y: item.positionY,
-            },
-        }));
+        roadmapDto.nodes = dbRoadmap.RoadmapItems.map((item) => {
+            return {
+                id: item.id,
+                type: item.type,
+                width: item.width,
+                height: item.height,
+                zIndex: item.zIndex,
+                data: {
+                    name: item.name,
+                    description: item.description,
+                    status: item.status,
+                    bgcolor: item.bgcolor,
+                    border: item.border,
+                    url: item.url,
+                    required: item.required,
+                    learnResources: item.LearnResources,
+                    contents_images: item.contents_images,
+                },
+                position: {
+                    x: item.positionX,
+                    y: item.positionY,
+                },
+            };
+        });
         roadmapDto.edges = dbRoadmap.RoadmapEdges.map((edge) => ({
             id: edge.id,
             type: edge.type,
@@ -216,8 +223,9 @@ let RoadmapsService = class RoadmapsService {
         }
         await this.roadmapsRepository.delete(id);
         if (roadmap.thumbnail) {
-            this.removeThumbnail(id);
+            await this.removeThumbnail(id);
         }
+        await (0, util_1.removeContentsImage)(id);
         return true;
     }
     async like(id, user) {
@@ -263,6 +271,7 @@ let RoadmapsService = class RoadmapsService {
         return likeUser.LikeRoadmaps.some((roadmap) => roadmap.id === id);
     }
     async save(user, { roadmap, nodes, edges, mode }) {
+        var _a;
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -299,9 +308,47 @@ let RoadmapsService = class RoadmapsService {
                 var { id, source, target } = _a, rest = __rest(_a, ["id", "source", "target"]);
                 return Object.assign(Object.assign({}, rest), { id: short_uuid_1.default.generate(), source: idMap.get(source), target: idMap.get(target) });
             });
+            if (!lodash_1.default.isEmpty(roadmap.contents_images)) {
+                roadmap.contents_images = roadmap.contents_images.map((image) => {
+                    const originFile = image;
+                    const ext = path_1.default.extname(originFile);
+                    const filename = (0, util_1.getContentsImageFilename)(roadmap.id, ext);
+                    fs_extra_1.default.copySync(path_1.default.join(configuration_1.PUBLIC_PATH, originFile), path_1.default.join(UPLOAD_CONTENTS_FULL_PATH, filename));
+                    const newContentsImage = `/${UPLOAD_CONTENTS_PATH}/${filename}`;
+                    roadmap.contents = roadmap.contents.replace(new RegExp(originFile, 'g'), newContentsImage);
+                    return newContentsImage;
+                });
+            }
+            nodes.forEach((node) => {
+                if (!lodash_1.default.isEmpty(node.data.contents_images)) {
+                    node.data.contents_images = node.data.contents_images.map((image) => {
+                        const originFile = image;
+                        const ext = path_1.default.extname(originFile);
+                        const filename = (0, util_1.getContentsImageFilename)(roadmap.id, ext);
+                        fs_extra_1.default.copySync(path_1.default.join(configuration_1.PUBLIC_PATH, originFile), path_1.default.join(UPLOAD_CONTENTS_FULL_PATH, filename));
+                        const newContentsImage = `/${UPLOAD_CONTENTS_PATH}/${filename}`;
+                        node.data.description = node.data.description.replace(new RegExp(originFile, 'g'), newContentsImage);
+                        return newContentsImage;
+                    });
+                }
+            });
         }
+        const { contents, contentsImages } = (0, util_1.moveTempImageToContents)(roadmap.id, roadmap.temp_images, roadmap.contents);
+        roadmap.contents = contents;
+        roadmap.contents_images = (0, util_1.getImagesInContents)([...((_a = roadmap.contents_images) !== null && _a !== void 0 ? _a : []), ...contentsImages], roadmap.contents);
+        nodes.map((node) => {
+            var _a;
+            const { contents, contentsImages } = (0, util_1.moveTempImageToContents)(roadmap.id, node.data.temp_images, node.data.description);
+            node.data.description = contents;
+            console.log(node.data.description);
+            console.log(node.data.contents_images);
+            console.log(contentsImages);
+            node.data.contents_images = (0, util_1.getImagesInContents)([...((_a = node.data.contents_images) !== null && _a !== void 0 ? _a : []), ...contentsImages], node.data.description);
+            console.log(node.data.contents_images);
+        });
         try {
             const newRoadmapItems = nodes.map((node) => {
+                var _a;
                 const roadmapItem = new roadmap_item_entity_1.RoadmapItem();
                 roadmapItem.id = node.id;
                 roadmapItem.name = node.data.name;
@@ -317,6 +364,13 @@ let RoadmapsService = class RoadmapsService {
                 roadmapItem.height = node.height;
                 roadmapItem.zIndex = node.zIndex;
                 roadmapItem.required = node.data.required;
+                roadmapItem.contents_images = node.data.contents_images;
+                const newLearnResources = (_a = node.data.learnResources) === null || _a === void 0 ? void 0 : _a.map((learnResource) => {
+                    const newLearnResource = new learn_resource_1.LearnResource();
+                    newLearnResource.id = learnResource.id;
+                    return newLearnResource;
+                });
+                roadmapItem.LearnResources = newLearnResources;
                 return roadmapItem;
             });
             await queryRunner.manager
@@ -347,13 +401,14 @@ let RoadmapsService = class RoadmapsService {
             newRoadmap.contents = roadmap.contents;
             newRoadmap.thumbnail = roadmap.thumbnail;
             newRoadmap.bgcolor = roadmap.bgcolor;
+            newRoadmap.contents_images = roadmap.contents_images;
             newRoadmap.User = user;
             newRoadmap.RoadmapItems = newRoadmapItems;
             newRoadmap.RoadmapEdges = newRoadmapEdges;
             await queryRunner.manager.getRepository(roadmap_entity_1.Roadmap).save(newRoadmap);
             await queryRunner.commitTransaction();
             if (!newRoadmap.thumbnail) {
-                this.removeThumbnail(newRoadmap.id);
+                await this.removeThumbnail(newRoadmap.id);
             }
             return true;
         }
@@ -365,11 +420,8 @@ let RoadmapsService = class RoadmapsService {
             await queryRunner.release();
         }
     }
-    async uploadThumbnail(id, url) {
-        await this.roadmapsRepository.update(id, { thumbnail: url });
-    }
-    removeThumbnail(id) {
-        const files = glob_1.default.sync(`${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`);
+    async removeThumbnail(id) {
+        const files = await (0, glob_1.glob)(`${thumbnail_upload_option_1.UPLOAD_THUMBNAIL_FULL_PATH}/${id}*`.replace(/\\/g, '/'));
         files.forEach((file) => {
             fs_extra_1.default.removeSync(file);
         });
