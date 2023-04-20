@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useReducer, ChangeEvent } from 'react';
+import { useRef, useEffect, useCallback, useReducer, ChangeEvent, MouseEvent } from 'react';
 import {
   Box,
   Button,
@@ -121,8 +121,43 @@ interface RoadmapItemModalProps {
 export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemModalProps) => {
   const editorElRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
+  const modalContentRef = useRef<HTMLElement>(null);
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isOpen: isOpenResource, onOpen: onOpenResource, onClose: onCloseResource } = useDisclosure();
+
+  const createEditor = useCallback((value?: string) => {
+    if (editorElRef.current) {
+      const editor = new Editor({
+        el: editorElRef.current,
+        initialValue: ' ',
+        initialEditType: 'markdown',
+        previewStyle: 'tab',
+        placeholder: '설명을 입력하세요',
+        hooks: {
+          async addImageBlobHook(blob, callback) {
+            if (!blob.type.startsWith('image/')) {
+              toastError('이미지를 업로드해 주세요');
+              return;
+            }
+
+            if (blob instanceof File) {
+              const tempImage = await saveTempImageAsync(blob);
+              callback(tempImage);
+              dispatch({ type: 'addTempImage', tempImage });
+            }
+          },
+        },
+      });
+
+      // 에디터를 ref에 설정
+      editorRef.current = editor;
+
+      // 에디터 오류로 인해 초기값을 공백으로 설정해서 잘못된 값을 지운 후 다시 빈 문자열로 설정한다
+      setTimeout(() => {
+        editor.setMarkdown(value || '');
+      });
+    }
+  }, []);
 
   // 에디터 생성
   useEffect(() => {
@@ -130,39 +165,9 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
       return;
     }
     setTimeout(() => {
-      if (editorElRef.current) {
-        const editor = new Editor({
-          el: editorElRef.current,
-          initialValue: ' ',
-          initialEditType: 'markdown',
-          previewStyle: 'tab',
-          placeholder: '설명을 입력하세요',
-          hooks: {
-            async addImageBlobHook(blob, callback) {
-              if (!blob.type.startsWith('image/')) {
-                toastError('이미지를 업로드해 주세요');
-                return;
-              }
-
-              if (blob instanceof File) {
-                const tempImage = await saveTempImageAsync(blob);
-                callback(tempImage);
-                dispatch({ type: 'addTempImage', tempImage });
-              }
-            },
-          },
-        });
-
-        // 에디터를 ref에 설정
-        editorRef.current = editor;
-
-        // 에디터 오류로 인해 초기값을 공백으로 설정해서 잘못된 값을 지운 후 다시 빈 문자열로 설정한다
-        setTimeout(() => {
-          editor.setMarkdown(roadmapItem?.description || '');
-        });
-      }
+      createEditor(roadmapItem?.description);
     });
-  }, [isOpen, roadmapItem]);
+  }, [createEditor, isOpen, roadmapItem]);
 
   // 데이터 설정
   useEffect(() => {
@@ -222,11 +227,31 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     dispatch({ type: 'removeLearnResource', learnResource });
   }, []);
 
+  const onClickModalContent = useCallback(
+    (e: MouseEvent) => {
+      //에디터 툴바를 닫기 위해 에디터를 새로 생성한다
+      const editorToolbarEl = modalContentRef.current?.querySelector<HTMLElement>('.toastui-editor-dropdown-toolbar');
+      if (
+        e.target instanceof HTMLElement &&
+        !e.target.classList.contains('more') &&
+        !e.target.closest('.toastui-editor-dropdown-toolbar') &&
+        editorToolbarEl?.style.display !== 'none'
+      ) {
+        if (editorRef.current) {
+          const description = editorRef.current.getMarkdown();
+          editorRef.current.destroy();
+          createEditor(description);
+        }
+      }
+    },
+    [createEditor],
+  );
+
   return (
     <>
       <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent ref={modalContentRef} onClick={onClickModalContent}>
           <ModalHeader>항목 수정</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

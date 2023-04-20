@@ -1,20 +1,22 @@
-import React, { ChangeEvent, HTMLInputTypeAttribute, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../Hooks/hooks';
 import { getUser } from '../../store/userSlice';
-import { Avatar, Box, Button, Flex, Image, Input, Square, Text, Textarea } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Input, Square, Text, Textarea } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ImageUploading, { ImageType } from 'react-images-uploading';
+import { ImageType } from 'react-images-uploading';
 import { ExportInterface } from 'react-images-uploading/dist/typings';
 import ReactImageUploading from 'react-images-uploading';
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import { useTitle } from '../../Hooks/useTitle';
 import { Loading } from '../../Components/Page/Loading';
+import { useUser } from '../../Hooks/dataFetch/useUser';
 
 const Profile = () => {
   useTitle('프로필 - Dev Roadmap');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { mutate } = useUser();
   const profileData = useAppSelector((state) => state.user);
   const loading = useAppSelector((state) => state.user.loading);
 
@@ -67,9 +69,10 @@ const Profile = () => {
       image,
     };
     axios.patch('api/users', saveDto, { withCredentials: true }).then(() => {
+      mutate();
       navigate('/');
     });
-  }, [email, nickname, comment, image, navigate]);
+  }, [email, nickname, comment, image, navigate, mutate]);
 
   const patchUser = useCallback(async () => {
     await dispatch(getUser());

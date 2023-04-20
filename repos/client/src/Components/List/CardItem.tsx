@@ -140,7 +140,7 @@ export const CardItem = ({ loading, roadmaps, renderMore }: Props) => {
                     </Heading>
 
                     {/* 내용 */}
-                    <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden">
+                    <Text h="2.5rem" mb="1rem" fontSize="xs" overflow="hidden" whiteSpace="break-spaces">
                       {(roadmap.contents ?? '').replaceAll(/!\[[^\]]*\]\([^)]*\)/g, '')}
                     </Text>
 
