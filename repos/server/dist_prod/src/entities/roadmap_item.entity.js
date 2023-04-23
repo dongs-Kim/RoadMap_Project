@@ -23,9 +23,13 @@ __decorate([
 ], RoadmapItem.prototype, "id", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, typeorm_1.Column)({ length: 20 }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], RoadmapItem.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], RoadmapItem.prototype, "category", void 0);
 __decorate([
     (0, typeorm_1.Column)('text', { nullable: true }),
     __metadata("design:type", String)
@@ -41,7 +45,7 @@ __decorate([
     __metadata("design:type", String)
 ], RoadmapItem.prototype, "required", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 20 }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], RoadmapItem.prototype, "type", void 0);
 __decorate([

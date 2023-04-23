@@ -81,6 +81,9 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
 
               <Flex flexDir="column">
                 <Flex alignItems="center" gap={2} pt={3}>
+                  {/* 카테고리 */}
+                  {roadmapItem?.category && <Badge colorScheme="teal">{roadmapItem.category}</Badge>}
+
                   {/* 진행상태 */}
                   {roadmapItem?.status && (
                     <Badge colorScheme={getStatusColor()}>{getRoadmapItemStatusName(roadmapItem?.status)}</Badge>
@@ -108,7 +111,7 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
             <Box mb={5}>
               <Link
                 as={RouterLink}
-                to={`/LearnResource/list?category=${roadmapItem?.name}`}
+                to={`/LearnResource/list?category=${roadmapItem?.category}`}
                 color="teal"
                 target="_blank"
               >

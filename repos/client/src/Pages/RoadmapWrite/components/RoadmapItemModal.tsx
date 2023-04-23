@@ -6,6 +6,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  Input,
   InputGroup,
   InputLeftAddon,
   Link,
@@ -56,6 +57,7 @@ const initialState: State = {
 type SetRoadmapItemAction = { type: 'setRoadmapItem'; roadmapItem: RoadmapItem };
 type ClearRoadmapItemAction = { type: 'clearRoadmapItem' };
 type SetNameAction = { type: 'setName'; name: string };
+type SetCategoryAction = { type: 'setCategory'; category: string };
 type SetBgColorAction = { type: 'setBgColor'; bgcolor: string };
 type SetDescriptionAction = { type: 'setDescription'; description: string };
 type SetStatusAction = { type: 'setStatus'; status?: RoadmapItemStatus };
@@ -68,6 +70,7 @@ type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
   | SetNameAction
+  | SetCategoryAction
   | SetDescriptionAction
   | SetStatusAction
   | SetBorderAction
@@ -81,6 +84,8 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'setName':
       return { ...state, name: action.name };
+    case 'setCategory':
+      return { ...state, category: action.category };
     case 'setDescription':
       return { ...state, description: action.description };
     case 'setBgColor':
@@ -209,8 +214,8 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     dispatch({ type: 'clearRoadmapItem' });
   }, [onClose, onCloseResource]);
 
-  const onChangeName = useCallback((name: string) => {
-    dispatch({ type: 'setName', name });
+  const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: 'setName', name: e.target.value });
   }, []);
 
   const onClickResource = useCallback(() => {
@@ -248,6 +253,10 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     [createEditor],
   );
 
+  const onChangeCategory = useCallback((category: string) => {
+    dispatch({ type: 'setCategory', category });
+  }, []);
+
   return (
     <>
       <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
@@ -258,8 +267,20 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
           <ModalBody>
             {/* 항목명 */}
             <FormControl zIndex={1000} mb={5}>
-              <ItemAutocomplete placeholder="항목명을 입력하세요" value={state.name} onChange={onChangeName} />
+              <ItemAutocomplete
+                placeholder="카테고리를 입력하세요"
+                value={state.category ?? ''}
+                onChange={onChangeCategory}
+              />
             </FormControl>
+
+            {/* 제목 */}
+            <InputGroup mb={5}>
+              <InputLeftAddon>
+                <Text fontSize="sm">항목명</Text>
+              </InputLeftAddon>
+              <Input placeholder="항목명을 입력하세요" bg="#fff" value={state.name} onChange={onChangeName} />
+            </InputGroup>
 
             <Flex mb={5} alignItems="center" justifyContent="space-between">
               {/* 배경색 */}

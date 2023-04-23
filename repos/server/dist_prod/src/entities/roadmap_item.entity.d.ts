@@ -3,6 +3,7 @@ import { LearnResource } from './learn_resource';
 export declare class RoadmapItem {
     id: string;
     name: string;
+    category?: string;
     description?: string;
     status?: string;
     required?: string;

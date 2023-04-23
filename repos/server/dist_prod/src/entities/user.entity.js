@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "comment", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100, nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "image", void 0);
 __decorate([

@@ -48,6 +48,7 @@ export class RoadmapNodeDto {
   @IsNotEmptyObject()
   data: {
     name: string;
+    category?: string;
     description?: string;
     status?: EN_ROADMAP_ITEM_STATUS;
     bgcolor: string;

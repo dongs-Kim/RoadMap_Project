@@ -21,6 +21,7 @@ export declare class RoadmapNodeDto {
     height?: number;
     data: {
         name: string;
+        category?: string;
         description?: string;
         status?: EN_ROADMAP_ITEM_STATUS;
         bgcolor: string;

@@ -93,6 +93,7 @@ let RoadmapsService = class RoadmapsService {
                 zIndex: item.zIndex,
                 data: {
                     name: item.name,
+                    category: item.category,
                     description: item.description,
                     status: item.status,
                     bgcolor: item.bgcolor,
@@ -352,6 +353,7 @@ let RoadmapsService = class RoadmapsService {
                 const roadmapItem = new roadmap_item_entity_1.RoadmapItem();
                 roadmapItem.id = node.id;
                 roadmapItem.name = node.data.name;
+                roadmapItem.category = node.data.category;
                 roadmapItem.description = node.data.description;
                 roadmapItem.status = node.data.status;
                 roadmapItem.bgcolor = node.data.bgcolor;

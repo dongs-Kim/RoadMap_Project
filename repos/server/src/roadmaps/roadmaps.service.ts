@@ -90,6 +90,7 @@ export class RoadmapsService {
         zIndex: item.zIndex,
         data: {
           name: item.name,
+          category: item.category,
           description: item.description,
           status: item.status as EN_ROADMAP_ITEM_STATUS | null,
           bgcolor: item.bgcolor,
@@ -458,6 +459,7 @@ export class RoadmapsService {
         const roadmapItem = new RoadmapItem();
         roadmapItem.id = node.id;
         roadmapItem.name = node.data.name;
+        roadmapItem.category = node.data.category;
         roadmapItem.description = node.data.description;
         roadmapItem.status = node.data.status;
         roadmapItem.bgcolor = node.data.bgcolor;

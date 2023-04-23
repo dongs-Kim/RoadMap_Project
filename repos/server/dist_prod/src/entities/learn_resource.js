@@ -23,7 +23,7 @@ __decorate([
 ], LearnResource.prototype, "id", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, typeorm_1.Column)({ length: 20 }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], LearnResource.prototype, "category", void 0);
 __decorate([

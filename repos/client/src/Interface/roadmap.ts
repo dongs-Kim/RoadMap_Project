@@ -4,6 +4,7 @@ import { RoadmapLearnResourceDto } from './learnResource';
 
 export interface RoadmapItem {
   name: string;
+  category?: string;
   description: string;
   bgcolor: string;
   border: boolean;

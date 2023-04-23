@@ -33,7 +33,7 @@ export class User {
   @Column('text', { nullable: true })
   comment?: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ nullable: true })
   image?: string;
 
   @Column({ default: () => 'CURRENT_TIMESTAMP', update: false })

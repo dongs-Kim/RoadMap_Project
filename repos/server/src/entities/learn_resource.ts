@@ -18,7 +18,7 @@ export class LearnResource {
   id: string;
 
   @IsNotEmpty()
-  @Column({ length: 20 })
+  @Column()
   category: string;
 
   @IsNotEmpty()

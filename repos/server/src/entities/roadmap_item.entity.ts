@@ -20,8 +20,11 @@ export class RoadmapItem {
   id: string;
 
   @IsNotEmpty()
-  @Column({ length: 20 })
+  @Column()
   name: string;
+
+  @Column({ nullable: true })
+  category?: string;
 
   @Column('text', { nullable: true })
   description?: string;
@@ -34,7 +37,7 @@ export class RoadmapItem {
   @Column({ length: 10, nullable: true })
   required?: string;
 
-  @Column({ length: 20 })
+  @Column()
   type: string;
 
   @Column('int')
