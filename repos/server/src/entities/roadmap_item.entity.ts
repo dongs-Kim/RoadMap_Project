@@ -64,6 +64,9 @@ export class RoadmapItem {
   @Column('int', { nullable: true })
   height?: number;
 
+  @Column({ nullable: true })
+  bold?: boolean;
+
   @Column('simple-array', { nullable: true })
   contents_images?: string[];
 

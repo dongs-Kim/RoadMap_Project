@@ -58,6 +58,7 @@ export class RoadmapNodeDto {
     learnResources?: LearnResource[];
     temp_images?: string[];
     contents_images?: string[];
+    bold?: boolean;
   };
 }
 

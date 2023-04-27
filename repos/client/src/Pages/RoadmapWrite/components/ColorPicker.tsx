@@ -7,12 +7,12 @@ const bgcolors = [
   '#9eabbf',
   '#ffff00',
   '#FFE599',
-  '#F47373',
-  '#37D67A',
-  '#aee6ef',
-  '#DCE775',
-  '#FF8A65',
-  '#dea7e7',
+  '#f49b9b',
+  '#7ad6a1',
+  '#caedf2',
+  '#dee883',
+  '#f5b09b',
+  '#e8c8ed',
 ];
 
 const linecolors = ['#2b78e4', '#ff5722', '#ff9800', '#4caf50', '#00bcd4', '#673ab7', '#795548', '#9e9e9e', '#607d8b'];

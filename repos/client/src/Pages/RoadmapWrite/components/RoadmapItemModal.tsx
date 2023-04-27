@@ -66,6 +66,7 @@ type SetRequiredAction = { type: 'setRequired'; required?: RoadmapItemRequired }
 type AddLearnResourceAction = { type: 'addLearnResource'; learnResource: RoadmapLearnResourceDto };
 type RemoveLearnResourceAction = { type: 'removeLearnResource'; learnResource: RoadmapLearnResourceDto };
 type AddTempImageAction = { type: 'addTempImage'; tempImage: string };
+type SetBoldAction = { type: 'setBold'; bold: boolean };
 type Action =
   | SetBgColorAction
   | SetRoadmapItemAction
@@ -78,7 +79,8 @@ type Action =
   | SetRequiredAction
   | AddLearnResourceAction
   | RemoveLearnResourceAction
-  | AddTempImageAction;
+  | AddTempImageAction
+  | SetBoldAction;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -109,6 +111,8 @@ function reducer(state: State, action: Action): State {
       };
     case 'addTempImage':
       return { ...state, temp_images: [...(state.temp_images ?? []), action.tempImage] };
+    case 'setBold':
+      return { ...state, bold: action.bold };
     default:
       throw new Error();
   }
@@ -257,6 +261,10 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
     dispatch({ type: 'setCategory', category });
   }, []);
 
+  const onChangeBold = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: 'setBold', bold: e.target.checked });
+  }, []);
+
   return (
     <>
       <Modal isOpen={isOpen} size="2xl" onClose={onCloseModal}>
@@ -297,9 +305,9 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
               </FormControl>
             </Flex>
 
-            <Flex gap={3}>
+            <Flex gap={3} mb={5} alignItems="center" justifyContent="space-between">
               {/* 진행상태 */}
-              <InputGroup mb={5}>
+              <InputGroup flex={1}>
                 <InputLeftAddon>
                   <Text fontSize="sm">진행상태</Text>
                 </InputLeftAddon>
@@ -313,7 +321,7 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
               </InputGroup>
 
               {/* 필수여부 */}
-              <InputGroup mb={5}>
+              <InputGroup flex={1}>
                 <InputLeftAddon>
                   <Text fontSize="sm">필수여부</Text>
                 </InputLeftAddon>
@@ -325,6 +333,14 @@ export const RoadmapItemModal = ({ isOpen, onClose, roadmapItem }: RoadmapItemMo
                   ))}
                 </Select>
               </InputGroup>
+
+              {/* 테두리 */}
+              <FormControl display="flex" alignItems="center" width={90} justifyContent="flex-end">
+                <FormLabel mb="0" color="#666" fontWeight="thin" fontSize="sm">
+                  굵게
+                </FormLabel>
+                <Switch colorScheme="teal" isChecked={state.bold} onChange={onChangeBold} />
+              </FormControl>
             </Flex>
 
             {/* 에디터 */}

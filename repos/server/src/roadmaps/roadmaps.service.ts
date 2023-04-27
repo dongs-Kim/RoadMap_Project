@@ -99,6 +99,7 @@ export class RoadmapsService {
           required: item.required as EN_ROADMAP_ITEM_REQUIRED | null,
           learnResources: item.LearnResources,
           contents_images: item.contents_images,
+          bold: item.bold,
         },
         position: {
           x: item.positionX,
@@ -473,6 +474,7 @@ export class RoadmapsService {
         roadmapItem.zIndex = node.zIndex;
         roadmapItem.required = node.data.required;
         roadmapItem.contents_images = node.data.contents_images;
+        roadmapItem.bold = node.data.bold;
 
         // learnResources
         const newLearnResources = node.data.learnResources?.map(

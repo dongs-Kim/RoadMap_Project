@@ -108,16 +108,18 @@ export const RoadmapItemDrawer = ({ isOpen, onClose, roadmapItem }: RoadmapItemD
 
           <DrawerBody>
             {/* 학습 리소스 링크 */}
-            <Box mb={5}>
-              <Link
-                as={RouterLink}
-                to={`/LearnResource/list?category=${roadmapItem?.category}`}
-                color="teal"
-                target="_blank"
-              >
-                관련 학습 리소스
-              </Link>
-            </Box>
+            {roadmapItem?.category && (
+              <Box mb={5}>
+                <Link
+                  as={RouterLink}
+                  to={`/LearnResource/list?category=${roadmapItem?.category}`}
+                  color="teal"
+                  target="_blank"
+                >
+                  관련 학습 리소스
+                </Link>
+              </Box>
+            )}
 
             {/* 설명 뷰어 */}
             <div ref={viewerElRef}></div>

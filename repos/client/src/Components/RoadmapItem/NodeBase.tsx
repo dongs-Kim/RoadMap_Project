@@ -1,4 +1,5 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import _ from 'lodash';
 import { NodeProps } from 'reactflow';
 import { BsCheckLg, BsCheckCircleFill } from 'react-icons/bs';
 import { FaPlay } from 'react-icons/fa';
@@ -8,6 +9,11 @@ import { NodeMode, RoadmapItem } from '../../Interface/roadmap';
 import { NodeResizer } from '@reactflow/node-resizer';
 
 export const NodeBase = ({ data, selected, mode }: NodeProps<RoadmapItem> & { mode: NodeMode }) => {
+  let className = 'has-description';
+  if (!data.description && !data.category && _.isEmpty(data.learnResources)) {
+    className = 'no-description';
+  }
+
   return (
     <>
       <NodeResizer color="#fff" isVisible={selected} minWidth={100} minHeight={42} />
@@ -23,10 +29,11 @@ export const NodeBase = ({ data, selected, mode }: NodeProps<RoadmapItem> & { mo
         letterSpacing="1px"
         justifyContent="center"
         alignItems="center"
-        // className={data.description ? 'has-description' : 'no-description'}
-        className="has-description"
+        className={className}
       >
-        {!data.name && mode === 'write' ? <Box color="gray.400">항목명</Box> : data.name}
+        <Text fontWeight={data.bold ? 700 : ''}>
+          {!data.name && mode === 'write' ? <Box color="gray.400">항목명</Box> : data.name}
+        </Text>
         <RequiredIcon required={data.required} />
         <StatusIcon status={data.status} />
       </Flex>
