@@ -81,6 +81,10 @@ __decorate([
     __metadata("design:type", Number)
 ], RoadmapItem.prototype, "height", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], RoadmapItem.prototype, "bold", void 0);
+__decorate([
     (0, typeorm_1.Column)('simple-array', { nullable: true }),
     __metadata("design:type", Array)
 ], RoadmapItem.prototype, "contents_images", void 0);

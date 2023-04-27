@@ -102,6 +102,7 @@ let RoadmapsService = class RoadmapsService {
                     required: item.required,
                     learnResources: item.LearnResources,
                     contents_images: item.contents_images,
+                    bold: item.bold,
                 },
                 position: {
                     x: item.positionX,
@@ -367,6 +368,7 @@ let RoadmapsService = class RoadmapsService {
                 roadmapItem.zIndex = node.zIndex;
                 roadmapItem.required = node.data.required;
                 roadmapItem.contents_images = node.data.contents_images;
+                roadmapItem.bold = node.data.bold;
                 const newLearnResources = (_a = node.data.learnResources) === null || _a === void 0 ? void 0 : _a.map((learnResource) => {
                     const newLearnResource = new learn_resource_1.LearnResource();
                     newLearnResource.id = learnResource.id;

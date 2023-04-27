@@ -31,6 +31,7 @@ export declare class RoadmapNodeDto {
         learnResources?: LearnResource[];
         temp_images?: string[];
         contents_images?: string[];
+        bold?: boolean;
     };
 }
 export declare class RoadmapEdgeDto {

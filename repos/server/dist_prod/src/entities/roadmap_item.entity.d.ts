@@ -16,6 +16,7 @@ export declare class RoadmapItem {
     url?: string;
     width?: number;
     height?: number;
+    bold?: boolean;
     contents_images?: string[];
     Roadmap: Roadmap;
     LearnResources: LearnResource[];
